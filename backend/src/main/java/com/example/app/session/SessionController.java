@@ -15,6 +15,7 @@ import java.util.UUID;
 @RequestMapping(value = "/")
 public class SessionController {
 
+    @CrossOrigin(origins = "http://localhost:8081")
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public @ResponseBody
     ResponseEntity<?> Login(@RequestBody LoginInput p_login) {
