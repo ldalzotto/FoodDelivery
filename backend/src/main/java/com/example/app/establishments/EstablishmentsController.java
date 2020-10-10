@@ -17,11 +17,12 @@ import java.sql.PreparedStatement;
 @RequestMapping(value = "/")
 public class EstablishmentsController {
 
+    @CrossOrigin(origins = "http://localhost:8081", allowCredentials = "true")
     @RequestMapping(value = "/establishment", method = RequestMethod.POST)
     public @ResponseBody
     ResponseEntity<?> CreateEstablishment(
-            @RequestHeader("session_token") String p_sessionToken,
-            @RequestHeader("session_user_id") long p_user_id,
+            @CookieValue("session_token") String p_sessionToken,
+            @CookieValue("session_user_id") long p_user_id,
             @RequestBody Establishment p_establishment) {
 
         FunctionalError l_Functional_error = new FunctionalError();
@@ -34,7 +35,7 @@ public class EstablishmentsController {
             return ResponseEntity.badRequest().body(l_Functional_error);
         }
         p_establishment.user_id = p_user_id;
-        return ResponseEntity.ok(this.InsertEstablishment(p_establishment));
+        return ResponseEntity.ok().body(this.InsertEstablishment(p_establishment));
     }
 
     @Transactional

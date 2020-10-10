@@ -33,10 +33,7 @@ public class SessionController {
         }
 
         Session l_session = this.createSession(l_foundUser.id);
-        HttpHeaders l_headers = new HttpHeaders();
-        l_headers.set(SessionConstants.TOKEN, l_session.token);
-        l_headers.set(SessionConstants.USER_ID, Long.toString(l_session.user_id));
-        return ResponseEntity.ok().headers(l_headers).body(null);
+        return ResponseEntity.ok(l_session);
     }
 
     @RequestMapping(value = "/session-check", method = RequestMethod.GET)
@@ -70,4 +67,3 @@ class LoginInput {
     public String username;
     public String password;
 }
-

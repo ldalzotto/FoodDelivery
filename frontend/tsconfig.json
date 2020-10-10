@@ -1,16 +1,20 @@
 {
     "compilerOptions": {
-        "module": "amd",
+        "module": "ES6",
+        "target": "ES2015",
+        "outDir": "./asset/generated/",
         "noImplicitAny": true,
         "removeComments": true,
         "preserveConstEnums": true,
-        "outFile": "./build/tsc.js",
         "sourceMap": true,
         "watch": true,
         "allowJs": true
     },
+    "files": [
+        "asset/src/app.ts"
+    ],
     "include": [
-        "assets/src/**/*"
+        "asset/src/**/*"
     ],
     "exclude": [
         "node_modules",

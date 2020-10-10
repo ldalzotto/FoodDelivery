@@ -1,7 +1,6 @@
 .DS_Store
 node_modules
-frontend/dist
-
+frontend/asset/generated
 
 # local env files
 .env.local
