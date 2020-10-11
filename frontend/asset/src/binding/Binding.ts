@@ -42,7 +42,30 @@ class Observable<T>
     }
 }
 
-class MObservableIndex
+class Computed<T> extends Observable<T>
+{
+    constructor(value : () => T, deps : Observable<T>[] )
+    {
+        super(value());
+        const listener = () => {
+            this._value = value();
+            this.notify();
+        };
+        deps.forEach(dep => dep.subscribe(listener));
+    }
+
+    get value() : T
+    {
+        return this._value;
+    }
+
+    set value(val : T)
+    {
+        throw "Cannot set computed property";
+    }
+}
+
+class BindingIndex
 {
     public index : number;
     constructor(p_index : number)
@@ -74,22 +97,22 @@ class MObservable<T>
         });
     }
 
-    subscribe(listener : (arg0 : T) => void) : MObservableIndex
+    subscribe(listener : (arg0 : T) => void) : BindingIndex
     {
         if(this._listeners_free.length > 0)
         {
             let l_index : number = this._listeners_free.pop();
             this._listeners[l_index] = listener;
-            return new MObservableIndex(l_index);
+            return new BindingIndex(l_index);
         }
         else
         {
             this._listeners.push(listener);
-            return new MObservableIndex(this._listeners.length - 1);
+            return new BindingIndex(this._listeners.length - 1);
         }
     }
 
-    unsubscribe(p_index : MObservableIndex)
+    unsubscribe(p_index : BindingIndex)
     {
         if(p_index.index <= this._listeners.length - 1)
         {
@@ -98,9 +121,9 @@ class MObservable<T>
         }
     }
 
-    subscribe_withInit(listener : (arg0 : T) => void) : MObservableIndex
+    subscribe_withInit(listener : (arg0 : T) => void) : BindingIndex
     {
-        let l_index : MObservableIndex = this.subscribe(listener);
+        let l_index : BindingIndex = this.subscribe(listener);
         listener(this._value);
         return l_index;
     }
@@ -120,26 +143,75 @@ class MObservable<T>
     }
 }
 
-class Computed<T> extends Observable<T>
+class MWatcher<T> 
 {
-    constructor(value : () => T, deps : Observable<T>[] )
+    protected _listeners : ((old_value : T, new_value : T) => void)[];
+    protected _listeners_free : number[];
+    protected _value : T;
+    protected _oldValue : T;
+
+    constructor(value : T)
     {
-        super(value());
-        const listener = () => {
-            this._value = value();
-            this.notify();
-        };
-        deps.forEach(dep => dep.subscribe(listener));
+        this._listeners = [];
+        this._listeners_free = [];
+        this._value = value;
+        this._oldValue = value;
     }
 
-    get value() : T
+    notify()
+    {
+        this._listeners.forEach(listener => {
+            if(listener!=null)
+            {
+                listener(this._oldValue, this._value);
+            }
+        });
+    }
+
+    subscribe(listener : (old_value : T, new_value : T) => void) : BindingIndex
+    {
+        if(this._listeners_free.length > 0)
+        {
+            let l_index : number = this._listeners_free.pop();
+            this._listeners[l_index] = listener;
+            return new BindingIndex(l_index);
+        }
+        else
+        {
+            this._listeners.push(listener);
+            return new BindingIndex(this._listeners.length - 1);
+        }
+    }
+
+    unsubscribe(p_index : BindingIndex)
+    {
+        if(p_index.index <= this._listeners.length - 1)
+        {
+            this._listeners[p_index.index] = null;
+            this._listeners_free.push(p_index.index);
+        }
+    }
+
+    subscribe_withInit(listener : (old_value : T, new_value : T) => void) : BindingIndex
+    {
+        let l_index : BindingIndex = this.subscribe(listener);
+        listener(this._oldValue, this._value);
+        return l_index;
+    }
+
+    get value()
     {
         return this._value;
     }
 
     set value(val : T)
     {
-        throw "Cannot set computed property";
+        if(this._value != val)
+        {
+            this._oldValue = this._value;
+            this._value = val;
+            this.notify();
+        }
     }
 }
 
@@ -150,4 +222,4 @@ function bindValue_inputElement(input : HTMLInputElement, observable : Observabl
     input.onkeyup = () => observable.value = input.value;
 }
 
-export {Observable, MObservable, MObservableIndex, Computed, bindValue_inputElement}
+export {Observable, Computed, bindValue_inputElement, BindingIndex, MObservable, MWatcher}

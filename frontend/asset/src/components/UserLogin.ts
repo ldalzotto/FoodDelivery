@@ -1,10 +1,25 @@
 import {Observable, bindValue_inputElement} from "../binding/Binding.js";
 import {LoginInput, LoginUser, ServerError} from "../services/Login.js"
 import {GUserState} from "../UserState.js"
-import {MObservableIndex} from "../binding/Binding.js"
+import {BindingIndex} from "../binding/Binding.js"
+
+class UserLogin_LoggedInEvent extends Event
+{
+    static readonly Type = 'logged-in';
+    constructor()
+    {
+        super(UserLogin_LoggedInEvent.Type);
+    }
+}
+
 
 class UserLogin extends HTMLElement
 {
+    static readonly Type : string = "user-login";
+
+    private NotLoggedInelement : HTMLDivElement;
+    private AlreadyLoggedInElement : HTMLDivElement;
+
     private LoginInput : HTMLInputElement;
     private PasswordInput : HTMLInputElement;
     private LogButton : HTMLButtonElement;
@@ -12,16 +27,17 @@ class UserLogin extends HTMLElement
     private LoginObservable : Observable<string>;
     private PasswordObservable : Observable<string>;
 
-    private GState_IsLoggedIn_handle : MObservableIndex;
+    private GState_IsLoggedIn_handle : BindingIndex;
 
     constructor(){
         super();
 
-        this.GState_IsLoggedIn_handle = GUserState.isLoggedIn.subscribe_withInit((p_value : boolean) => { this.onUserLoggedInChanged(p_value); });
-
         this.attachShadow({mode: 'open'});
-        let l_template : HTMLTemplateElement = document.getElementById("user-login") as HTMLTemplateElement;
+        let l_template : HTMLTemplateElement = document.getElementById(UserLogin.Type) as HTMLTemplateElement;
         this.shadowRoot.append(l_template.content.cloneNode(true));
+        
+        this.NotLoggedInelement = this.shadowRoot.getElementById("not-logged-in-element") as HTMLDivElement;
+        this.AlreadyLoggedInElement = this.shadowRoot.getElementById("logged-in-element") as HTMLDivElement;
 
         this.LoginInput = this.shadowRoot.getElementById("login") as HTMLInputElement;
         this.PasswordInput = this.shadowRoot.getElementById("password") as HTMLInputElement;
@@ -33,10 +49,12 @@ class UserLogin extends HTMLElement
 
         bindValue_inputElement(this.LoginInput, this.LoginObservable);
         bindValue_inputElement(this.PasswordInput, this.PasswordObservable);
+
+        this.GState_IsLoggedIn_handle = GUserState.isLoggedIn_watcher.subscribe_withInit((p_old : boolean, p_new : boolean) => { this.onUserLoggedInChanged(p_old, p_new); });
     }
 
     disconnectedCallback() {
-        GUserState.isLoggedIn.unsubscribe(this.GState_IsLoggedIn_handle);
+        GUserState.isLoggedIn_watcher.unsubscribe(this.GState_IsLoggedIn_handle);
     }
 
     onLogButtonClick()
@@ -56,20 +74,22 @@ class UserLogin extends HTMLElement
         });
     }
 
-    onUserLoggedInChanged(p_isLoggedIn : boolean)
+    onUserLoggedInChanged(p_old : boolean, p_new : boolean)
     {
-        if(p_isLoggedIn)
+        this.NotLoggedInelement.style.display = !p_new ? "" : "none";
+        this.AlreadyLoggedInElement.style.display = p_new ? "" : "none";
+
+        if(!p_old && p_new)
         {
-            this.remove();
-            // this.parentElement.removeChild(this);
+            this.dispatchEvent(new UserLogin_LoggedInEvent());
         }
     }
 
 }
 
-function UserLogin_initialize()
+function userLogin_init()
 {
-    customElements.define('user-login', UserLogin);
-};
+    customElements.define(UserLogin.Type, UserLogin);
+}
 
-export {UserLogin_initialize}
+export {userLogin_init, UserLogin, UserLogin_LoggedInEvent};

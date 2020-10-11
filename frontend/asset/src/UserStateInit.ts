@@ -3,12 +3,12 @@ import {GetSessionFromCookie} from './services/Login.js'
 
 function GUserState_Init()
 {
-    if(!GUserState.isLoggedIn.value)
+    if(!GUserState.isLoggedIn)
     {
         let l_session = GetSessionFromCookie();
         if(l_session.token && l_session.token.length !== 0 && l_session.user_id && l_session.user_id.length !== 0)
         {
-            GUserState.isLoggedIn.value = true;
+            GUserState.isLoggedIn = true;
             GUserState.user_id = parseInt(l_session.user_id);
         }
     }

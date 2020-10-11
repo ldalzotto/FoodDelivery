@@ -1,20 +1,46 @@
-import {UserLogin_initialize} from "./components/UserLogin.js"
-import {GUserState_Init} from "./UserStateInit.js"
 
-class MainApp extends HTMLElement
+import {GUserState_Init} from "./UserStateInit.js"
+import {Router, Route} from "./router/Router.js"
+
+let appElement : HTMLElement = document.getElementById("app");
+
+import {RegisterComponents} from "./components/Register.js"
+
+import {RootPage} from "./pages/Root.js"
+import {LoginPage} from "./pages/LoginPage.js"
+import {ProfilePage} from "./pages/ProfilePage.js"
+
+
+RegisterComponents();
+GUserState_Init();
+
+var router : Router = new Router();
+
+class Navigation_Constants
 {
-    constructor()
-    {
-        super();        
-        this.attachShadow({mode: 'open'});
-        this.shadowRoot.append((document.getElementById("main-app") as HTMLTemplateElement).content.cloneNode(true));
-    }
+    static readonly RootPath : string = "/";
+    static readonly LoginPath : string = "/login";
+    static readonly ProfilePath : string = "/profile";
 }
 
-customElements.define('main-app', MainApp);
-UserLogin_initialize();
+router.add(new Route(Navigation_Constants.LoginPath, () => {
+    appElement.innerHTML = "";
+    appElement.appendChild(new LoginPage());
+    console.log("LOGIN");
+}));
 
+router.add(new Route(Navigation_Constants.ProfilePath, () => {
+    appElement.innerHTML = "";
+    appElement.appendChild(new ProfilePage());
+    console.log("PROFILE");
+}));
 
+router.add(new Route(Navigation_Constants.RootPath, () => {
+    appElement.innerHTML = "";
+    appElement.appendChild(new RootPage());
+    console.log("ROOT");
+}));
 
+router.interpretCurrentUrl();
 
-GUserState_Init();
+export {router, Navigation_Constants};

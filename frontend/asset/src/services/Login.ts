@@ -59,7 +59,7 @@ function GetSessionFromCookie() : Session
 
 function LoginUser(p_loginInput : LoginInput, onCompleted : (err : ServerError) => (void))
 {
-    if(!GUserState.isLoggedIn.value)
+    if(!GUserState.isLoggedIn)
     {
         let xhr : XMLHttpRequest = new XMLHttpRequest();
         xhr.open("POST", "http://localhost:8080/login", true);
@@ -73,7 +73,7 @@ function LoginUser(p_loginInput : LoginInput, onCompleted : (err : ServerError) 
                 {
                     let l_response : LoginResponse = JSON.parse(xhr.response);
                     PushLoginCookie(l_response);
-                    GUserState.isLoggedIn.value = true;
+                    GUserState.isLoggedIn = true;
                     onCompleted(null);
                 }
                 else

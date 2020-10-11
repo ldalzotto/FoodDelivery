@@ -5,19 +5,40 @@
     <script type="module" src="./generated/app.js"></script>
   </head>
   <body>
+    <div id="app">
 
-    <template id="main-app">
-        <user-login></user-login>
+    </div>
+    
+    <template id="page-header">
+      <button id="login-button">LOGIN</button>
+      <button id="profile-button">PROFILE</button>
+      <hr/>
+    </template>
+
+    <template id="root-page">
+        <page-header></page-header>
+    </template>
+
+    <template id="login-page">
+      <page-header></page-header>
+      <user-login></user-login>
+    </template>
+
+    <template id="profile-page">
+      <page-header></page-header>
     </template>
 
     <template id="user-login">
-        <div>Login : </div>
-        <input id="login" type="text"/>
-        <br/><br/>
-        <div> Password : </div>
-        <input id="password" type="text"/>
-        <br/><br/>
-        <button id="log-button">GO</button>
+        <div id="not-logged-in-element">
+          <div class="test-color">Login : </div>
+          <input id="login" type="text"/>
+          <br/><br/>
+          <div> Password : </div>
+          <input id="password" type="text"/>
+          <br/><br/>
+          <button id="log-button">GO</button>
+        </div>
+        <div id="logged-in-element" class="test-color">You are already logged in !</div>
     </template>
 
     <main-app></main-app>
