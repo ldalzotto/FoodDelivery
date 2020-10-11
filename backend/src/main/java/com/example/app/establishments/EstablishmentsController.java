@@ -4,11 +4,15 @@ import com.example.app.session.SessionErrorHandler;
 import com.example.app.session.SessionService;
 import com.example.main.ConfigurationBeans;
 import com.example.main.FunctionalError;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.PreparedStatement;
@@ -38,24 +42,33 @@ public class EstablishmentsController {
         return ResponseEntity.ok().body(this.InsertEstablishment(p_establishment));
     }
 
-    @Transactional
     public Establishment InsertEstablishment(Establishment p_establishment) {
-        Establishment l_return = p_establishment.copy();
 
+        Establishment l_return = p_establishment.copy();
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
-        ConfigurationBeans.jdbcTemplate.update(con -> {
-            PreparedStatement l_ps = con.prepareStatement("insert into establishments(name, address, phone, user_id) VALUES (?, ?, ?, ?)");
-            l_ps.setString(1, p_establishment.name);
-            l_ps.setString(2, p_establishment.address);
-            l_ps.setString(3, p_establishment.phone);
-            l_ps.setLong(4, p_establishment.user_id);
-            return l_ps;
-        }, keyHolder);
+        TransactionStatus l_transaction = ConfigurationBeans.transactionManager.getTransaction(new DefaultTransactionDefinition());
 
-        l_return.id = keyHolder.getKey().longValue();
+        try {
+            ConfigurationBeans.jdbcTemplate.update(con -> {
+                PreparedStatement l_ps = con.prepareStatement("insert into establishments(name, address, phone, user_id) VALUES (?, ?, ?, ?)");
+                l_ps.setString(1, p_establishment.name);
+                l_ps.setString(2, p_establishment.address);
+                l_ps.setString(3, p_establishment.phone);
+                l_ps.setLong(4, p_establishment.user_id);
+                return l_ps;
+            }, keyHolder);
 
-        return l_return;
+            ConfigurationBeans.transactionManager.commit(l_transaction);
+
+            l_return.id = keyHolder.getKey().longValue();
+
+            return l_return;
+        } catch (DataAccessException ex) {
+            ConfigurationBeans.transactionManager.rollback(l_transaction);
+            throw ex;
+        }
+
     }
 
 

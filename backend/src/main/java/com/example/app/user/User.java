@@ -13,12 +13,17 @@ public class User {
     public User copy()
     {
         User l_cpy = new User();
-        l_cpy.id = this.id;
-        l_cpy.username = this.username;
-        l_cpy.password = this.password;
-        l_cpy.email = this.email;
-        l_cpy.isValidated = this.isValidated;
+        this.copyTo(l_cpy);
         return l_cpy;
+    }
+
+    public void copyTo(User p_target)
+    {
+        p_target.id = this.id;
+        p_target.username = this.username;
+        p_target.password = this.password;
+        p_target.email = this.email;
+        p_target.isValidated = this.isValidated;
     }
 
     public boolean validate(FunctionalError in_out_validationFunctionalError)
@@ -36,6 +41,11 @@ public class User {
         else if(ValidationMessage.string_nullOrEmpty(this.email))
         {
             in_out_validationFunctionalError.code = "USER_EMAIL_EMTPY";
+            return false;
+        }
+        else if(!ValidationMessage.string_isValidEmail(this.email))
+        {
+            in_out_validationFunctionalError.code = "USER_EMAIL_INVALIDFORMAT";
             return false;
         }
         return true;
