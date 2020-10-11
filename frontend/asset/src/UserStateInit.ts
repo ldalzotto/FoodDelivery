@@ -9,7 +9,6 @@ function GUserState_Init()
         if(l_session.token && l_session.token.length !== 0 && l_session.user_id && l_session.user_id.length !== 0)
         {
             GUserState.isLoggedIn = true;
-            GUserState.user_id = parseInt(l_session.user_id);
         }
     }
 }

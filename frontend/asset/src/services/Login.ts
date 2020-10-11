@@ -1,12 +1,6 @@
-
 import {GUserState} from '../UserState.js'
+import {ServerError, Server} from "../server/Server.js"
 
-class ServerError
-{
-    public status : number;
-    public code : string;
-    public message : string;
-}
 
 class LoginInput
 {
@@ -61,31 +55,16 @@ function LoginUser(p_loginInput : LoginInput, onCompleted : (err : ServerError) 
 {
     if(!GUserState.isLoggedIn)
     {
-        let xhr : XMLHttpRequest = new XMLHttpRequest();
-        xhr.open("POST", "http://localhost:8080/login", true);
-        xhr.setRequestHeader("Content-Type", "application/json");
-        
-        xhr.onreadystatechange = function()
-        {
-            if(this.readyState == XMLHttpRequest.DONE)
-            {
-                if(this.status == 200)
-                {
-                    let l_response : LoginResponse = JSON.parse(xhr.response);
-                    PushLoginCookie(l_response);
-                    GUserState.isLoggedIn = true;
-                    onCompleted(null);
-                }
-                else
-                {
-                    let l_error : ServerError = JSON.parse(xhr.response);
-                    l_error.status = xhr.status;
-                    onCompleted(l_error);
-                }
+        Server.SendRequest("POST", "http://localhost:8080/login", p_loginInput,
+            (res : LoginResponse) => {
+                PushLoginCookie(res);
+                GUserState.isLoggedIn = true;
+                onCompleted(null);
+            },
+            (err : ServerError) => {
+                onCompleted(err);
             }
-        }
-    
-        xhr.send(JSON.stringify(p_loginInput));
+        );
     }
     else
     {

@@ -4,7 +4,7 @@ class UserState
 {
     private _isLoggedIn : boolean;
     public isLoggedIn_watcher : MWatcher<boolean>;
-    public user_id : number;
+    private _user : User;
 
     constructor()
     {
@@ -17,8 +17,20 @@ class UserState
         this._isLoggedIn = p_value;
         this.isLoggedIn_watcher.value = this._isLoggedIn;
     }
+
+    set user(p_user : User) { this._user = p_user; }
+    get user() : User {return this._user;}
+}
+
+class User
+{
+    public id : number;
+    public username : string;
+    public password : string;
+    public email : string;
+    public isValidated : boolean;
 }
 
 var GUserState : UserState = new UserState();
 
-export {GUserState};
+export {GUserState, User};

@@ -4,11 +4,12 @@ import {Router, Route} from "./router/Router.js"
 
 let appElement : HTMLElement = document.getElementById("app");
 
-import {RegisterComponents} from "./components/Register.js"
+import {RegisterComponents} from "./components/@Register.js"
 
 import {RootPage} from "./pages/Root.js"
 import {LoginPage} from "./pages/LoginPage.js"
 import {ProfilePage} from "./pages/ProfilePage.js"
+import {RegisterPage} from "./pages/RegisterPage.js"
 
 
 RegisterComponents();
@@ -21,12 +22,19 @@ class Navigation_Constants
     static readonly RootPath : string = "/";
     static readonly LoginPath : string = "/login";
     static readonly ProfilePath : string = "/profile";
+    static readonly RegisterPath : string = "/register";
 }
 
 router.add(new Route(Navigation_Constants.LoginPath, () => {
     appElement.innerHTML = "";
     appElement.appendChild(new LoginPage());
     console.log("LOGIN");
+}));
+
+router.add(new Route(Navigation_Constants.RegisterPath, () => {
+    appElement.innerHTML = "";
+    appElement.appendChild(new RegisterPage());
+    console.log("REGISTER");
 }));
 
 router.add(new Route(Navigation_Constants.ProfilePath, () => {

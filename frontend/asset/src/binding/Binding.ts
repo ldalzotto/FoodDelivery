@@ -215,11 +215,20 @@ class MWatcher<T>
     }
 }
 
-function bindValue_inputElement(input : HTMLInputElement, observable : Observable<string>)
+class BindingUtils
 {
-    input.value = observable.value;
-    observable.subscribe(() => {input.value = observable.value});
-    input.onkeyup = () => observable.value = input.value;
+    static bindInputText(input : HTMLInputElement, observable : Observable<string>)
+    {
+        input.value = observable.value;
+        observable.subscribe(() => {input.value = observable.value});
+        input.onkeyup = () => observable.value = input.value;
+    }
+
+    static bindDisplayStyle(p_element : HTMLElement, observable : Observable<boolean>)
+    {
+        p_element.style.display = observable.value ? "" : "NONE";
+        observable.subscribe(() => {  p_element.style.display = observable.value ? "" : "NONE"; });
+    }
 }
 
-export {Observable, Computed, bindValue_inputElement, BindingIndex, MObservable, MWatcher}
+export {Observable, Computed, BindingUtils, BindingIndex, MObservable, MWatcher}

@@ -1,18 +1,27 @@
 import { router, Navigation_Constants } from "../app.js";
 
-function MoveToRootpage()
+class Navigation 
 {
-    router.navigate(Navigation_Constants.RootPath);
+    static MoveToRootpage()
+    {
+        router.navigate(Navigation_Constants.RootPath);
+    }
+    
+    static MoveToLoginPage()
+    {
+        router.navigate(Navigation_Constants.LoginPath);
+    }
+    
+    static MoveToProfilePage()
+    {
+        router.navigate(Navigation_Constants.ProfilePath);
+    }
+    
+    static MoveToRegisterPage()
+    {
+        router.navigate(Navigation_Constants.RegisterPath);
+    }
 }
 
-function MoveToLoginPage()
-{
-    router.navigate(Navigation_Constants.LoginPath);
-}
 
-function MoveToProfilePage()
-{
-    router.navigate(Navigation_Constants.ProfilePath);
-}
-
-export {Navigation_Constants, MoveToRootpage, MoveToLoginPage, MoveToProfilePage}
+export {Navigation}

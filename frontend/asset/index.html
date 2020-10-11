@@ -11,6 +11,7 @@
     
     <template id="page-header">
       <button id="login-button">LOGIN</button>
+      <button id="register-button">REGISTER</button>
       <button id="profile-button">PROFILE</button>
       <hr/>
     </template>
@@ -24,13 +25,18 @@
       <user-login></user-login>
     </template>
 
+    <template id="register-page">
+      <page-header></page-header>
+      <user-register></user-register>
+    </template>
+
     <template id="profile-page">
       <page-header></page-header>
     </template>
 
     <template id="user-login">
         <div id="not-logged-in-element">
-          <div class="test-color">Login : </div>
+          <div>Login : </div>
           <input id="login" type="text"/>
           <br/><br/>
           <div> Password : </div>
@@ -39,6 +45,20 @@
           <button id="log-button">GO</button>
         </div>
         <div id="logged-in-element" class="test-color">You are already logged in !</div>
+    </template>
+
+    <template id="user-register">
+      <div>Username : </div>
+      <input id="username" type="text" />
+      <div>Password : </div>
+      <input id="password" type="text" />
+      <div>Email : </div>
+      <input id="email" type="text" />
+      <br/><br/>
+      <div>
+        <button id="submit">SUBMIT</button>
+        <div id="submit-message"></div>
+      </div>
     </template>
 
     <main-app></main-app>

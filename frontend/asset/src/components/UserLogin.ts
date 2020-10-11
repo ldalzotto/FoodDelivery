@@ -1,4 +1,4 @@
-import {Observable, bindValue_inputElement} from "../binding/Binding.js";
+import {Observable, BindingUtils} from "../binding/Binding.js";
 import {LoginInput, LoginUser, ServerError} from "../services/Login.js"
 import {GUserState} from "../UserState.js"
 import {BindingIndex} from "../binding/Binding.js"
@@ -47,8 +47,8 @@ class UserLogin extends HTMLElement
         this.LoginObservable = new Observable("");
         this.PasswordObservable = new Observable("");
 
-        bindValue_inputElement(this.LoginInput, this.LoginObservable);
-        bindValue_inputElement(this.PasswordInput, this.PasswordObservable);
+        BindingUtils.bindInputText(this.LoginInput, this.LoginObservable);
+        BindingUtils.bindInputText(this.PasswordInput, this.PasswordObservable);
 
         this.GState_IsLoggedIn_handle = GUserState.isLoggedIn_watcher.subscribe_withInit((p_old : boolean, p_new : boolean) => { this.onUserLoggedInChanged(p_old, p_new); });
     }

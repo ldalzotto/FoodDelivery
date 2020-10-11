@@ -1,5 +1,5 @@
 import {UserLogin, UserLogin_LoggedInEvent} from "../components/UserLogin.js"
-import {MoveToRootpage} from "../services/Navigation.js"
+import {Navigation} from "../services/Navigation.js"
 
 class LoginPage extends HTMLElement
 {
@@ -15,7 +15,7 @@ class LoginPage extends HTMLElement
 
         this.userLogin = this.shadowRoot.querySelector(UserLogin.Type);
         this.userLogin.addEventListener(UserLogin_LoggedInEvent.Type, () => {
-            MoveToRootpage();
+            Navigation.MoveToRootpage();
         });
     }
 }

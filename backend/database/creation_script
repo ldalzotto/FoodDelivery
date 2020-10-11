@@ -34,9 +34,12 @@ drop table if exists sessions;
 create table if not exists sessions
 (
     token TEXT NOT NULL,
-    expiration_time INTEGER NOT NULL
+    user_id INTEGER NOT NULL,
+    expiration_time INTEGER NOT NULL,
+    FOREIGN KEY(user_id) REFERENCES users(id)
 );
 
+/*
 select count(*) from users
 where users.id == 1;
 
@@ -52,7 +55,6 @@ update users
 set is_validated = 1
 where id == 0;
 
-/*
 insert into users (id, username, email, password, is_validated)
 values (0, 'test', 'loic.dalzotto@hotmail.fr', 'pass', 0);
 

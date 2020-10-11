@@ -16,6 +16,7 @@ import java.util.Properties;
 @RequestMapping(value = "/")
 public class UserController {
 
+    @CrossOrigin(origins = "http://localhost:8081")
     @RequestMapping(value = "/user", method = RequestMethod.POST)
     public @ResponseBody
     ResponseEntity<?> CreateUser(@RequestBody User p_user) {

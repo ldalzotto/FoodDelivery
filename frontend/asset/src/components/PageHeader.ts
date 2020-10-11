@@ -1,10 +1,11 @@
 import {GUserState} from "../UserState.js"
 import {BindingIndex} from "../binding/Binding.js"
-import {MoveToLoginPage, MoveToProfilePage} from "../services/Navigation.js"
+import {Navigation} from "../services/Navigation.js"
 
 class PageHeader extends HTMLElement
 {
     private loginButton : HTMLButtonElement;
+    private registerButton : HTMLButtonElement;
     private profileButton : HTMLButtonElement;
 
     private GState_IsLoggedIn_handle : BindingIndex;
@@ -20,12 +21,15 @@ class PageHeader extends HTMLElement
         this.loginButton = this.shadowRoot.getElementById("login-button") as HTMLButtonElement;
         this.loginButton.addEventListener('click', () => {this.onLoginButtonClick();});
 
+        this.registerButton = this.shadowRoot.getElementById("register-button") as HTMLButtonElement;
+        this.registerButton.addEventListener('click', () => { this.onRegisterButtonClick(); });
+
         this.profileButton = this.shadowRoot.getElementById("profile-button") as HTMLButtonElement;
         this.profileButton.addEventListener('click', () => {this.onProfileButtonClick();});
 
         this.GState_IsLoggedIn_handle = GUserState.isLoggedIn_watcher.subscribe_withInit((p_old, p_new) => {this.onIsLoggenInChanged(p_old, p_new);});
     }
-
+   
     disconnectedCallback()
     {
         GUserState.isLoggedIn_watcher.unsubscribe(this.GState_IsLoggedIn_handle);
@@ -34,17 +38,23 @@ class PageHeader extends HTMLElement
     onIsLoggenInChanged(p_old : boolean, p_new : boolean)
     {
         this.loginButton.style.display = !p_new ? "" : "none";
+        this.registerButton.style.display = !p_new ? "" : "none";
         this.profileButton.style.display = p_new ? "" : "none";
     }
 
     onLoginButtonClick()
     {
-        MoveToLoginPage();
+        Navigation.MoveToLoginPage();
+    }
+
+    onRegisterButtonClick() 
+    {
+        Navigation.MoveToRegisterPage();
     }
 
     onProfileButtonClick()
     {
-        MoveToProfilePage();
+        Navigation.MoveToProfilePage();
     }
 }
 
