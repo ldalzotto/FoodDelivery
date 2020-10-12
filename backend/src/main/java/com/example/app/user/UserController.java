@@ -101,6 +101,7 @@ public class UserController {
             l_message.setFrom("test@outlook.fr");
             l_message.addRecipient(Message.RecipientType.TO, new InternetAddress(p_user.email));
             l_message.setSubject("validation");
+            //TODO -> renaming sessionToken to emailtoken
             String l_url = String.format("http://localhost:8081/register/validation?userId=%d&sessionToken=%s", p_user.id, p_mailToken);
             l_message.setText("To validate, click here : " + l_url);
             Transport.send(l_message);

@@ -21,12 +21,12 @@ create table if not exists user_validation
 drop table if exists establishments;
 
 create table if not exists establishments(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    address TEXT NOT NULL,
-    phone TEXT NOT NULL,
-    user_id INTEGER NOT NULL,
-    FOREIGN KEY(user_id) REFERENCES users(id)
+                                             id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                             name TEXT NOT NULL,
+                                             address TEXT NOT NULL,
+                                             phone TEXT NOT NULL,
+                                             user_id INTEGER NOT NULL,
+                                             FOREIGN KEY(user_id) REFERENCES users(id)
 );
 
 drop table if exists sessions;
@@ -35,7 +35,9 @@ create table if not exists sessions
 (
     token TEXT NOT NULL,
     user_id INTEGER NOT NULL,
+    emission_time INTEGER NOT NULL,
     expiration_time INTEGER NOT NULL,
+    is_cancelled INTEGER NOT NULL,
     FOREIGN KEY(user_id) REFERENCES users(id)
 );
 

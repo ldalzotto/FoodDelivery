@@ -2,12 +2,11 @@ package com.example.app.session;
 
 import com.example.app.user.User;
 import com.example.app.user.UserService;
-import com.example.main.ConfigurationBeans;
 import com.example.main.FunctionalError;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.WebUtils;
 
 import java.util.UUID;
 
@@ -32,8 +31,27 @@ public class SessionController {
             return ResponseEntity.badRequest().body(l_error);
         }
 
-        Session l_session = this.createSession(l_foundUser.id);
+        Session l_session = SessionService.createSession(l_foundUser.id);
         return ResponseEntity.ok(l_session);
+    }
+
+    @CrossOrigin(origins = "http://localhost:8081", allowCredentials = "true")
+    @RequestMapping(value = "/logout", method = RequestMethod.POST)
+    public @ResponseBody
+    ResponseEntity<?> Logout(
+            @CookieValue("session_token") String p_sessionToken,
+            @CookieValue("session_user_id") long p_user_id
+    ) {
+        FunctionalError l_Functional_error = new FunctionalError();
+
+        if (!SessionErrorHandler.HandleSessionValidationToken(
+                SessionService.validateSessionToken(p_sessionToken, p_user_id), l_Functional_error)) {
+            return ResponseEntity.badRequest().body(l_Functional_error);
+        }
+
+        SessionService.disableSession(p_user_id);
+
+        return ResponseEntity.ok().body(null);
     }
 
     @RequestMapping(value = "/session-check", method = RequestMethod.GET)
@@ -50,15 +68,6 @@ public class SessionController {
         return ResponseEntity.ok().body(null);
     }
 
-    Session createSession(long p_userId) {
-        Session l_session = new Session();
-        l_session.token = UUID.randomUUID().toString();
-        l_session.user_id = p_userId;
-        l_session.expiration_time = System.currentTimeMillis() + 3600000;
-        ConfigurationBeans.jdbcTemplate.update("insert into sessions(token, user_id, expiration_time) VALUES (?, ?, ?);", l_session.token,
-                l_session.user_id, l_session.expiration_time);
-        return l_session;
-    }
 
 
 }

@@ -1,5 +1,5 @@
 import {Observable, BindingUtils} from "../binding/Binding.js";
-import {LoginInput, LoginUser, ServerError} from "../services/Login.js"
+import {LoginInput, LoginService, ServerError} from "../services/Login.js"
 import {GUserState} from "../UserState.js"
 import {BindingIndex} from "../binding/Binding.js"
 
@@ -62,7 +62,7 @@ class UserLogin extends HTMLElement
         let l_loginInput : LoginInput = new LoginInput();
         l_loginInput.username = this.LoginObservable.value;
         l_loginInput.password = this.PasswordObservable.value;
-        LoginUser(l_loginInput, (err : ServerError) => {
+        LoginService.LoginUser(l_loginInput, (err : ServerError) => {
             if(!err)
             {
                 console.log("OK"); 

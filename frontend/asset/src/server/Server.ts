@@ -7,11 +7,15 @@ class ServerError
 
 class Server
 {
-    static SendRequest(p_verb : string, p_url : string, p_input : any, ok_callback ?: (p_responsebody : any)=>void, error_callback ?: (p_serverError : ServerError)=>void)
+    static SendRequest(p_verb : string, p_url : string, p_input : any, p_withCredentials ?: boolean, ok_callback ?: (p_responsebody : any)=>void, error_callback ?: (p_serverError : ServerError)=>void)
     {
         let xhr : XMLHttpRequest = new XMLHttpRequest();
         xhr.open(p_verb, p_url, true);
         xhr.setRequestHeader("Content-Type", "application/json");
+        if(p_withCredentials)
+        {
+            xhr.withCredentials = true;
+        }
         
         xhr.onreadystatechange = function()
         {

@@ -15,11 +15,7 @@ class LoginResponse
     public expiration_time : number;
 }
 
-function PushLoginCookie(p_loginResponse : LoginResponse)
-{
-    document.cookie = "session_token="+p_loginResponse.token+"; expires=" + new Date(p_loginResponse.expiration_time).toUTCString() + ";";
-    document.cookie = "session_user_id="+p_loginResponse.user_id+"; expires=" + new Date(p_loginResponse.expiration_time).toUTCString() + ";";
-}
+
 
 class Session 
 {
@@ -27,50 +23,91 @@ class Session
     public user_id : string;
 }
 
-function getCookie(cname : string) {
-    var name = cname + "=";
-    var decodedCookie = decodeURIComponent(document.cookie);
-    var ca = decodedCookie.split(';');
-    for(var i = 0; i <ca.length; i++) {
-      var c = ca[i];
-      while (c.charAt(0) == ' ') {
-        c = c.substring(1);
-      }
-      if (c.indexOf(name) == 0) {
-        return c.substring(name.length, c.length);
-      }
-    }
-    return "";
-  }
-
-function GetSessionFromCookie() : Session
+class LoginService
 {
-    let l_session : Session = new Session();
-    l_session.token = getCookie("session_token");
-    l_session.user_id = getCookie("session_user_id");
-    return l_session;
-}
-
-function LoginUser(p_loginInput : LoginInput, onCompleted : (err : ServerError) => (void))
-{
-    if(!GUserState.isLoggedIn)
+    private static PushLoginCookie(p_loginResponse : LoginResponse)
     {
-        Server.SendRequest("POST", "http://localhost:8080/login", p_loginInput,
-            (res : LoginResponse) => {
-                PushLoginCookie(res);
-                GUserState.isLoggedIn = true;
-                onCompleted(null);
-            },
-            (err : ServerError) => {
-                onCompleted(err);
-            }
-        );
+        document.cookie = "session_token="+p_loginResponse.token+"; expires=" + new Date(p_loginResponse.expiration_time).toUTCString() + ";";
+        document.cookie = "session_user_id="+p_loginResponse.user_id+"; expires=" + new Date(p_loginResponse.expiration_time).toUTCString() + ";";
     }
-    else
+
+    private static getCookie(cname : string) {
+        var name = cname + "=";
+        var decodedCookie = decodeURIComponent(document.cookie);
+        var ca = decodedCookie.split(';');
+        for(var i = 0; i <ca.length; i++) {
+          var c = ca[i];
+          while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+          }
+          if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+          }
+        }
+        return "";
+      }
+    
+    private static GetSessionFromCookie() : Session
     {
-        onCompleted(null);
+        let l_session : Session = new Session();
+        l_session.token = LoginService.getCookie("session_token");
+        l_session.user_id = LoginService.getCookie("session_user_id");
+        return l_session;
     }
     
+    public static LoginUser(p_loginInput : LoginInput, onCompleted : (err : ServerError) => (void))
+    {
+        if(!GUserState.isLoggedIn)
+        {
+            Server.SendRequest("POST", "http://localhost:8080/login", p_loginInput, false,
+                (res : LoginResponse) => {
+                    LoginService.PushLoginCookie(res);
+                    GUserState.isLoggedIn = true;
+                    onCompleted(null);
+                },
+                (err : ServerError) => {
+                    onCompleted(err);
+                }
+            );
+        }
+        else
+        {
+            onCompleted(null);
+        }
+    }
+
+    public static LoginUser_FromCookies()
+    {
+        let l_session = LoginService.GetSessionFromCookie();
+        if(l_session.token && l_session.token.length !== 0 && l_session.user_id && l_session.user_id.length !== 0)
+        {
+            GUserState.isLoggedIn = true;
+        }
+    }
+
+    public static Logoutuser(p_success ?: ()=>(void), p_error ?: (p_serverError : ServerError) => (void))
+    {
+        if(GUserState.isLoggedIn)
+        {
+            Server.SendRequest("POST", "http://localhost:8080/logout", null, true,
+            (res : null) => {
+                GUserState.isLoggedIn = false;
+                GUserState.user.invalidate();
+                if(p_success)
+                {
+                    p_success();
+                }
+            },
+            (p_serverError : ServerError) => {
+                if(p_error)
+                {
+                    p_error(p_serverError);
+                }
+            })
+        }
+    }
 }
 
-export {ServerError, LoginInput, LoginUser, GetSessionFromCookie}
+
+
+export {ServerError, LoginInput, LoginService}

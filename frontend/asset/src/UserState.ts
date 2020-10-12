@@ -59,6 +59,11 @@ class UserCached
         this._value = p_user;
         this._isValid = true;
     }
+
+    public invalidate()
+    {
+        this._isValid = false;
+    }
 }
 
 var GUserState : UserState = new UserState();
