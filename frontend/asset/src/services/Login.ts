@@ -18,7 +18,7 @@ class LoginResponse
 function PushLoginCookie(p_loginResponse : LoginResponse)
 {
     document.cookie = "session_token="+p_loginResponse.token+"; expires=" + new Date(p_loginResponse.expiration_time).toUTCString() + ";";
-    document.cookie = "session_user_id="+p_loginResponse.token+"; expires=" + new Date(p_loginResponse.expiration_time).toUTCString() + ";";
+    document.cookie = "session_user_id="+p_loginResponse.user_id+"; expires=" + new Date(p_loginResponse.expiration_time).toUTCString() + ";";
 }
 
 class Session 

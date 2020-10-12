@@ -13,7 +13,7 @@ public class UserControllerErrorHandler {
     public static final String EMAIL_ALREADY_EXISTS = "EMAIL_ALREADY_EXISTS";
     public static final String MAIl_SEND_ERROR = "MAIl_SEND_ERROR";
 
-    public static final String USER_NOT_FOUND = "MAIl_SEND_ERROR";
+    public static final String USER_NOT_FOUND = "USER_NOT_FOUND";
     public static final String CANT_VALIDATE_MAILTOKEN = "VALIDATE_CANNOT_VALIDATE_MAIL_TOKEN";
 
     public static boolean HandleInsertUserReturn(InsertUserReturn p_insertUserReturn, FunctionalError p_error)

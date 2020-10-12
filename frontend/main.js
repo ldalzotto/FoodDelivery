@@ -4,7 +4,8 @@ var express = require("express");
 var app = express();
 
 var appDir = path.join(__dirname, "asset");
-app.use(express.static(appDir));
+app.use(express.static("asset"));
+
 
 app.get("*", (req, res) => {
     res.sendFile(path.join(appDir, "index.html"));

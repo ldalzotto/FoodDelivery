@@ -3,7 +3,6 @@ package com.example.app.user;
 import com.example.app.user.inter.InsertUserReturn;
 import com.example.app.user.inter.ValidateUserReturn;
 import com.example.database.DatabaseError;
-import com.example.error.IHandledError;
 import com.example.main.ConfigurationBeans;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.RowMapper;
@@ -11,7 +10,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import java.sql.PreparedStatement;
@@ -83,6 +81,29 @@ public class UserService {
         return null;
     }
 
+    public static User findUser_by_id_and_isValidatedConstraint(long p_userId, int p_isValidated) {
+        List<User> l_foundUsers =
+                ConfigurationBeans.jdbcTemplate.query("select * from users where users.id == ? and users.is_validated == ?", new Object[]{p_userId, p_isValidated},
+                        new RowMapper<User>() {
+                            @Override
+                            public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+                                User l_user = new User();
+                                l_user.id = rs.getLong(1);
+                                l_user.username = rs.getString(2);
+                                l_user.email = rs.getString(3);
+                                l_user.password = rs.getString(4);
+                                l_user.isValidated = rs.getBoolean(5);
+                                return l_user;
+                            }
+                        });
+
+        if (l_foundUsers.size() > 0) {
+            return l_foundUsers.get(0);
+        }
+
+        return null;
+    }
+
     public static User findUser_by_username(String p_username) {
         List<User> l_foundUsers =
                 ConfigurationBeans.jdbcTemplate.query("select * from users where users.username == ? ", new Object[]{p_username},
@@ -108,7 +129,7 @@ public class UserService {
 
     public static ValidateUserReturn validateUser(long p_userId, String p_mailToken)
     {
-        User l_foundUser = UserService.findUser_by_id(p_userId);
+        User l_foundUser = UserService.findUser_by_id_and_isValidatedConstraint(p_userId, 0);
         if (l_foundUser == null) {
             return ValidateUserReturn.USER_NOT_FOUND;
         }
@@ -157,4 +178,3 @@ public class UserService {
     }
 
 }
-

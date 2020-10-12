@@ -63,12 +63,16 @@ class UserRegister extends HTMLElement
 
         UserService.PostUser(
             {username: this.usernameObservable.value, password: this.passwordObservable.value, email: this.emailObservable.value},
-            () => {
-                if(!GUserState.user.isValidated)
-                {
-                    this.submitMessageVisible.value = true;
-                    this.submitMessage.textContent = "Registration successful. Confirm your email by clicking the link we have provided to you in your mailbox.";
-                }
+            (p_user : User) => {
+                // GUserState.user.
+                GUserState.user.pushValue(p_user);
+                GUserState.user.getValue((pp_user : User) => {
+                    if(!pp_user.isValidated)
+                    {
+                        this.submitMessageVisible.value = true;
+                        this.submitMessage.textContent = "Registration successful. Confirm your email by clicking the link we have provided to you in your mailbox.";
+                    }
+                });
             },
             (err) => {
                 this.submitMessageVisible.value = true;

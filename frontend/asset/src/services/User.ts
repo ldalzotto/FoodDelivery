@@ -12,15 +12,25 @@ class PostUserInput
 
 class UserService
 {
-    static PostUser(p_user : PostUserInput, p_ok ?: (err : User)=>void, p_err ?: (err : ServerError)=>void)
+    static PostUser(p_user : PostUserInput, p_ok ?: (p_user : User)=>void, p_err ?: (err : ServerError)=>void)
     {
-        Server.SendRequest("POST", "http://localhost:8080/user", p_user, 
-            (p_insertedUser : User) => {
-                GUserState.user = p_insertedUser;
-                if(p_ok){p_ok(p_insertedUser);}
+        Server.SendRequest("POST", "http://localhost:8080/user/register", p_user, 
+            (pp_user : User) => {
+                if(p_ok){p_ok(pp_user);}
             },
             p_err
         );
+    }
+
+    static GetUser(p_ok ?: (p_user : User)=>void, p_err ?: (err : ServerError)=>void)
+    {
+        Server.SendRequest("GET", "http://localhost:8080/user", null, p_ok, p_err);
+    }
+
+    static Validate(p_userId : string, p_sessionToken : string, p_ok ?: ()=>void, p_err ?: (err:ServerError)=>void)
+    {
+        Server.SendRequest("POST", `http://localhost:8080/user/validate?userId=${p_userId}&sessionToken=${p_sessionToken}`, null,
+            p_ok, p_err);
     }
 }
 

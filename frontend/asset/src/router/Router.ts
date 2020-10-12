@@ -66,20 +66,63 @@ class Router
             const match = this.current.match(route.Path);
             if (match) {
               match.shift();
-              route.Callback.apply({}, match);
-              return true;
+              if(route.Callback(match.input))
+              {
+                return true;
+              };
             }
             return false;
         });
     }
+
+    static extractQueryParams(p_path : string) : RouteQueryParams
+    {
+        let l_params : RouteQueryParams = {};
+        let l_queryMatch_0 = p_path.match(/(\?(.+?)=([^&]*))/g);
+        if(l_queryMatch_0.length > 0)
+        {
+            for(let i=0;i<l_queryMatch_0.length;i++)
+            {
+                let l_querySubmatch =  l_queryMatch_0[i].match(/(\?(.+?)=([^&]*))/);
+                for(let j=0;j<l_querySubmatch.length;j = j + 2)
+                {
+                    l_params[l_querySubmatch[j]] = l_querySubmatch[j+1];
+                }
+
+            }
+        }
+
+
+        let l_queryMath_1 = p_path.match(/(&(.*)=([^&]*))/g);
+
+        if(l_queryMath_1.length > 0)
+        {
+            for(let i=0;i<l_queryMath_1.length;i++)
+            {
+                let l_querySubmatch =  l_queryMath_1[i].match(/(&(.*)=([^&]*))/);
+                for(let j=0;j<l_querySubmatch.length;j = j + 2)
+                {
+                    l_params[l_querySubmatch[j]] = l_querySubmatch[j+1];
+                }
+
+            }
+        }
+
+        return l_params;
+    }
+}
+
+interface RouteQueryParams
+{
+    [name:string]: string
 }
 
 class Route
 {
     public Path : string;
-    public Callback : ()=>void;
+    public Callback : (p_math : string)=>boolean;
 
-    constructor(p_path : string, p_callback : ()=>void)
+    constructor(p_path : string, p_callback : (p_math : string)=>boolean)
     {
         this.Path = p_path;
         this.Callback = p_callback;

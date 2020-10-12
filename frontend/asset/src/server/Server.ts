@@ -22,14 +22,31 @@ class Server
                 {
                     if(ok_callback)
                     {
-                        ok_callback(JSON.parse(xhr.response));
+                        if((xhr.response as string).length == 0)
+                        {
+                            ok_callback(null);
+                        }
+                        else
+                        {
+                            ok_callback(JSON.parse(xhr.response));
+                        }
+                        
                     }
                 }
                 else
                 {
                     if(error_callback)
                     {
-                        let l_error : ServerError = JSON.parse(xhr.response);
+                        let l_error : ServerError = null;
+                        if((xhr.response as string).length == 0)
+                        {
+                            l_error = new ServerError();
+                        }
+                        else
+                        {
+                            l_error = JSON.parse(xhr.response);
+                        }
+                        
                         l_error.status = xhr.status;
                         error_callback(l_error);
                     }

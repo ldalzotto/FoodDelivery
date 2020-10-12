@@ -1,14 +1,11 @@
 package com.example.app.user;
 
+import com.example.app.session.SessionErrorHandler;
+import com.example.app.session.SessionService;
 import com.example.app.user.inter.InsertUserReturn;
-import com.example.database.DatabaseConstants;
-import com.example.database.DatabaseError;
-import com.example.database.DatabaseUniqueConstraintError;
-import com.example.main.ConfigurationBeans;
 import com.example.main.FunctionalError;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.*;
@@ -19,6 +16,28 @@ import java.util.Properties;
 @Controller
 @RequestMapping(value = "/")
 public class UserController {
+
+    @CrossOrigin(origins = "http://localhost:8081")
+    @RequestMapping(value = "/user", method = RequestMethod.GET)
+    public @ResponseBody ResponseEntity<?> GetUser(
+            @CookieValue("session_token") String p_sessionToken,
+            @CookieValue("session_user_id") long p_user_id
+    )
+    {
+        FunctionalError l_error = new FunctionalError();
+
+        if (!SessionErrorHandler.HandleSessionValidationToken(
+                SessionService.validateSessionToken(p_sessionToken, p_user_id), l_error)) {
+            return ResponseEntity.badRequest().body(l_error);
+        }
+
+        User l_user = UserService.findUser_by_id(p_user_id);
+        if(l_user==null) {
+            l_error.code = UserControllerErrorHandler.USER_NOT_FOUND;
+            return ResponseEntity.badRequest().body(l_error);
+        }
+        return ResponseEntity.ok(new UserInterface(l_user));
+    }
 
     @CrossOrigin(origins = "http://localhost:8081")
     @RequestMapping(value = "/user/register", method = RequestMethod.POST)
@@ -44,11 +63,14 @@ public class UserController {
             return ResponseEntity.badRequest().body(l_error);
         }
 
-        return ResponseEntity.ok(l_insertedUser.User);
+        return ResponseEntity.ok(new UserInterface(l_insertedUser.User));
     }
 
-    @RequestMapping(value = "/user-validate", method = RequestMethod.GET)
-    public ResponseEntity<?> ValidateUser(@RequestParam(name = "user_id") long p_uerId, @RequestParam(name = "mail_token") String p_mailToken) {
+    @CrossOrigin(origins = "http://localhost:8081")
+    @RequestMapping(value = "/user/validate", method = RequestMethod.POST)
+    public ResponseEntity<?> ValidateUser(
+            @RequestParam("userId") long p_uerId,
+            @RequestParam("sessionToken") String p_mailToken) {
 
         FunctionalError l_error = new FunctionalError();
         if(!UserControllerErrorHandler.HandleValidateUserReturn(UserService.validateUser(p_uerId, p_mailToken), l_error))
@@ -79,7 +101,7 @@ public class UserController {
             l_message.setFrom("test@outlook.fr");
             l_message.addRecipient(Message.RecipientType.TO, new InternetAddress(p_user.email));
             l_message.setSubject("validation");
-            String l_url = String.format("http://localhost:8080/user-validate?user_id=%d&mail_token=%s", p_user.id, p_mailToken);
+            String l_url = String.format("http://localhost:8081/register/validation?userId=%d&sessionToken=%s", p_user.id, p_mailToken);
             l_message.setText("To validate, click here : " + l_url);
             Transport.send(l_message);
         } catch (MessagingException e) {
@@ -91,4 +113,15 @@ public class UserController {
     }
 
 
+}
+
+class UserInterface
+{
+    public long id;
+    public boolean isValidated;
+
+    public UserInterface(User p_user) {
+        this.id = p_user.id;
+        this.isValidated = p_user.isValidated;
+    }
 }
