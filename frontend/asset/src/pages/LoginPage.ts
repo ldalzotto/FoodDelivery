@@ -10,10 +10,9 @@ class LoginPage extends HTMLElement
     constructor()
     {
         super();        
-        this.attachShadow({mode: 'open'});
-        this.shadowRoot.append((document.getElementById(LoginPage.Type) as HTMLTemplateElement).content.cloneNode(true));
+        this.appendChild((document.getElementById(LoginPage.Type) as HTMLTemplateElement).content.cloneNode(true));
 
-        this.userLogin = this.shadowRoot.querySelector(UserLogin.Type);
+        this.userLogin = this.querySelector(UserLogin.Type);
         this.userLogin.addEventListener(UserLogin_LoggedInEvent.Type, () => {
             Navigation.MoveToRootpage();
         });

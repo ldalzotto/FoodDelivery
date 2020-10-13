@@ -22,14 +22,13 @@ class ProfileEstablishmentContext extends HTMLElement
     {
         super()
 
-        this.attachShadow({mode: 'open'});
         let l_template : HTMLTemplateElement = document.getElementById(ProfileEstablishmentContext.Type) as HTMLTemplateElement;
-        this.shadowRoot.append(l_template.content.cloneNode(true));
+        this.appendChild(l_template.content.cloneNode(true));
 
-        this.establishmentRegistration = this.shadowRoot.querySelector(EstablishmentRegistration.Type);
+        this.establishmentRegistration = this.querySelector(EstablishmentRegistration.Type);
         this.establishmentRegistration.addEventListener(EstablishmentRegistration_AddedEstablishment.Type, () => {this.reloadEstablishments();});
 
-        this.establishmentListsElement = this.shadowRoot.getElementById("establishments-list");
+        this.establishmentListsElement = this.querySelector("#establishments-list");
         this.reloadEstablishments();
     }
 
@@ -40,7 +39,7 @@ class ProfileEstablishmentContext extends HTMLElement
             (p_establishments : Establishment[]) => {
                 for(let i=0;i<p_establishments.length;i++)
                 {
-                    let l_establishmentDisplay : EstablishementDisplay = document.createElement(EstablishementDisplay.Type) as EstablishementDisplay;
+                    let l_establishmentDisplay : EstablishementDisplay = new EstablishementDisplay();
                     this.establishmentListsElement.appendChild(l_establishmentDisplay);
                     l_establishmentDisplay.populateEstablishment(p_establishments[i]);
                 }
@@ -82,20 +81,19 @@ class EstablishmentRegistration extends HTMLElement
     {
         super()
 
-        this.attachShadow({mode: 'open'});
         let l_template : HTMLTemplateElement = document.getElementById(EstablishmentRegistration.Type) as HTMLTemplateElement;
-        this.shadowRoot.append(l_template.content.cloneNode(true));
+        this.appendChild(l_template.content.cloneNode(true));
 
-        this.addEstablishmentButton = this.shadowRoot.getElementById("add-establishment-button") as HTMLButtonElement;
+        this.addEstablishmentButton = this.querySelector("#add-establishment-button") as HTMLButtonElement;
         this.addEstablishmentButton.addEventListener("click", () => {this.onAddEstablishmentButtonClick();});
 
-        this.addEstablishmentForm = this.shadowRoot.getElementById("add-establishment-form") as HTMLElement;
+        this.addEstablishmentForm = this.querySelector("#add-establishment-form") as HTMLElement;
         this.addEstablishmentFormDisplayed = new Observable<boolean>(false);
         BindingUtils.bindDisplayStyle(this.addEstablishmentForm, this.addEstablishmentFormDisplayed);
 
-        this.inputName = this.shadowRoot.getElementById("name") as HTMLInputElement;
-        this.inputAddress = this.shadowRoot.getElementById("address") as HTMLInputElement;
-        this.inputPhone = this.shadowRoot.getElementById("phone") as HTMLInputElement;
+        this.inputName = this.querySelector("#name") as HTMLInputElement;
+        this.inputAddress = this.querySelector("#address") as HTMLInputElement;
+        this.inputPhone = this.querySelector("#phone") as HTMLInputElement;
 
         this.inputNameObservable = new Observable<string>("");
         this.inputAddressObservable = new Observable<string>("");
@@ -105,7 +103,7 @@ class EstablishmentRegistration extends HTMLElement
         BindingUtils.bindInputText(this.inputAddress, this.inputAddressObservable);
         BindingUtils.bindInputText(this.inputPhone, this.inputPhoneObservable);
 
-        this.createEstablishmentButton = new LoadingButtonV2(this.shadowRoot.querySelector(`${LoadingButtonV2.Type}#establishment-creation`), (p_onCompleted) => {this.createEstablishment(p_onCompleted);});   
+        this.createEstablishmentButton = new LoadingButtonV2(this.querySelector(`${LoadingButtonV2.Type}#establishment-creation`), (p_onCompleted) => {this.createEstablishment(p_onCompleted);});   
     }
 
     onAddEstablishmentButtonClick()
@@ -142,13 +140,12 @@ class EstablishementDisplay extends HTMLElement
     {
         super()
 
-        this.attachShadow({mode: 'open'});
         let l_template : HTMLTemplateElement = document.getElementById(EstablishementDisplay.Type) as HTMLTemplateElement;
-        this.shadowRoot.append(l_template.content.cloneNode(true));
+        this.appendChild(l_template.content.cloneNode(true));
 
-        this.nameElement = this.shadowRoot.getElementById("name") as HTMLDivElement;
-        this.addressElement = this.shadowRoot.getElementById("address") as HTMLDivElement;
-        this.phoneElement = this.shadowRoot.getElementById("phone") as HTMLDivElement;
+        this.nameElement = this.querySelector("#name") as HTMLDivElement;
+        this.addressElement = this.querySelector("#address") as HTMLDivElement;
+        this.phoneElement = this.querySelector("#phone") as HTMLDivElement;
     }
 
     public populateEstablishment(p_establishment : Establishment)

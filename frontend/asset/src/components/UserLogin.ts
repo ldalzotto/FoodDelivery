@@ -32,16 +32,15 @@ class UserLogin extends HTMLElement
     constructor(){
         super();
 
-        this.attachShadow({mode: 'open'});
         let l_template : HTMLTemplateElement = document.getElementById(UserLogin.Type) as HTMLTemplateElement;
-        this.shadowRoot.append(l_template.content.cloneNode(true));
+        this.appendChild(l_template.content.cloneNode(true));
         
-        this.NotLoggedInelement = this.shadowRoot.getElementById("not-logged-in-element") as HTMLDivElement;
-        this.AlreadyLoggedInElement = this.shadowRoot.getElementById("logged-in-element") as HTMLDivElement;
+        this.NotLoggedInelement = this.querySelector("#not-logged-in-element") as HTMLDivElement;
+        this.AlreadyLoggedInElement = this.querySelector("#logged-in-element") as HTMLDivElement;
 
-        this.LoginInput = this.shadowRoot.getElementById("login") as HTMLInputElement;
-        this.PasswordInput = this.shadowRoot.getElementById("password") as HTMLInputElement;
-        this.LogButton = this.shadowRoot.getElementById("log-button") as HTMLButtonElement;
+        this.LoginInput = this.querySelector("#login") as HTMLInputElement;
+        this.PasswordInput = this.querySelector("#password") as HTMLInputElement;
+        this.LogButton = this.querySelector("#log-button") as HTMLButtonElement;
         this.LogButton.onclick = () => {this.onLogButtonClick();};
 
         this.LoginObservable = new Observable("");

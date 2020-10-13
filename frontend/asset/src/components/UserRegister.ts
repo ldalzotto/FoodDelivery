@@ -29,17 +29,16 @@ class UserRegister extends HTMLElement
     {
         super()
 
-        this.attachShadow({mode: 'open'});
         let l_template : HTMLTemplateElement = document.getElementById(UserRegister.Type) as HTMLTemplateElement;
-        this.shadowRoot.append(l_template.content.cloneNode(true));
+        this.appendChild(l_template.content.cloneNode(true));
         
-        this.usernameInput = this.shadowRoot.getElementById("username") as HTMLInputElement;
-        this.passwordInput = this.shadowRoot.getElementById("password") as HTMLInputElement;
-        this.emailInput = this.shadowRoot.getElementById("email") as HTMLInputElement;
-        this.submitButton = this.shadowRoot.getElementById("submit") as LoadingButton;
+        this.usernameInput = this.querySelector("#username") as HTMLInputElement;
+        this.passwordInput = this.querySelector("#password") as HTMLInputElement;
+        this.emailInput = this.querySelector("#email") as HTMLInputElement;
+        this.submitButton = this.querySelector("#submit") as LoadingButton;
         this.submitButton.new((p_onComplented) => {this.sumitRegistration(p_onComplented);} );
 
-        this.submitMessage = this.shadowRoot.getElementById("submit-message") as HTMLDivElement;
+        this.submitMessage = this.querySelector("#submit-message") as HTMLDivElement;
 
         this.usernameObservable = new Observable<string>("");
         this.passwordObservable = new Observable<string>("");

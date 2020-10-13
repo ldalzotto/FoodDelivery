@@ -21,20 +21,19 @@ class PageHeader extends HTMLElement
     {
         super();
 
-        this.attachShadow({mode: 'open'});
         let l_template : HTMLTemplateElement = document.getElementById("page-header") as HTMLTemplateElement;
-        this.shadowRoot.append(l_template.content.cloneNode(true));
+        this.appendChild(l_template.content.cloneNode(true));
 
-        this.loginButton = this.shadowRoot.getElementById("login-button") as HTMLButtonElement;
+        this.loginButton = this.querySelector("#login-button") as HTMLButtonElement;
         this.loginButton.addEventListener('click', () => {this.onLoginButtonClick();});
 
-        this.logoutButton = this.shadowRoot.getElementById("logout-button") as HTMLButtonElement;
+        this.logoutButton = this.querySelector("#logout-button") as HTMLButtonElement;
         this.logoutButton.addEventListener('click', () => {this.onLogoutButtonClick();});
 
-        this.registerButton = this.shadowRoot.getElementById("register-button") as HTMLButtonElement;
+        this.registerButton = this.querySelector("#register-button") as HTMLButtonElement;
         this.registerButton.addEventListener('click', () => { this.onRegisterButtonClick(); });
 
-        this.profileButton = this.shadowRoot.getElementById("profile-button") as HTMLButtonElement;
+        this.profileButton = this.querySelector("#profile-button") as HTMLButtonElement;
         this.profileButton.addEventListener('click', () => {this.onProfileButtonClick();});
 
 

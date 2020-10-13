@@ -6,6 +6,27 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
     integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
     crossorigin=""/>
+    
+    <style>
+      .profile-grid
+      {
+          display: grid;
+          grid-template-columns: 15% 85%;
+          grid-template-rows: 600px auto;
+      }
+
+      .profile-grid .left-column 
+      {
+          border-width: 1px;
+          border-right: double;
+      }
+
+      .profile-grid .context-content
+      {
+        margin: 5px;
+      }
+    </style>
+    
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
     integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
     crossorigin=""></script>
@@ -46,25 +67,6 @@
         <profile-selector class="left-column"></profile-selector>
         <profile-context-content class="context-content"></profile-context-content>
       </div>
-      <style>
-        .profile-grid
-        {
-            display: grid;
-            grid-template-columns: 15% 85%;
-            grid-template-rows: 600px auto;
-        }
-
-        .profile-grid .left-column 
-        {
-            border-width: 1px;
-            border-right: double;
-        }
-
-        .profile-grid .context-content
-        {
-          margin: 5px;
-        }
-      </style>
     </template>
 
     <template id="register-validation-page">

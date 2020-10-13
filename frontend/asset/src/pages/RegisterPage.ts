@@ -7,8 +7,7 @@ class RegisterPage extends HTMLElement
     constructor()
     {
         super();        
-        this.attachShadow({mode: 'open'});
-        this.shadowRoot.append((document.getElementById(RegisterPage.Type) as HTMLTemplateElement).content.cloneNode(true));
+        this.appendChild((document.getElementById(RegisterPage.Type) as HTMLTemplateElement).content.cloneNode(true));
     }
 }
 

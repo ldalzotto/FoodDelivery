@@ -13,11 +13,10 @@ class RegisterValidationPage extends HTMLElement
     constructor(p_userId : string, p_sessionToken : string)
     {
         super();        
-        this.attachShadow({mode: 'open'});
-        this.shadowRoot.append((document.getElementById(RegisterValidationPage.Type) as HTMLTemplateElement).content.cloneNode(true));
+        this.appendChild((document.getElementById(RegisterValidationPage.Type) as HTMLTemplateElement).content.cloneNode(true));
 
         this.errorMessageElementVisible = new Observable(false);
-        this.errorMessageElement = this.shadowRoot.getElementById("error-message") as HTMLDivElement;
+        this.errorMessageElement = this.querySelector("#error-message") as HTMLDivElement;
 
         BindingUtils.bindDisplayStyle(this.errorMessageElement, this.errorMessageElementVisible);
 

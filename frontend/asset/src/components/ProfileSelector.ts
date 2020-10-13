@@ -32,9 +32,8 @@ class ProfileSelector extends HTMLElement
     constructor(){
         super();
 
-        // this.attachShadow({mode: 'open'});
         let l_template : HTMLTemplateElement = document.getElementById(ProfileSelector.Type) as HTMLTemplateElement;
-        this.append(l_template.content.cloneNode(true));
+        this.appendChild(l_template.content.cloneNode(true));
         
         this.establishmentButton = this.querySelector("#establishment-button") as HTMLButtonElement;
         this.establishmentButton.addEventListener("click", () => {this.onEstablishmentButtonClick();});
@@ -74,9 +73,8 @@ class ProfileContextContent extends HTMLElement
     constructor(){
         super();
 
-        // this.attachShadow({mode: 'open'});
         let l_template : HTMLTemplateElement = document.getElementById(ProfileContextContent.Type) as HTMLTemplateElement;
-        this.append(l_template.content.cloneNode(true));
+        this.appendChild(l_template.content.cloneNode(true));
     }
 
     public static Initialize()
