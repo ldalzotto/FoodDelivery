@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "main": "src/main.js",
   "scripts": {
-    "start": "node main.js", 
+    "start": "node main.js",
     "compile": "tsc"
   },
   "dependencies": {

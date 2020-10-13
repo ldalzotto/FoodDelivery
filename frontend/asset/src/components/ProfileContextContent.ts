@@ -159,14 +159,4 @@ class EstablishementDisplay extends HTMLElement
     }
 }
 
-/*
-    <template id="establishment-display">
-      <div>
-        <div>Name : </div> <div id="name"></div>
-        <div>Address : </div> <div id="address"></div>
-        <div>Phone : </div> <div id="phone"></div>
-      </div>
-    </template>
-*/
-
 export {ProfileEstablishmentContext}

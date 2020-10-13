@@ -1,6 +1,7 @@
 package com.example.main;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -15,6 +16,7 @@ public class ConfigurationBeans
 {
     public static JdbcTemplate jdbcTemplate;
     public static PlatformTransactionManager transactionManager;
+    public static RestTemplateBuilder restTemplateBuilder;
 
     @Autowired
     JdbcTemplate _jdbcTemplate;
@@ -22,10 +24,14 @@ public class ConfigurationBeans
     @Autowired
     DataSourceTransactionManager _dataSourceTransactionManager;
 
+    @Autowired
+    RestTemplateBuilder _restTenmplateBuilder;
+
     @PostConstruct
     public void init()
     {
         ConfigurationBeans.jdbcTemplate = _jdbcTemplate;
         ConfigurationBeans.transactionManager = _dataSourceTransactionManager;
+        ConfigurationBeans.restTemplateBuilder = _restTenmplateBuilder;
     }
 }
