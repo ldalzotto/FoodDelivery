@@ -101,7 +101,35 @@
     <template id="profile-establishment-context">
       <div>Profile Establishment</div>
       <!--<div id="establishment-creation" button-text="CREATE"></div>-->
-      <loading-button-v2 id="establishment-creation" button-text="CREATE"></loading-button-v2> 
+      <establishment-creation></establishment-creation>
+      <br/>
+      <div id="establishments-list"></div>
+    </template>
+
+    <template id="establishment-creation">
+      <button id="add-establishment-button">REGISTER NEW ESTABLISHMENT</button>
+      <div id="add-establishment-form">
+        <div>Name : </div> <input id="name" type="text"/>
+        <div>Address : </div> <input id="address" type="text"/>
+        <div>Phone : </div> <input id="phone" type="text"/>
+        <br/><br/>
+        <loading-button-v2 id="establishment-creation" button-text="CREATE"></loading-button-v2> 
+      </div>
+    </template>
+
+    <template id="establishment-display">
+      <div>
+        <div style="display: flex;">
+          <div>Name : </div> <div id="name"></div>
+        </div>
+        <div style="display: flex;">
+          <div>Address : </div> <div id="address"></div>
+        </div>
+        <div style="display: flex;">
+          <div>Phone : </div> <div id="phone"></div>
+        </div>
+      </div>
+      <br/>
     </template>
 
     <main-app></main-app>

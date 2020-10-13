@@ -35,7 +35,7 @@ class LoadingButton extends HTMLElement
 class LoadingButtonV2 
 {
     static readonly Type : string = "loading-button-v2";
-    
+
     private _rootElement : HTMLButtonElement;
     public get rootElement(){return this._rootElement;}
 
