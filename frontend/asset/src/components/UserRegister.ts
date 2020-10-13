@@ -3,6 +3,7 @@ import {Observable} from "../binding/Binding.js"
 import {UserService} from "../services/User.js"
 import { User } from "../UserState.js";
 import {GUserState} from "../UserState.js"
+import {LoadingButton} from "../components_graphic/LoadingButton.js"
 
 class UserRegister extends HTMLElement
 {
@@ -16,14 +17,13 @@ class UserRegister extends HTMLElement
     private usernameInput : HTMLInputElement;
     private passwordInput : HTMLInputElement;
     private emailInput : HTMLInputElement;
-    private submitButton : HTMLButtonElement;
+    private submitButton : LoadingButton;
     private submitMessage : HTMLDivElement;
 
     private usernameObservable : Observable<string>;
     private passwordObservable : Observable<string>;
     private emailObservable : Observable<string>;
     private submitMessageVisible : Observable<boolean>;
-    private submitButtonVisible : Observable<boolean>;
 
     constructor()
     {
@@ -36,29 +36,27 @@ class UserRegister extends HTMLElement
         this.usernameInput = this.shadowRoot.getElementById("username") as HTMLInputElement;
         this.passwordInput = this.shadowRoot.getElementById("password") as HTMLInputElement;
         this.emailInput = this.shadowRoot.getElementById("email") as HTMLInputElement;
-        this.submitButton = this.shadowRoot.getElementById("submit") as HTMLButtonElement;
+        this.submitButton = this.shadowRoot.getElementById("submit") as LoadingButton;
+        this.submitButton.new((p_onComplented) => {this.sumitRegistration(p_onComplented);} );
+
         this.submitMessage = this.shadowRoot.getElementById("submit-message") as HTMLDivElement;
 
         this.usernameObservable = new Observable<string>("");
         this.passwordObservable = new Observable<string>("");
         this.emailObservable = new Observable<string>("");
         this.submitMessageVisible = new Observable<boolean>(false);
-        this.submitButtonVisible = new Observable<boolean>(true);
 
         BindingUtils.bindInputText(this.usernameInput, this.usernameObservable);
         BindingUtils.bindInputText(this.passwordInput, this.passwordObservable);
         BindingUtils.bindInputText(this.emailInput, this.emailObservable);
 
         BindingUtils.bindDisplayStyle(this.submitMessage, this.submitMessageVisible);
-        BindingUtils.bindDisplayStyle(this.submitButton, this.submitButtonVisible);
 
-        this.submitButton.addEventListener('click', () => {this.onSubmitClicked();});
     }
 
 
-    onSubmitClicked()
+    sumitRegistration(p_onCompleted: () => void)
     {
-        this.submitButtonVisible.value = false;
         this.submitMessageVisible.value = false;
 
         UserService.PostUser(
@@ -71,14 +69,14 @@ class UserRegister extends HTMLElement
                     {
                         this.submitMessageVisible.value = true;
                         this.submitMessage.textContent = "Registration successful. Confirm your email by clicking the link we have provided to you in your mailbox.";
+                        p_onCompleted();
                     }
                 });
             },
             (err) => {
                 this.submitMessageVisible.value = true;
                 this.submitMessage.textContent = "An error has occured.";
-
-                this.submitButtonVisible.value = true;
+                p_onCompleted();
             });
     }
 

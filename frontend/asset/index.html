@@ -33,6 +33,29 @@
 
     <template id="profile-page">
       <page-header></page-header>
+      <div class="profile-grid">
+        <profile-selector class="left-column"></profile-selector>
+        <profile-context-content class="context-content"></profile-context-content>
+      </div>
+      <style>
+        .profile-grid
+        {
+            display: grid;
+            grid-template-columns: 15% 85%;
+            grid-template-rows: 600px auto;
+        }
+
+        .profile-grid .left-column 
+        {
+            border-width: 1px;
+            border-right: double;
+        }
+
+        .profile-grid .context-content
+        {
+          margin: 5px;
+        }
+      </style>
     </template>
 
     <template id="register-validation-page">
@@ -62,9 +85,23 @@
       <input id="email" type="text" />
       <br/><br/>
       <div>
-        <button id="submit">SUBMIT</button>
+        <loading-button id="submit" button-text="SUBMIT"></loading-button>
         <div id="submit-message"></div>
       </div>
+    </template>
+
+    <template id="profile-selector">
+        <button id="establishment-button">ESTABLISHMENTS</button>
+    </template>
+
+    <template id="profile-context-content">
+      
+    </template>
+
+    <template id="profile-establishment-context">
+      <div>Profile Establishment</div>
+      <!--<div id="establishment-creation" button-text="CREATE"></div>-->
+      <loading-button-v2 id="establishment-creation" button-text="CREATE"></loading-button-v2> 
     </template>
 
     <main-app></main-app>

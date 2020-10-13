@@ -31,6 +31,12 @@ class LoginService
         document.cookie = "session_user_id="+p_loginResponse.user_id+"; expires=" + new Date(p_loginResponse.expiration_time).toUTCString() + ";";
     }
 
+    private static DeleteLoginCookie()
+    {
+        document.cookie = "session_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+        document.cookie = "session_user_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+    }
+
     private static getCookie(cname : string) {
         var name = cname + "=";
         var decodedCookie = decodeURIComponent(document.cookie);
@@ -93,6 +99,8 @@ class LoginService
             (res : null) => {
                 GUserState.isLoggedIn = false;
                 GUserState.user.invalidate();
+                LoginService.DeleteLoginCookie();
+                //TODO -> clear cookies
                 if(p_success)
                 {
                     p_success();

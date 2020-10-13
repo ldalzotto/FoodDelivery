@@ -5,6 +5,7 @@ import {Router, Route} from "./router/Router.js"
 let appElement : HTMLElement = document.getElementById("app");
 
 import {RegisterComponents} from "./components/@Register.js"
+import {RegisterComponentsGraphic} from "./components_graphic/@Register.js"
 
 import {RootPage} from "./pages/Root.js"
 import {LoginPage} from "./pages/LoginPage.js"
@@ -12,7 +13,7 @@ import {ProfilePage} from "./pages/ProfilePage.js"
 import {RegisterPage} from "./pages/RegisterPage.js"
 import {RegisterValidationPage} from "./pages/RegisterValidationPage.js"
 
-
+RegisterComponentsGraphic();
 RegisterComponents();
 GUserState_Init();
 
