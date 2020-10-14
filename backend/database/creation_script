@@ -18,15 +18,56 @@ create table if not exists user_validation
     mail_token TEXT NOT NULL
 );
 
+drop table if exists country;
+
+create table if not exists country
+(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL
+);
+
+
+create index country_name on country(name);
+
+drop table if exists city;
+
+create table if not exists city
+(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    numeric_id_0 INTEGER,
+    country_id INTEGER NOT NULL,
+    FOREIGN KEY(country_id) REFERENCES country(id)
+);
+
+create index city_name on city(name);
+
+drop table if exists establishment_address;
+
+create table if not exists establishment_address
+(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    street_full_name TEXT NOT NULL,
+    city_id INTEGER NOT NULL,
+    lat REAL NOT NULL,
+    lng REAL NOT NULL,
+    FOREIGN KEY(city_id) REFERENCES city(id)
+);
+
+create index establishment_address_lat on establishment_address(lat);
+create index establishment_address_long on establishment_address(long);
+
 drop table if exists establishments;
 
-create table if not exists establishments(
-                                             id INTEGER PRIMARY KEY AUTOINCREMENT,
-                                             name TEXT NOT NULL,
-                                             address TEXT NOT NULL,
-                                             phone TEXT NOT NULL,
-                                             user_id INTEGER NOT NULL,
-                                             FOREIGN KEY(user_id) REFERENCES users(id)
+create table if not exists establishments
+(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    address_id INTEGER NOT NULL,
+    phone TEXT NOT NULL,
+    user_id INTEGER NOT NULL,
+    FOREIGN KEY(user_id) REFERENCES users(id),
+    FOREIGN KEY(address_id) REFERENCES establishment_address(id)
 );
 
 drop table if exists sessions;
@@ -41,36 +82,9 @@ create table if not exists sessions
     FOREIGN KEY(user_id) REFERENCES users(id)
 );
 
-/*
-select count(*) from users
-where users.id == 1;
 
-select count(*) from user_validation
-where user_validation.user_id == 1
-and user_validation.mail_token == '2faa5391-185c-4ce7-87ef-0e400afd1e71';
+insert into country (id, name) values (1, 'France');
 
-delete from user_validation
-where user_validation.user_id == 1
-and user_validation.mail_token == 'zdzddz';
-
-update users
-set is_validated = 1
-where id == 0;
-
-insert into users (id, username, email, password, is_validated)
-values (0, 'test', 'loic.dalzotto@hotmail.fr', 'pass', 0);
-
-insert into users (id, username, email, password, is_validated)
-values (1, 'test2', 'loic2.dalzotto@hotmail.fr','pass2', 0);
-
-select * from users
-where users.username == 'test';
-
-
-insert into users DEFAULT VALUES;
-SELECT last_insert_rowid();
-
-insert into establishments( name, address, phone, user_id)
-VALUES ('name_test', 'address_name', 'phone_test', 2);
-SELECT last_insert_rowid();
-*/
+insert into city (name, numeric_id_0, country_id) values (1, 'Paris', 75000, 1);
+insert into city (name, numeric_id_0, country_id) values (2, 'Marseille', 13000, 1);
+insert into city (name, numeric_id_0, country_id) values (3, 'Lyon', 69000, 1);

@@ -1,13 +1,13 @@
 package com.example.app.establishments;
 
+import com.example.app.establishments.domain.Establishment;
+import com.example.app.establishments.domain.EstablishmentBO;
 import com.example.app.session.SessionErrorHandler;
 import com.example.app.session.SessionService;
 import com.example.main.FunctionalError;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
-import java.sql.PreparedStatement;
 
 @Controller
 @RequestMapping(value = "/")
@@ -19,7 +19,7 @@ public class EstablishmentsController {
     ResponseEntity<?> CreateEstablishment(
             @CookieValue("session_token") String p_sessionToken,
             @CookieValue("session_user_id") long p_user_id,
-            @RequestBody Establishment p_establishment) {
+            @RequestBody EstablishmentBO p_establishment) {
 
         FunctionalError l_Functional_error = new FunctionalError();
 
@@ -27,10 +27,13 @@ public class EstablishmentsController {
                 SessionService.validateSessionToken(p_sessionToken, p_user_id), l_Functional_error)) {
             return ResponseEntity.badRequest().body(l_Functional_error);
         }
+        //TODO
+        /*
         if (!p_establishment.validate(l_Functional_error)) {
             return ResponseEntity.badRequest().body(l_Functional_error);
         }
-        p_establishment.user_id = p_user_id;
+        */
+        p_establishment.establishment.user_id = p_user_id;
         return ResponseEntity.ok().body(EstablishmentService.InsertEstablishment(p_establishment));
     }
 

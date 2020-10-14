@@ -1,4 +1,4 @@
-import {LoadingButtonV2} from "../components_graphic/LoadingButton.js"
+import {LoadingButton} from "../components_graphic/LoadingButton.js"
 import { ServerError } from "../server/Server.js";
 import {EstablishmentService, Establishment} from "../services/Establishment.js"
 import {BindingUtils, Observable} from "../binding/Binding.js"
@@ -75,7 +75,7 @@ class EstablishmentRegistration extends HTMLElement
     private inputAddressObservable : Observable<string>;
     private inputPhoneObservable : Observable<string>;
 
-    private createEstablishmentButton : LoadingButtonV2;
+    private createEstablishmentButton : LoadingButton;
 
     constructor()
     {
@@ -103,7 +103,8 @@ class EstablishmentRegistration extends HTMLElement
         BindingUtils.bindInputText(this.inputAddress, this.inputAddressObservable);
         BindingUtils.bindInputText(this.inputPhone, this.inputPhoneObservable);
 
-        this.createEstablishmentButton = new LoadingButtonV2(this.querySelector(`${LoadingButtonV2.Type}#establishment-creation`), (p_onCompleted) => {this.createEstablishment(p_onCompleted);});   
+        this.createEstablishmentButton = this.querySelector("#establishment-creation") as LoadingButton;
+        this.createEstablishmentButton.new((p_onCompleted) => {this.createEstablishment(p_onCompleted);});
     }
 
     onAddEstablishmentButtonClick()

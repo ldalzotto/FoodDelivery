@@ -16,7 +16,7 @@ class MapSelection extends HTMLElement
     private _selectedLat : number;
     public get selectedLat():number{return this._selectedLat;}
     private _selectedLong : number;
-    public get selectedLing():number{return this._selectedLat;}
+    public get selectedLong():number{return this._selectedLong;}
     private displayedMarker : any;
 
     constructor()
