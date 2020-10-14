@@ -1,4 +1,4 @@
-package com.example.app.geo;
+package com.example.app.geo.domain;
 
 public class Country {
     public long id;
