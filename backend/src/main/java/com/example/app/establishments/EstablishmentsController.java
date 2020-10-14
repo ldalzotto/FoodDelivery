@@ -1,7 +1,6 @@
 package com.example.app.establishments;
 
-import com.example.app.establishments.domain.Establishment;
-import com.example.app.establishments.domain.EstablishmentBO;
+import com.example.app.establishments.domain.EstablishmentWithAddress;
 import com.example.app.session.SessionErrorHandler;
 import com.example.app.session.SessionService;
 import com.example.main.FunctionalError;
@@ -19,7 +18,7 @@ public class EstablishmentsController {
     ResponseEntity<?> CreateEstablishment(
             @CookieValue("session_token") String p_sessionToken,
             @CookieValue("session_user_id") long p_user_id,
-            @RequestBody EstablishmentBO p_establishment) {
+            @RequestBody EstablishmentWithAddress p_establishment) {
 
         FunctionalError l_Functional_error = new FunctionalError();
 
