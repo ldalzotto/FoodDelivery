@@ -55,7 +55,7 @@ create table if not exists establishment_address
 );
 
 create index establishment_address_lat on establishment_address(lat);
-create index establishment_address_long on establishment_address(long);
+create index establishment_address_long on establishment_address(lng);
 
 drop table if exists establishments;
 
@@ -85,6 +85,6 @@ create table if not exists sessions
 
 insert into country (id, name) values (1, 'France');
 
-insert into city (name, numeric_id_0, country_id) values (1, 'Paris', 75000, 1);
-insert into city (name, numeric_id_0, country_id) values (2, 'Marseille', 13000, 1);
-insert into city (name, numeric_id_0, country_id) values (3, 'Lyon', 69000, 1);
+insert into city (id, name, numeric_id_0, country_id) values (1, 'Paris', 75000, 1);
+insert into city (id, name, numeric_id_0, country_id) values (2, 'Marseille', 13000, 1);
+insert into city (id, name, numeric_id_0, country_id) values (3, 'Lyon', 69000, 1);

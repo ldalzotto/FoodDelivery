@@ -10,8 +10,10 @@ public class GeoController {
     @CrossOrigin(origins = "http://localhost:8081")
     @RequestMapping(value = "/city/match", method = RequestMethod.GET)
     public @ResponseBody
-    ResponseEntity<?> CreateEstablishment(
-            @RequestParam("matchValue") String p_matchValue) {
-        return ResponseEntity.ok().body(GeoService.GetAllCitiesMatching(p_matchValue));
+    ResponseEntity<?> GetAllCitiesMatching(
+            @RequestParam("matchValue") String p_matchValue,
+            @RequestParam("limit") long p_limit) {
+        return ResponseEntity.ok().body(GeoService.GetAllCitiesMatching(p_matchValue, p_limit));
     }
+
 }

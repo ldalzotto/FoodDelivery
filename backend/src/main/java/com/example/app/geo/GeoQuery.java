@@ -7,12 +7,13 @@ import java.sql.PreparedStatement;
 import java.util.List;
 
 public class GeoQuery {
-    public static List<City> Get_AllCities_MatchingName(String p_name)
+    public static List<City> Get_AllCities_MatchingName(String p_name, long p_limit)
     {
         return
                 ConfigurationBeans.jdbcTemplate.query(con -> {
-                    PreparedStatement l_ps = con.prepareStatement("select * from city where city.name like ?");
+                    PreparedStatement l_ps = con.prepareStatement("select * from city where city.name like ? limit ?");
                     l_ps.setString(1, "%" + p_name + "%");
+                    l_ps.setLong(2, p_limit);
                     return l_ps;
                 }, (rs, rowNum) -> {
                     City l_city = new City();

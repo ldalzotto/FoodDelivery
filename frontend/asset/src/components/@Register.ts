@@ -3,6 +3,7 @@ import {pageHeader_init} from "./PageHeader.js"
 import {UserRegister} from "./UserRegister.js"
 import {ProfileSelector, ProfileContextContent} from "./ProfileSelector.js"
 import {ProfileEstablishmentContext} from "./ProfileContextContent.js"
+import {CitySelection} from "./CitySelection.js"
 
 function RegisterComponents()
 {
@@ -12,6 +13,7 @@ function RegisterComponents()
     ProfileEstablishmentContext.Initialize();
     ProfileSelector.Initialize();
     ProfileContextContent.Initialize();
+    CitySelection.Initialize();
 }
 
 export {RegisterComponents}

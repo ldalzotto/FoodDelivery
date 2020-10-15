@@ -65,6 +65,57 @@ class Computed<T> extends Observable<T>
     }
 }
 
+class Watcher<T> 
+{
+    protected _listeners : ((old_value : T, new_value : T) => void)[];
+
+    protected _value : T;
+    protected _oldValue : T;
+
+    constructor(value : T)
+    {
+        this._listeners = [];
+        this._value = value;
+        this._oldValue = value;
+    }
+
+    notify()
+    {
+        this._listeners.forEach(listener => {
+            if(listener!=null)
+            {
+                listener(this._oldValue, this._value);
+            }
+        });
+    }
+
+    subscribe(listener : (old_value : T, new_value : T) => void)
+    {
+        this._listeners.push(listener);
+    }
+
+    subscribe_withInit(listener : (old_value : T, new_value : T) => void)
+    {
+        this.subscribe(listener);
+        listener(this._oldValue, this._value);
+    }
+
+    get value()
+    {
+        return this._value;
+    }
+
+    set value(val : T)
+    {
+        if(this._value != val)
+        {
+            this._oldValue = this._value;
+            this._value = val;
+            this.notify();
+        }
+    }
+}
+
 class BindingIndex
 {
     public index : number;
@@ -224,6 +275,11 @@ class BindingUtils
         input.onkeyup = () => observable.value = input.value;
     }
 
+    static bindToInputText(observable : Observable<string>, input : HTMLInputElement)
+    {
+        observable.subscribe((p_str:string) => {input.value = p_str});
+    }
+
     static bindDisplayStyle(p_element : HTMLElement, observable : Observable<boolean>)
     {
         p_element.style.display = observable.value ? "" : "NONE";
@@ -231,4 +287,4 @@ class BindingUtils
     }
 }
 
-export {Observable, Computed, BindingUtils, BindingIndex, MObservable, MWatcher}
+export {Observable, Computed, Watcher, BindingUtils, BindingIndex, MObservable, MWatcher}
