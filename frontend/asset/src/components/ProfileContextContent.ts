@@ -1,7 +1,10 @@
 import {LoadingButton} from "../components_graphic/LoadingButton.js"
 import { ServerError } from "../server/Server.js";
-import {EstablishmentService, Establishment} from "../services/Establishment.js"
+import {EstablishmentService, Establishment, EstablishmentAddress} from "../services/Establishment.js"
 import {BindingUtils, Observable} from "../binding/Binding.js"
+import { CitySelection } from "./CitySelection.js";
+import { City } from "../services/Geo.js";
+import {MapSelection} from "../components_graphic/MapSelection.js"
 
 
 class ProfileEstablishmentContext extends HTMLElement
@@ -68,11 +71,15 @@ class EstablishmentRegistration extends HTMLElement
     private addEstablishmentFormDisplayed : Observable<boolean>;
 
     private inputName : HTMLInputElement;
-    private inputAddress : HTMLInputElement;
+    private inputAddressStreetName : HTMLInputElement;
+    private citySelection : CitySelection;
+    private latLngMap : MapSelection;
     private inputPhone : HTMLInputElement;
 
     private inputNameObservable : Observable<string>;
-    private inputAddressObservable : Observable<string>;
+    
+    private inputAddressStreetNameObservable : Observable<string>;
+
     private inputPhoneObservable : Observable<string>;
 
     private createEstablishmentButton : LoadingButton;
@@ -92,15 +99,17 @@ class EstablishmentRegistration extends HTMLElement
         BindingUtils.bindDisplayStyle(this.addEstablishmentForm, this.addEstablishmentFormDisplayed);
 
         this.inputName = this.querySelector("#name") as HTMLInputElement;
-        this.inputAddress = this.querySelector("#address") as HTMLInputElement;
+        this.inputAddressStreetName = this.querySelector("#street-name") as HTMLInputElement;
+        this.citySelection = this.querySelector("#city") as CitySelection;
+        this.latLngMap = this.querySelector("#latlng") as MapSelection;
         this.inputPhone = this.querySelector("#phone") as HTMLInputElement;
 
         this.inputNameObservable = new Observable<string>("");
-        this.inputAddressObservable = new Observable<string>("");
+        this.inputAddressStreetNameObservable = new Observable<string>("");
         this.inputPhoneObservable = new Observable<string>("");
 
         BindingUtils.bindInputText(this.inputName, this.inputNameObservable);
-        BindingUtils.bindInputText(this.inputAddress, this.inputAddressObservable);
+        BindingUtils.bindInputText(this.inputAddressStreetName, this.inputAddressStreetNameObservable);
         BindingUtils.bindInputText(this.inputPhone, this.inputPhoneObservable);
 
         this.createEstablishmentButton = this.querySelector("#establishment-creation") as LoadingButton;
@@ -114,8 +123,20 @@ class EstablishmentRegistration extends HTMLElement
 
     createEstablishment(p_onCompleted : ()=>void)
     {
-        console.log("onCreateEstablishmentButtonClicked");
-        EstablishmentService.CreateEstablishment(this.inputNameObservable.value, this.inputAddressObservable.value, this.inputPhoneObservable.value, 
+        let l_city : City | null = this.citySelection.getSelectedCity();
+        let l_establishment : Establishment = new Establishment(this.inputNameObservable.value, this.inputPhoneObservable.value);
+        let l_establishmentAddress : EstablishmentAddress = new EstablishmentAddress();
+        l_establishmentAddress.street_full_name = this.inputAddressStreetNameObservable.value;
+        l_establishmentAddress.lat = this.latLngMap.selectedLat;
+        l_establishmentAddress.lng = this.latLngMap.selectedLong;
+        
+        if(l_city)
+        {
+            l_establishmentAddress.city_id = l_city.id;
+        }
+
+        EstablishmentService.CreateEstablishment_With_Address(
+            l_establishment, l_establishmentAddress, 
         () => {
             this.dispatchEvent(new EstablishmentRegistration_AddedEstablishment());
             p_onCompleted();
@@ -152,7 +173,7 @@ class EstablishementDisplay extends HTMLElement
     public populateEstablishment(p_establishment : Establishment)
     {
         this.nameElement.innerText = p_establishment.name;
-        this.addressElement.innerText = p_establishment.address;
+        // this.addressElement.innerText = p_establishment.address;
         this.phoneElement.innerText = p_establishment.phone;
     }
 }

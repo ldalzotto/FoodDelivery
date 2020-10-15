@@ -121,9 +121,9 @@
       <button id="add-establishment-button">REGISTER NEW ESTABLISHMENT</button>
       <div id="add-establishment-form">
         <div>Name : </div> <input id="name" type="text"/>
-        <div>Address : </div> <input id="address" type="text"/>
-        <city-selection></city-selection>
-        <map-selection></map-selection>
+        <div>Address street name : </div> <input id="street-name" type="text"/>
+        <city-selection id="city"></city-selection>
+        <map-selection id="latlng"></map-selection>
         <div>Phone : </div> <input id="phone" type="text"/>
         <br/><br/>
         <loading-button id="establishment-creation" button-text="CREATE"></loading-button>
@@ -145,10 +145,9 @@
       <br/>
     </template>
 
-    <template id="city-selection">
+    <template id="select-festch">
       <input id="input" type="text"/>
       <datalist>
-        <option>Test1</option>
       </datalist>
     </template>
 
