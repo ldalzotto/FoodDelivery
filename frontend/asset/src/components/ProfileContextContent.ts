@@ -61,6 +61,7 @@ class EstablishmentRegistration_AddedEstablishment extends Event
     }
 }
 
+//TODO -> Adding support for zip code ?
 class EstablishmentRegistration extends HTMLElement
 {
     static readonly Type : string = "establishment-creation";

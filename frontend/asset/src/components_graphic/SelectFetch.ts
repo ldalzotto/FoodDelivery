@@ -1,5 +1,65 @@
 import {BindingUtils, Observable} from "../binding/Binding.js"
 
+/**
+ * //TODO ->
+ * A more sophisticated version can be created by creating a position absolute div : 
+ * <html>
+    <head>
+        <style>
+            .wrapper
+            {
+                
+            }
+            .list-container
+            {
+                background-color: aqua;
+                width: 30%;
+                position: absolute;
+            }
+        </style>
+        <script>
+            var l_textInput;
+            var l_listContainer;
+
+            var updatePosition = function()
+            {
+                var l_rect = l_textInput.getBoundingClientRect();
+                l_listContainer.style.top = l_rect.bottom;
+                l_listContainer.style.left = l_rect.left;
+                l_listContainer.style.width = l_rect.width;
+            }
+
+            setTimeout(() => {
+                l_textInput = document.getElementById("text-input");
+                l_listContainer = document.getElementById("list-container");
+
+                updatePosition();
+                window.onresize = updatePosition;
+                // l_listContainer.style.height = 0
+            }, 0);
+        </script>
+    </head>
+    <body>
+        <div style="display: flex;">
+            <div style="background-color: blue;">TEST</div>
+            <div class="wrapper">
+                <input id="text-input" type="text">
+                <div id="list-container" class="list-container">
+                    <div>1</div>
+                    <div>2</div>
+                    <div>3</div>
+                    <div>4</div>
+                    <div>5</div>
+                </div>
+            </div>
+        </div>
+        
+    </body>
+</html>
+
+ */
+
+ /** */
 class SelectFetch<T>
 {
     static readonly Type : string = "select-festch";

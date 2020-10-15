@@ -25,6 +25,12 @@
       {
         margin: 5px;
       }
+
+      .establishment-details
+      {
+        border-style: dotted;
+      }
+
     </style>
     
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
@@ -131,7 +137,7 @@
     </template>
 
     <template id="establishment-display">
-      <div>
+      <div class="establishment-details">
         <div style="display: flex;">
           <div>Name : </div> <div id="name"></div>
         </div>
