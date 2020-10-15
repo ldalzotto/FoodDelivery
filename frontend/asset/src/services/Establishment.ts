@@ -11,7 +11,7 @@ class EstablishmentService
         );
     }
 
-    public static GetEstablishments(p_okCallback : (p_establishments : Establishment[]) => void, p_errorCallback : (p_serverError : ServerError)=>(void))
+    public static GetEstablishments(p_okCallback : (p_establishments : EstablishmentWithAddress[]) => void, p_errorCallback : (p_serverError : ServerError)=>(void))
     {
         Server.SendRequest("GET", "http://localhost:8080/establishments", null, true,
            p_okCallback, p_errorCallback
@@ -64,4 +64,4 @@ class EstablishmentWithAddress
     }
 }
 
-export {EstablishmentService, Establishment, EstablishmentAddress}
+export {EstablishmentService, Establishment, EstablishmentAddress, EstablishmentWithAddress}

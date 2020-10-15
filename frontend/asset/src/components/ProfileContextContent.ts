@@ -1,6 +1,6 @@
 import {LoadingButton} from "../components_graphic/LoadingButton.js"
 import { ServerError } from "../server/Server.js";
-import {EstablishmentService, Establishment, EstablishmentAddress} from "../services/Establishment.js"
+import {EstablishmentService, Establishment, EstablishmentAddress, EstablishmentWithAddress} from "../services/Establishment.js"
 import {BindingUtils, Observable} from "../binding/Binding.js"
 import { CitySelection } from "./CitySelection.js";
 import { City } from "../services/Geo.js";
@@ -39,7 +39,7 @@ class ProfileEstablishmentContext extends HTMLElement
     {
         this.establishmentListsElement.innerHTML = "";
         EstablishmentService.GetEstablishments(
-            (p_establishments : Establishment[]) => {
+            (p_establishments : EstablishmentWithAddress[]) => {
                 for(let i=0;i<p_establishments.length;i++)
                 {
                     let l_establishmentDisplay : EstablishementDisplay = new EstablishementDisplay();
@@ -156,6 +156,7 @@ class EstablishementDisplay extends HTMLElement
 
     private nameElement : HTMLDivElement;
     private addressElement : HTMLDivElement;
+    private pointElement : MapSelection;
     private phoneElement : HTMLDivElement;
 
     constructor()
@@ -167,14 +168,16 @@ class EstablishementDisplay extends HTMLElement
 
         this.nameElement = this.querySelector("#name") as HTMLDivElement;
         this.addressElement = this.querySelector("#address") as HTMLDivElement;
+        this.pointElement = this.querySelector("#point") as MapSelection;
         this.phoneElement = this.querySelector("#phone") as HTMLDivElement;
     }
 
-    public populateEstablishment(p_establishment : Establishment)
+    public populateEstablishment(p_establishment : EstablishmentWithAddress)
     {
-        this.nameElement.innerText = p_establishment.name;
-        // this.addressElement.innerText = p_establishment.address;
-        this.phoneElement.innerText = p_establishment.phone;
+        this.nameElement.innerText = p_establishment.establishment.name;
+        this.addressElement.innerText = p_establishment.establishment_address.street_full_name;
+        this.pointElement.setSelectionMarker(p_establishment.establishment_address.lat, p_establishment.establishment_address.lng, true);
+        this.phoneElement.innerText = p_establishment.establishment.phone;
     }
 }
 
