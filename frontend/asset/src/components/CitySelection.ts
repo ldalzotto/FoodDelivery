@@ -24,10 +24,16 @@ class CitySelection extends HTMLElement
     constructor()
     {
         super();
-        this.selectFetch = new SelectFetch<CitySelection_Entry>(this);
+        let l_readOnly = false;
+        if(this.hasAttribute("readonly"))
+        {
+            l_readOnly = true;
+        }
+        this.selectFetch = new SelectFetch<CitySelection_Entry>(this, l_readOnly);
         this.selectFetch.bind((arg0, arg1) => this.fetchSelectList(arg0, arg1), 
             (arg0, arg1) => this.selectionPredicate(arg0, arg1),
-            (arg0) => this.onSelectedKeyChanged(arg0));
+            (arg0) => this.onSelectedKeyChanged(arg0),
+            () => this.onReadOnlyChange());
     }
  
     public static Initialize()
@@ -82,6 +88,13 @@ class CitySelection extends HTMLElement
         {
             this.selectFetch.input.style.backgroundColor = "red";
             this.dispatchEvent(new CitySelection_SelectedEvent(null))
+        }
+    }
+
+    onReadOnlyChange() {
+        if(this.selectFetch.readOnly.value)
+        {
+            this.selectFetch.input.style.backgroundColor = "";
         }
     }
 }
