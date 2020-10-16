@@ -1,10 +1,12 @@
 import {LoadingButton} from "../components_graphic/LoadingButton.js"
 import { ServerError } from "../server/Server.js";
-import {EstablishmentService, Establishment, EstablishmentAddress, EstablishmentWithAddress} from "../services/Establishment.js"
+import {EstablishmentService, Establishment, EstablishmentAddress, EstablishmentWithAddress, 
+        EstablishmentDelta, EstablishmentAddressDelta} from "../services/Establishment.js"
 import {BindingUtils, Observable} from "../binding/Binding.js"
 import { CitySelection } from "./CitySelection.js";
 import { City } from "../services/Geo.js";
 import {MapSelection} from "../components_graphic/MapSelection.js"
+import {InputTextUpdateElement} from "../components_graphic/InputTextUpdateElement.js"
 
 
 class ProfileEstablishmentContext extends HTMLElement
@@ -155,10 +157,21 @@ class EstablishementDisplay extends HTMLElement
 {
     static readonly Type : string = "establishment-display";
 
-    private nameElement : HTMLDivElement;
-    private addressElement : HTMLDivElement;
+    private nameElement : InputTextUpdateElement;
+    private addressElement : InputTextUpdateElement;
     private pointElement : MapSelection;
-    private phoneElement : HTMLDivElement;
+    private phoneElement : InputTextUpdateElement;
+
+    private modificationUnlockButton : HTMLButtonElement;
+    private submitChangeButton : HTMLButtonElement;
+
+    private isModificationEnabled : Observable<boolean>;
+    private modificationButtonText : Observable<string>;
+
+    private establishmentServer : EstablishmentWithAddress;
+
+    private establishmentUpdateDelta : EstablishmentDelta;
+    private establishmentAddressUpdateDelta : EstablishmentAddressDelta;
 
     constructor()
     {
@@ -167,18 +180,81 @@ class EstablishementDisplay extends HTMLElement
         let l_template : HTMLTemplateElement = document.getElementById(EstablishementDisplay.Type) as HTMLTemplateElement;
         this.appendChild(l_template.content.cloneNode(true));
 
-        this.nameElement = this.querySelector("#name") as HTMLDivElement;
-        this.addressElement = this.querySelector("#address") as HTMLDivElement;
+        this.isModificationEnabled = new Observable<boolean>(false);
+        this.modificationButtonText = new Observable<string>("");
+        
+        this.nameElement = new InputTextUpdateElement(this.querySelector("#name"));
+        
+        this.addressElement = new InputTextUpdateElement(this.querySelector("#address"));
+        
         this.pointElement = this.querySelector("#point") as MapSelection;
-        this.phoneElement = this.querySelector("#phone") as HTMLDivElement;
+        this.phoneElement = new InputTextUpdateElement(this.querySelector("#phone"));
+        
+        this.modificationUnlockButton = this.querySelector("#modification-unlock");
+        this.submitChangeButton = this.querySelector("#submit") as HTMLButtonElement;
+        
+        this.modificationButtonText.subscribe((arg0)=>{this.modificationUnlockButton.textContent = arg0});
+
+        this.isModificationEnabled.subscribe_withInit((arg0)=>{this.onIsModificationEnabledChanged(arg0);})
+        this.modificationUnlockButton.addEventListener("click", () => {this.isModificationEnabled.value = !this.isModificationEnabled.value});
+    
+        this.submitChangeButton.addEventListener("click", () => {this.onSubmitPressed();});
     }
 
     public populateEstablishment(p_establishment : EstablishmentWithAddress)
     {
-        this.nameElement.innerText = p_establishment.establishment.name;
-        this.addressElement.innerText = p_establishment.establishment_address.street_full_name;
+        this.establishmentServer = p_establishment;
+        this.nameElement.init(p_establishment.establishment.name);
+        this.addressElement.init(p_establishment.establishment_address.street_full_name);
         this.pointElement.setSelectionMarker(p_establishment.establishment_address.lat, p_establishment.establishment_address.lng, true);
-        this.phoneElement.innerText = p_establishment.establishment.phone;
+        this.phoneElement.init(p_establishment.establishment.phone);
+    }
+
+    onIsModificationEnabledChanged(p_isModificationEnabled : boolean)
+    {
+        if(p_isModificationEnabled)
+        {
+            this.nameElement.enableModifications();
+            this.addressElement.enableModifications();
+            this.phoneElement.enableModifications();
+            this.modificationButtonText.value = "LOCK MODIFICATIONS";
+        }
+        else
+        {
+            this.nameElement.disableModifications();
+            this.addressElement.disableModifications();
+            this.phoneElement.disableModifications();
+            this.modificationButtonText.value = "UNLOCK MODIFICATIONS";
+        }
+    }
+
+    onSubmitPressed()
+    {
+        console.log("Submit");
+        let l_establishmentDelta : EstablishmentDelta | null;
+        let l_establishmentAddressDelta : EstablishmentAddressDelta | null;
+        if(this.nameElement.hasChanged.value || this.phoneElement.hasChanged.value)
+        {
+            l_establishmentDelta = new EstablishmentDelta();
+            if(this.nameElement.hasChanged.value){l_establishmentDelta.name = this.nameElement.input.value;}
+            if(this.phoneElement.hasChanged.value){l_establishmentDelta.phone = this.phoneElement.input.value;}
+        }
+
+        if(this.addressElement.hasChanged.value)
+        {
+            l_establishmentAddressDelta = new EstablishmentAddressDelta();
+            if(this.addressElement.hasChanged.value){l_establishmentAddressDelta.street_full_name = this.addressElement.input.value;}
+        }
+
+        EstablishmentService.UpdateEstablishment_Widht_Address(this.establishmentServer.establishment.id, l_establishmentDelta, l_establishmentAddressDelta, 
+            () => {
+                this.nameElement.setCurrentAsInitialValue();
+                this.addressElement.setCurrentAsInitialValue();
+                this.phoneElement.setCurrentAsInitialValue();
+                this.isModificationEnabled.value = false;
+            }
+            , null);
+        // console.log(this.phoneElement.hasChanged);
     }
 }
 

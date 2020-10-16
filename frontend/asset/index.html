@@ -139,15 +139,17 @@
     <template id="establishment-display">
       <div class="establishment-details">
         <div style="display: flex;">
-          <div>Name : </div> <div id="name"></div>
+          <div>Name : </div> <input-text-update id="name"></input-text-update>
         </div>
         <div style="display: flex;">
-          <div>Address : </div> <div id="address"></div>
+          <div>Address : </div> <input-text-update id="address"></input-text-update>
         </div>
         <map-selection id="point"></map-selection>
         <div style="display: flex;">
-          <div>Phone : </div> <div id="phone"></div>
+          <div>Phone : </div> <input-text-update id="phone"></input-text-update>
         </div>
+        <button id="modification-unlock"></button>
+        <button id="submit">SUBMIT CHANGES</button>
       </div>
       <br/>
     </template>

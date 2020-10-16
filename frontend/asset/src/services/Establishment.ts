@@ -18,6 +18,15 @@ class EstablishmentService
         );
     }
 
+    public static UpdateEstablishment_Widht_Address(p_establishmentId : number, p_establishmentDelta : EstablishmentDelta | null, p_addressDelta : EstablishmentAddressDelta | null,
+        p_okCallback ?: (arg0 : null)=>(void), p_errorCallback ?: (p_serverError : ServerError)=>(void))
+    {
+        let l_delta = new EstablishmentWithAddressDelta();
+        l_delta.establishment = p_establishmentDelta;
+        l_delta.establishment_address = p_addressDelta;
+        Server.SendRequest("POST", `http://localhost:8080/establishment/update?establishment_id=${p_establishmentId}`, l_delta, true, p_okCallback, p_errorCallback);
+    }
+
 }
 
 class Establishment
@@ -64,4 +73,24 @@ class EstablishmentWithAddress
     }
 }
 
-export {EstablishmentService, Establishment, EstablishmentAddress, EstablishmentWithAddress}
+class EstablishmentDelta
+{
+    public name : string | null;
+    public phone : string | null;
+}
+
+class EstablishmentAddressDelta
+{
+    public street_full_name : string | null;
+    public city_id : number | null;
+    public lat : number | null;
+    public lng : number | null;
+}
+
+class EstablishmentWithAddressDelta
+{
+    public establishment : EstablishmentDelta | null;
+    public establishment_address : EstablishmentAddressDelta | null;
+}
+
+export {EstablishmentService, Establishment, EstablishmentAddress, EstablishmentWithAddress, EstablishmentDelta, EstablishmentAddressDelta}
