@@ -6,7 +6,7 @@ import {
 } from "../services/Establishment.js"
 import { BindingUtils, Observable } from "../binding/Binding.js"
 import { CitySelection } from "./CitySelection.js";
-import { City } from "../services/Geo.js";
+import { City, GeoService } from "../services/Geo.js";
 import { MapSelection, MapSelectionUpdate } from "../components_graphic/MapSelection.js"
 import { InputTextUpdateElement } from "../components_graphic/InputTextUpdateElement.js"
 
@@ -147,6 +147,7 @@ class EstablishementDisplay extends HTMLElement {
 
     private nameElement: InputTextUpdateElement;
     private addressElement: InputTextUpdateElement;
+    private cityElement: CitySelection;
     private pointElement: MapSelectionUpdate;
     private phoneElement: InputTextUpdateElement;
 
@@ -174,6 +175,14 @@ class EstablishementDisplay extends HTMLElement {
 
         l_establihsmentDisplay.addressElement = new InputTextUpdateElement(l_establihsmentDisplay.querySelector("#address"));
         l_establihsmentDisplay.addressElement.init(p_sourceEstablishment.establishment_address.street_full_name);
+
+        l_establihsmentDisplay.cityElement = l_establihsmentDisplay.querySelector("#city") as CitySelection;
+        GeoService.GetCity(p_sourceEstablishment.establishment_address.city_id, (p_city:City|null, p_err) => {
+            if(p_city)
+            {
+                l_establihsmentDisplay.cityElement.forceCity(p_city);
+            }
+        })
 
         l_establihsmentDisplay.pointElement = new MapSelectionUpdate(l_establihsmentDisplay.querySelector("#point"), p_sourceEstablishment.establishment_address.lat, p_sourceEstablishment.establishment_address.lng);
 

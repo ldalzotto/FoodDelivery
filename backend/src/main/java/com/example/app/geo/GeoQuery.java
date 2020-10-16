@@ -26,4 +26,28 @@ public class GeoQuery {
                     return l_city;
                 });
     }
+
+    public static City GetCity(long p_city_id)
+    {
+        List<City> l_retrievedCity =
+                ConfigurationBeans.jdbcTemplate.query(con -> {
+                    PreparedStatement l_ps = con.prepareStatement("select * from city where city.id = ? limit 1");
+                    l_ps.setLong(1, p_city_id);
+                    return l_ps;
+                }, (rs, rowNum) -> {
+                    City l_city = new City();
+
+                    l_city.id = rs.getLong(1);
+                    l_city.name = rs.getString(2);
+                    l_city.numeric_id_0 = rs.getLong(3);
+                    l_city.country_id = rs.getLong(4);
+
+                    return l_city;
+                });
+        if(l_retrievedCity.size() > 0)
+        {
+            return l_retrievedCity.get(0);
+        }
+        return null;
+    }
 }

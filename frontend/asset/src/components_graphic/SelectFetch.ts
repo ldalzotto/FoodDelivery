@@ -121,6 +121,11 @@ class SelectFetch<T>
         return null;
     }
 
+    public forceInputValue(p_value : string)
+    {
+        this.inputValue_observable.value = p_value;
+    }
+
     onInputValueChanged(p_new:string)
     {
         switch(this.refreshTimerState)

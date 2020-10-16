@@ -8,4 +8,8 @@ public class GeoService {
     {
         return GeoQuery.Get_AllCities_MatchingName(p_name, p_limit);
     }
+    public static City GetCity(long p_city_id)
+    {
+        return GeoQuery.GetCity(p_city_id);
+    }
 }

@@ -19,13 +19,13 @@ class CitySelection extends HTMLElement
 {
     static readonly Type : string = "city-selection";
 
-    private SelectFetch : SelectFetch<CitySelection_Entry>;
+    private selectFetch : SelectFetch<CitySelection_Entry>;
 
     constructor()
     {
         super();
-        this.SelectFetch = new SelectFetch<CitySelection_Entry>(this);
-        this.SelectFetch.bind((arg0, arg1) => this.fetchSelectList(arg0, arg1), 
+        this.selectFetch = new SelectFetch<CitySelection_Entry>(this);
+        this.selectFetch.bind((arg0, arg1) => this.fetchSelectList(arg0, arg1), 
             (arg0, arg1) => this.selectionPredicate(arg0, arg1),
             (arg0) => this.onSelectedKeyChanged(arg0));
     }
@@ -35,9 +35,14 @@ class CitySelection extends HTMLElement
         customElements.define(CitySelection.Type, CitySelection);
     }
 
+    public forceCity(p_city : City)
+    {
+        this.selectFetch.forceInputValue(p_city.name);
+    }
+
     public getSelectedCity() : City | null
     {
-        let l_city = this.SelectFetch.getSelectedElement();
+        let l_city = this.selectFetch.getSelectedElement();
         if(l_city)
         {
             return l_city.city;
@@ -48,13 +53,13 @@ class CitySelection extends HTMLElement
     fetchSelectList(p_input : string, p_onComplented : (p_fetched : CitySelection_Entry[] | null)  => void)
     {
         GeoService.GetAllCitiesMatching(p_input, 5, (p_cities:City[], p_err:ServerError)=>{
-            this.SelectFetch.dynamicSelection.innerHTML = "";
+            this.selectFetch.dynamicSelection.innerHTML = "";
             let l_entries : CitySelection_Entry[] = [];
             if(p_cities)
             {
                 for(let i = 0;i<p_cities.length;i++)
                 {
-                    l_entries.push(new CitySelection_Entry(this.SelectFetch.dynamicSelection, p_cities[i], i));
+                    l_entries.push(new CitySelection_Entry(this.selectFetch.dynamicSelection, p_cities[i], i));
                 }
             }
             p_onComplented(l_entries);
@@ -63,19 +68,19 @@ class CitySelection extends HTMLElement
 
     selectionPredicate(p_input : string, p_index : number) : boolean
     {
-        return this.SelectFetch.selection[p_index].city.name === p_input;
+        return this.selectFetch.selection[p_index].city.name === p_input;
     }
 
     onSelectedKeyChanged(p_key : number)
     {
         if(p_key!=-1)
         {
-            this.SelectFetch.input.style.backgroundColor = "green";
-            this.dispatchEvent(new CitySelection_SelectedEvent(this.SelectFetch.selection[this.SelectFetch.selectedKey_observable.value].city))
+            this.selectFetch.input.style.backgroundColor = "green";
+            this.dispatchEvent(new CitySelection_SelectedEvent(this.selectFetch.selection[this.selectFetch.selectedKey_observable.value].city))
         }
         else
         {
-            this.SelectFetch.input.style.backgroundColor = "red";
+            this.selectFetch.input.style.backgroundColor = "red";
             this.dispatchEvent(new CitySelection_SelectedEvent(null))
         }
     }
