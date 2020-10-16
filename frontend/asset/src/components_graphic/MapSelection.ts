@@ -1,3 +1,5 @@
+import { Observable } from "../binding/Binding.js";
+
 declare namespace L
 {
     function map(params:HTMLElement):any;
@@ -5,11 +7,11 @@ declare namespace L
     function marker(p_latlong:any):any;
 }
 
-class MapSelection extends HTMLElement
+class MapSelection
 {
     static readonly Type : string = "map-selection";
 
-    private mapDiv : HTMLElement;
+    private _root : HTMLElement;
 
     private map : any;
 
@@ -19,37 +21,39 @@ class MapSelection extends HTMLElement
     public get selectedLong():number{return this._selectedLong;}
     private displayedMarker : any;
 
-    constructor()
+    constructor(p_parent : HTMLElement, p_initialLat : number, p_initialLng : number)
     {
-        super();
+        this._selectedLat = p_initialLat;
+        this._selectedLong = p_initialLng;
 
-        this.mapDiv = document.createElement("div");
-        this.mapDiv = this.appendChild(this.mapDiv);
-        this.mapDiv.style.width = "300px";
-        this.mapDiv.style.height = "300px";
+        this._root = document.createElement("div");
+
+        this._root = p_parent.appendChild(this._root);
+
+        this._root.style.width = "300px";
+        this._root.style.height = "300px";
+
+        setTimeout(() => {
+            this.map = L.map(this._root).setView([this._selectedLat, this.selectedLong], 13);
+            L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoicGxvbWJhIiwiYSI6ImNrZzgwcnZ2OTA2NXcyd215bDhveXc2dmYifQ.40bIOrEnYw6UTl9TKkZJOw',
+            {
+                attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                maxZoom: 18,
+                id: 'mapbox/streets-v11',
+                tileSize: 512,
+                zoomOffset: -1,
+                accessToken: 'your.mapbox.access.token'
+            }).addTo(this.map);
+            this.map.on('click', (event:any) => {this.onMapClick(event);} );
+            this.setSelectionMarker(this._selectedLat, this.selectedLong, true);
+        }, 0);
+
     }
 
     public static Initialize()
     {
-        customElements.define(MapSelection.Type, MapSelection);
+        // customElements.define(MapSelection.Type, MapSelection);
     }
-
-    connectedCallback() {
-
-        this.map = L.map(this.mapDiv).setView([this._selectedLat, this.selectedLong], 13);
-        L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoicGxvbWJhIiwiYSI6ImNrZzgwcnZ2OTA2NXcyd215bDhveXc2dmYifQ.40bIOrEnYw6UTl9TKkZJOw',
-        {
-            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-            maxZoom: 18,
-            id: 'mapbox/streets-v11',
-            tileSize: 512,
-            zoomOffset: -1,
-            accessToken: 'your.mapbox.access.token'
-        }).addTo(this.map);
-        this.map.on('click', (event:any) => {this.onMapClick(event);} );
-        this.setSelectionMarker(this._selectedLat, this.selectedLong, true);
-    }
-
     
     public setSelectionMarker(p_lat : number, p_long : number, p_moveTo : boolean)
     {

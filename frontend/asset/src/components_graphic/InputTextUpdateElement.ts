@@ -14,12 +14,11 @@ class InputTextUpdateElement
 
     private list : InputTextUpdateElement_KeyUpEventListener;
 
-    constructor(p_root : HTMLElement)
+    constructor(p_parent : HTMLElement)
     {
-        this._root = p_root;
-
-        this._input = document.createElement("input") as HTMLInputElement;
-        this._root.appendChild(this._input);
+        this._root = document.createElement("input");
+        this._input = this._root as HTMLInputElement;
+        p_parent.appendChild(this._root);
         this.list = new InputTextUpdateElement_KeyUpEventListener(this);
         this._input.readOnly = false;
 

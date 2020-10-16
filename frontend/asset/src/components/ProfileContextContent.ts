@@ -44,9 +44,8 @@ class ProfileEstablishmentContext extends HTMLElement
             (p_establishments : EstablishmentWithAddress[]) => {
                 for(let i=0;i<p_establishments.length;i++)
                 {
-                    let l_establishmentDisplay : EstablishementDisplay = new EstablishementDisplay();
+                    let l_establishmentDisplay : EstablishementDisplay = EstablishementDisplay.build(p_establishments[i]);
                     this.establishmentListsElement.appendChild(l_establishmentDisplay);
-                    l_establishmentDisplay.populateEstablishment(p_establishments[i]);
                 }
             }, null
         );
@@ -104,7 +103,7 @@ class EstablishmentRegistration extends HTMLElement
         this.inputName = this.querySelector("#name") as HTMLInputElement;
         this.inputAddressStreetName = this.querySelector("#street-name") as HTMLInputElement;
         this.citySelection = this.querySelector("#city") as CitySelection;
-        this.latLngMap = this.querySelector("#latlng") as MapSelection;
+        this.latLngMap = new MapSelection(this.querySelector("#latlng"), 0, 0);
         this.inputPhone = this.querySelector("#phone") as HTMLInputElement;
 
         this.inputNameObservable = new Observable<string>("");
@@ -173,41 +172,44 @@ class EstablishementDisplay extends HTMLElement
     private establishmentUpdateDelta : EstablishmentDelta;
     private establishmentAddressUpdateDelta : EstablishmentAddressDelta;
 
+    public static build(p_sourceEstablishment : EstablishmentWithAddress) : EstablishementDisplay
+    {
+        let l_establihsmentDisplay : EstablishementDisplay = new EstablishementDisplay();
+
+        l_establihsmentDisplay.establishmentServer = p_sourceEstablishment;
+        l_establihsmentDisplay.isModificationEnabled = new Observable<boolean>(false);
+        l_establihsmentDisplay.modificationButtonText = new Observable<string>("");
+        
+        l_establihsmentDisplay.nameElement = new InputTextUpdateElement(l_establihsmentDisplay.querySelector("#name"));
+        l_establihsmentDisplay.nameElement.init(p_sourceEstablishment.establishment.name);
+
+        l_establihsmentDisplay.addressElement = new InputTextUpdateElement(l_establihsmentDisplay.querySelector("#address"));
+        l_establihsmentDisplay.addressElement.init(p_sourceEstablishment.establishment_address.street_full_name);
+
+        l_establihsmentDisplay.pointElement = new MapSelection(l_establihsmentDisplay.querySelector("#point"), p_sourceEstablishment.establishment_address.lat, p_sourceEstablishment.establishment_address.lng);
+        
+        l_establihsmentDisplay.phoneElement = new InputTextUpdateElement(l_establihsmentDisplay.querySelector("#phone"));
+        l_establihsmentDisplay.phoneElement.init(p_sourceEstablishment.establishment.phone);
+
+        l_establihsmentDisplay.modificationUnlockButton = l_establihsmentDisplay.querySelector("#modification-unlock");
+        l_establihsmentDisplay.submitChangeButton = l_establihsmentDisplay.querySelector("#submit") as HTMLButtonElement;
+        
+        l_establihsmentDisplay.modificationButtonText.subscribe((arg0)=>{l_establihsmentDisplay.modificationUnlockButton.textContent = arg0});
+
+        l_establihsmentDisplay.isModificationEnabled.subscribe_withInit((arg0)=>{l_establihsmentDisplay.onIsModificationEnabledChanged(arg0);})
+        l_establihsmentDisplay.modificationUnlockButton.addEventListener("click", () => {l_establihsmentDisplay.isModificationEnabled.value = !l_establihsmentDisplay.isModificationEnabled.value});
+    
+        l_establihsmentDisplay.submitChangeButton.addEventListener("click", () => {l_establihsmentDisplay.onSubmitPressed();});
+
+        return l_establihsmentDisplay;
+    }
+
     constructor()
     {
         super()
 
         let l_template : HTMLTemplateElement = document.getElementById(EstablishementDisplay.Type) as HTMLTemplateElement;
         this.appendChild(l_template.content.cloneNode(true));
-
-        this.isModificationEnabled = new Observable<boolean>(false);
-        this.modificationButtonText = new Observable<string>("");
-        
-        this.nameElement = new InputTextUpdateElement(this.querySelector("#name"));
-        
-        this.addressElement = new InputTextUpdateElement(this.querySelector("#address"));
-        
-        this.pointElement = this.querySelector("#point") as MapSelection;
-        this.phoneElement = new InputTextUpdateElement(this.querySelector("#phone"));
-        
-        this.modificationUnlockButton = this.querySelector("#modification-unlock");
-        this.submitChangeButton = this.querySelector("#submit") as HTMLButtonElement;
-        
-        this.modificationButtonText.subscribe((arg0)=>{this.modificationUnlockButton.textContent = arg0});
-
-        this.isModificationEnabled.subscribe_withInit((arg0)=>{this.onIsModificationEnabledChanged(arg0);})
-        this.modificationUnlockButton.addEventListener("click", () => {this.isModificationEnabled.value = !this.isModificationEnabled.value});
-    
-        this.submitChangeButton.addEventListener("click", () => {this.onSubmitPressed();});
-    }
-
-    public populateEstablishment(p_establishment : EstablishmentWithAddress)
-    {
-        this.establishmentServer = p_establishment;
-        this.nameElement.init(p_establishment.establishment.name);
-        this.addressElement.init(p_establishment.establishment_address.street_full_name);
-        this.pointElement.setSelectionMarker(p_establishment.establishment_address.lat, p_establishment.establishment_address.lng, true);
-        this.phoneElement.init(p_establishment.establishment.phone);
     }
 
     onIsModificationEnabledChanged(p_isModificationEnabled : boolean)
