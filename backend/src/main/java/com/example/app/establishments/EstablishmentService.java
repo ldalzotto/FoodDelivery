@@ -65,4 +65,9 @@ public class EstablishmentService {
     {
         return EstablishmentQuery.GetAllEstablishments_with_EstablishmentAddress(p_userId);
     }
+
+    public static void DeleteEstablishment(long p_establishmentId)
+    {
+        EstablishmentQuery.DeleteEstablishment_with_Address(p_establishmentId);
+    }
 }

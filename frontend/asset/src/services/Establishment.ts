@@ -27,6 +27,11 @@ class EstablishmentService
         Server.SendRequest("POST", `http://localhost:8080/establishment/update?establishment_id=${p_establishmentId}`, l_delta, true, p_okCallback, p_errorCallback);
     }
 
+    public static DeleteEstablishment(p_establishmentId : number, p_okCallback ?: (arg0 : null)=>(void), p_errorCallback ?: (p_serverError : ServerError)=>(void))
+    {
+        Server.SendRequest("POST", `http://localhost:8080/establishment/delete?establishment_id=${p_establishmentId}`, null, true, p_okCallback, p_errorCallback);
+    }
+
 }
 
 class Establishment

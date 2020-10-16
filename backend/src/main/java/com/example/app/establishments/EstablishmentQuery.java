@@ -53,6 +53,31 @@ public class EstablishmentQuery {
         return l_return;
     }
 
+    public static Establishment GetEstablishment(long p_establihsmentId)
+    {
+        List<Establishment> l_retrievedEstablishment =
+        ConfigurationBeans.jdbcTemplate.query(con -> {
+            PreparedStatement l_ps = con.prepareStatement("select * from establishments where establishments.id == ? limit 1");
+            l_ps.setLong(1, p_establihsmentId);
+            return l_ps;
+        }, (rs, rowNum) -> {
+            Establishment l_establishment = new Establishment();
+            l_establishment.id = rs.getLong(1);
+            l_establishment.name = rs.getString(2);
+            l_establishment.address_id = rs.getLong(3);
+            l_establishment.phone = rs.getString(4);
+            l_establishment.user_id = rs.getLong(5);
+            return l_establishment;
+        });
+
+        if(l_retrievedEstablishment.size() > 0)
+        {
+            return l_retrievedEstablishment.get(0);
+        }
+
+        return null;
+    }
+
     public static EstablishmentWithAddress GetEstablishment_with_EstablishmentAddress(long p_establishment_id)
     {
         List<EstablishmentWithAddress> l_foundEstablishments =
@@ -173,5 +198,23 @@ public class EstablishmentQuery {
 
                 return l_establishmentWithAddress;
             });
+    }
+
+    public static void DeleteEstablishment_with_Address(long p_establishment)
+    {
+        Establishment l_establishment = GetEstablishment(p_establishment);
+        if(l_establishment!=null)
+        {
+            ConfigurationBeans.jdbcTemplate.update(con -> {
+                PreparedStatement l_ps = con.prepareStatement("delete from establishment_address where establishment_address.id == ?");
+                l_ps.setLong(1, l_establishment.address_id);
+                return l_ps;
+            });
+            ConfigurationBeans.jdbcTemplate.update(con -> {
+                PreparedStatement l_ps = con.prepareStatement("delete from establishments where establishments.id == ?");
+                l_ps.setLong(1, l_establishment.id);
+                return l_ps;
+            });
+        }
     }
 }
