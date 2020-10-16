@@ -5,7 +5,7 @@ import {EstablishmentService, Establishment, EstablishmentAddress, Establishment
 import {BindingUtils, Observable} from "../binding/Binding.js"
 import { CitySelection } from "./CitySelection.js";
 import { City } from "../services/Geo.js";
-import {MapSelection} from "../components_graphic/MapSelection.js"
+import {MapSelection, MapSelectionUpdate} from "../components_graphic/MapSelection.js"
 import {InputTextUpdateElement} from "../components_graphic/InputTextUpdateElement.js"
 
 
@@ -129,8 +129,8 @@ class EstablishmentRegistration extends HTMLElement
         let l_establishment : Establishment = new Establishment(this.inputNameObservable.value, this.inputPhoneObservable.value);
         let l_establishmentAddress : EstablishmentAddress = new EstablishmentAddress();
         l_establishmentAddress.street_full_name = this.inputAddressStreetNameObservable.value;
-        l_establishmentAddress.lat = this.latLngMap.selectedLat;
-        l_establishmentAddress.lng = this.latLngMap.selectedLong;
+        l_establishmentAddress.lat = this.latLngMap.latLng._Lat;
+        l_establishmentAddress.lng = this.latLngMap.latLng._Lng;
         
         if(l_city)
         {
@@ -158,7 +158,7 @@ class EstablishementDisplay extends HTMLElement
 
     private nameElement : InputTextUpdateElement;
     private addressElement : InputTextUpdateElement;
-    private pointElement : MapSelection;
+    private pointElement : MapSelectionUpdate;
     private phoneElement : InputTextUpdateElement;
 
     private modificationUnlockButton : HTMLButtonElement;
@@ -186,7 +186,7 @@ class EstablishementDisplay extends HTMLElement
         l_establihsmentDisplay.addressElement = new InputTextUpdateElement(l_establihsmentDisplay.querySelector("#address"));
         l_establihsmentDisplay.addressElement.init(p_sourceEstablishment.establishment_address.street_full_name);
 
-        l_establihsmentDisplay.pointElement = new MapSelection(l_establihsmentDisplay.querySelector("#point"), p_sourceEstablishment.establishment_address.lat, p_sourceEstablishment.establishment_address.lng);
+        l_establihsmentDisplay.pointElement = new MapSelectionUpdate(l_establihsmentDisplay.querySelector("#point"), p_sourceEstablishment.establishment_address.lat, p_sourceEstablishment.establishment_address.lng);
         
         l_establihsmentDisplay.phoneElement = new InputTextUpdateElement(l_establihsmentDisplay.querySelector("#phone"));
         l_establihsmentDisplay.phoneElement.init(p_sourceEstablishment.establishment.phone);
@@ -219,6 +219,7 @@ class EstablishementDisplay extends HTMLElement
             this.nameElement.enableModifications();
             this.addressElement.enableModifications();
             this.phoneElement.enableModifications();
+            this.pointElement.enableModifications();
             this.modificationButtonText.value = "LOCK MODIFICATIONS";
         }
         else
@@ -226,6 +227,7 @@ class EstablishementDisplay extends HTMLElement
             this.nameElement.disableModifications();
             this.addressElement.disableModifications();
             this.phoneElement.disableModifications();
+            this.pointElement.disableModifications();
             this.modificationButtonText.value = "UNLOCK MODIFICATIONS";
         }
     }
@@ -242,10 +244,14 @@ class EstablishementDisplay extends HTMLElement
             if(this.phoneElement.hasChanged.value){l_establishmentDelta.phone = this.phoneElement.input.value;}
         }
 
-        if(this.addressElement.hasChanged.value)
+        if(this.addressElement.hasChanged.value || this.pointElement.hasChanged.value)
         {
             l_establishmentAddressDelta = new EstablishmentAddressDelta();
             if(this.addressElement.hasChanged.value){l_establishmentAddressDelta.street_full_name = this.addressElement.input.value;}
+            if(this.pointElement.hasChanged.value){
+                l_establishmentAddressDelta.lat = this.pointElement.latLng._Lat;
+                l_establishmentAddressDelta.lng = this.pointElement.latLng._Lng;
+            }
         }
 
         EstablishmentService.UpdateEstablishment_Widht_Address(this.establishmentServer.establishment.id, l_establishmentDelta, l_establishmentAddressDelta, 
@@ -253,6 +259,7 @@ class EstablishementDisplay extends HTMLElement
                 this.nameElement.setCurrentAsInitialValue();
                 this.addressElement.setCurrentAsInitialValue();
                 this.phoneElement.setCurrentAsInitialValue();
+                this.pointElement.setCurrentAsInitialValue();
                 this.isModificationEnabled.value = false;
             }
             , null);

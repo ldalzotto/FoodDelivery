@@ -11,20 +11,22 @@ class MapSelection
 {
     static readonly Type : string = "map-selection";
 
-    private _root : HTMLElement;
+    protected _root : HTMLElement;
+    public readonly : boolean = false;
 
     private map : any;
 
-    private _selectedLat : number = 0;
-    public get selectedLat():number{return this._selectedLat;}
-    private _selectedLong : number = 0;
-    public get selectedLong():number{return this._selectedLong;}
+    protected _latLng : LatLng = new LatLng();
+    public get latLng(){return this._latLng;}
+
+    public onLatLngChanged : Observable<null> = new Observable<null>(null);
+
     private displayedMarker : any;
 
     constructor(p_parent : HTMLElement, p_initialLat : number, p_initialLng : number)
     {
-        this._selectedLat = p_initialLat;
-        this._selectedLong = p_initialLng;
+        this._latLng._Lat = p_initialLat;
+        this._latLng._Lng = p_initialLng;
 
         this._root = document.createElement("div");
 
@@ -34,7 +36,7 @@ class MapSelection
         this._root.style.height = "300px";
 
         setTimeout(() => {
-            this.map = L.map(this._root).setView([this._selectedLat, this.selectedLong], 13);
+            this.map = L.map(this._root).setView([this._latLng._Lat, this._latLng._Lng], 13);
             L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoicGxvbWJhIiwiYSI6ImNrZzgwcnZ2OTA2NXcyd215bDhveXc2dmYifQ.40bIOrEnYw6UTl9TKkZJOw',
             {
                 attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
@@ -45,14 +47,11 @@ class MapSelection
                 accessToken: 'your.mapbox.access.token'
             }).addTo(this.map);
             this.map.on('click', (event:any) => {this.onMapClick(event);} );
-            this.setSelectionMarker(this._selectedLat, this.selectedLong, true);
+            this.setSelectionMarker(this._latLng._Lat, this._latLng._Lng, true);
+
+            this.onLatLngChanged.subscribe((p_null) => {this.onLatLngChangedFn();})
         }, 0);
 
-    }
-
-    public static Initialize()
-    {
-        // customElements.define(MapSelection.Type, MapSelection);
     }
     
     public setSelectionMarker(p_lat : number, p_long : number, p_moveTo : boolean)
@@ -68,14 +67,102 @@ class MapSelection
                 this.map.setView([p_lat, p_long], 13);
             }
     }
-    
+
     onMapClick(event:any)
     {
-        this._selectedLat = event.latlng.lat;
-        this._selectedLong = event.latlng.lng;
+        this.setLatLng(event.latlng.lat, event.latlng.lng);
+    }
 
-        this.setSelectionMarker(this._selectedLat, this._selectedLong, false);
+    setLatLng(p_lat : number, p_long : number)
+    {
+        if(!this.readonly)
+        {
+            if(this._latLng._Lat !== p_lat || this._latLng._Lng !== p_long)
+            {
+                this._latLng._Lat = p_lat;
+                this._latLng._Lng = p_long;
+    
+                this.onLatLngChanged.notify();
+            }
+        }
+    }
+    
+    onLatLngChangedFn()
+    {
+        this.setSelectionMarker(this._latLng._Lat, this._latLng._Lng, false);
     }
 }
 
-export {MapSelection}
+class LatLng
+{
+    public _Lat : number = 0;
+    public _Lng : number = 0;
+}
+
+class MapSelectionUpdate extends MapSelection
+{
+    
+    private _initialValue : LatLng;
+
+    private _hasChanged : Observable<boolean>;
+    public get hasChanged(){return this._hasChanged;}
+
+    constructor(p_parent : HTMLElement, p_initialLat : number, p_initialLng : number)
+    {
+        super(p_parent, p_initialLat, p_initialLng);
+
+        this._initialValue = new LatLng();
+        this._initialValue._Lat = p_initialLat;
+        this._initialValue._Lng = p_initialLng;
+
+        this._hasChanged = new Observable<boolean>(false);
+
+        this.onLatLngChanged.subscribe(() => {this.onLatLngChangedUpdate();});
+        this._hasChanged.subscribe(() => {this.onHasChanged_change(this._hasChanged.value);});
+    }
+
+    public enableModifications()
+    {
+        this.readonly = false;
+    }
+
+    public disableModifications()
+    {
+        this.readonly = true;
+    }
+
+    public setCurrentAsInitialValue()
+    {
+        this._initialValue._Lat = this._latLng._Lat;
+        this._initialValue._Lng = this._latLng._Lng;
+        this.onLatLngChangedUpdate();
+    }
+
+    onLatLngChangedUpdate()
+    {
+        if(this._initialValue._Lat !== this._latLng._Lat || this._initialValue._Lng !== this._latLng._Lng)
+            {
+                this._hasChanged.value = true;
+            }
+            else
+            {
+                this._hasChanged.value = false;
+            }
+    }
+
+    private onHasChanged_change(p_hasChanged : boolean)
+    {
+        if(p_hasChanged)
+        {
+            this._root.style.borderStyle = "dashed";
+            this._root.style.borderColor = "orange";
+        }
+        else
+        {
+            this._root.style.borderStyle = "";
+            this._root.style.borderColor = "";
+        }
+    }
+}
+
+export {MapSelection, MapSelectionUpdate}
