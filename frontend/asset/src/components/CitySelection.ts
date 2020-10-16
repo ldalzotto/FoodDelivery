@@ -1,6 +1,7 @@
 import { ServerError } from "../server/Server.js";
 import {GeoService, City} from "../services/Geo.js"
 import {SelectFetch} from "../components_graphic/SelectFetch.js"
+import { Observable } from "../binding/Binding.js";
 
 class CitySelection_SelectedEvent extends Event
 {
@@ -15,30 +16,23 @@ class CitySelection_SelectedEvent extends Event
     }
 }
 
-class CitySelection extends HTMLElement
+class CitySelection
 {
     static readonly Type : string = "city-selection";
 
-    private selectFetch : SelectFetch<CitySelection_Entry>;
+    protected _root : HTMLElement;
+    protected selectFetch : SelectFetch<CitySelection_Entry>;
 
-    constructor()
+    protected onSelectedKeyChanged_chainCallback : ((p_key : number)=>void) | null;
+
+    constructor(p_root : HTMLElement, p_readOnly : boolean = false)
     {
-        super();
-        let l_readOnly = false;
-        if(this.hasAttribute("readonly"))
-        {
-            l_readOnly = true;
-        }
-        this.selectFetch = new SelectFetch<CitySelection_Entry>(this, l_readOnly);
+        this._root = p_root;
+        this.selectFetch = new SelectFetch<CitySelection_Entry>(this._root, p_readOnly);
         this.selectFetch.bind((arg0, arg1) => this.fetchSelectList(arg0, arg1), 
             (arg0, arg1) => this.selectionPredicate(arg0, arg1),
             (arg0) => this.onSelectedKeyChanged(arg0),
             () => this.onReadOnlyChange());
-    }
- 
-    public static Initialize()
-    {
-        customElements.define(CitySelection.Type, CitySelection);
     }
 
     public forceCity(p_city : City)
@@ -82,12 +76,17 @@ class CitySelection extends HTMLElement
         if(p_key!=-1)
         {
             this.selectFetch.input.style.backgroundColor = "green";
-            this.dispatchEvent(new CitySelection_SelectedEvent(this.selectFetch.selection[this.selectFetch.selectedKey_observable.value].city))
+            this._root.dispatchEvent(new CitySelection_SelectedEvent(this.selectFetch.selection[this.selectFetch.selectedKey_observable.value].city))
         }
         else
         {
             this.selectFetch.input.style.backgroundColor = "red";
-            this.dispatchEvent(new CitySelection_SelectedEvent(null))
+            this._root.dispatchEvent(new CitySelection_SelectedEvent(null))
+        }
+
+        if(this.onSelectedKeyChanged_chainCallback)
+        {
+            this.onSelectedKeyChanged_chainCallback(p_key);
         }
     }
 
@@ -95,6 +94,79 @@ class CitySelection extends HTMLElement
         if(this.selectFetch.readOnly.value)
         {
             this.selectFetch.input.style.backgroundColor = "";
+        }
+    }
+}
+
+class CitySelectionUpdate extends CitySelection
+{
+    
+    constructor(p_root : HTMLElement)
+    {
+        super(p_root, true);
+        this._hasChanged = new Observable<boolean>(false);
+        this.onSelectedKeyChanged_chainCallback = this.onSelectedKeyChanged_update;
+        this._hasChanged.subscribe_withInit(() => {this.onHasChanged_change(this._hasChanged.value);});
+    }
+
+    private _initialValue : City;
+
+    private _hasChanged : Observable<boolean>;
+    public get hasChanged(){return this._hasChanged;}
+
+    public setInitialValue(p_city : City)
+    {
+        this._initialValue = p_city;
+        this.forceCity(this._initialValue);
+    }
+
+    public setCurrentAsInitialValue()
+    {
+        let l_selectedElement = this.selectFetch.getSelectedElement();
+        if(l_selectedElement)
+        {
+            this._initialValue = l_selectedElement.city;
+        }
+        this.onSelectedKeyChanged_update();
+    }
+
+    public enableModifications()
+    {
+        this.selectFetch.readOnly.value = false;
+    }
+
+    public disableModifications()
+    {
+        this.selectFetch.readOnly.value = true;
+    }
+
+    onSelectedKeyChanged_update()
+    {
+        let l_selectedElement = this.selectFetch.getSelectedElement();
+        if(l_selectedElement)
+        {
+            if(l_selectedElement.city.id !== this._initialValue.id)
+            {
+                this._hasChanged.value = true;
+            }
+            else
+            {
+                this._hasChanged.value = false;
+            }
+        }
+    }
+
+    onHasChanged_change(p_hasChanged : boolean)
+    {
+        if(p_hasChanged)
+        {
+            this._root.style.borderStyle = "dashed";
+            this._root.style.borderColor = "orange";
+        }
+        else
+        {
+            this._root.style.borderStyle = "";
+            this._root.style.borderColor = "";
         }
     }
 }
@@ -121,4 +193,4 @@ class CitySelection_Entry
     }
 }
 
-export {CitySelection, CitySelection_SelectedEvent}
+export {CitySelection, CitySelection_SelectedEvent, CitySelectionUpdate}

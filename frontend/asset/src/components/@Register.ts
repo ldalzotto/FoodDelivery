@@ -13,7 +13,6 @@ function RegisterComponents()
     ProfileEstablishmentContext.Initialize();
     ProfileSelector.Initialize();
     ProfileContextContent.Initialize();
-    CitySelection.Initialize();
 }
 
 export {RegisterComponents}
