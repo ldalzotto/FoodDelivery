@@ -1,34 +1,29 @@
-class LoadingButton extends HTMLElement
+class LoadingButton
 {
     static readonly Type : string = "loading-button";
     private static Html(p_text : string) : string { return `<button>${p_text}</button>`; } ; 
 
+    private _root : HTMLElement;
+
     private asyncOperationOnClick : ( p_onCompleted : ()=>void ) => void;
 
-    private button : HTMLButtonElement;
+    private _button : HTMLButtonElement;
+    public get button(){return this._button;}
 
-    constructor()
+    constructor(p_parent : HTMLElement,
+        p_asyncOperationOnClick : ( p_onCompleted : ()=>void ) => void)
     {
-        super()
-        this.innerHTML = LoadingButton.Html(this.getAttribute("button-text"));
-        this.button = this.querySelector("button");
-        this.button.addEventListener("click", () => {this.onButtonClicked();});
-    }
-
-    public new(p_asyncOperationOnClick : ( p_onCompleted : ()=>void ) => void)
-    {
+        this._root = p_parent;
+        this._root.innerHTML = LoadingButton.Html(this._root.getAttribute("button-text"));
+        this._button = this._root.querySelector("button");
+        this._button.addEventListener("click", () => {this.onButtonClicked();});
         this.asyncOperationOnClick = p_asyncOperationOnClick;
-    }
-
-    public static Initialize()
-    {
-        customElements.define(LoadingButton.Type, LoadingButton);
     }
 
     onButtonClicked()
     {
-        this.button.disabled = true;
-        this.asyncOperationOnClick( () => {this.button.disabled = false;} )
+        this._button.disabled = true;
+        this.asyncOperationOnClick( () => {this._button.disabled = false;} )
     }
 }
 

@@ -108,8 +108,7 @@ class EstablishmentRegistration extends HTMLElement {
         BindingUtils.bindInputText(this.inputAddressStreetName, this.inputAddressStreetNameObservable);
         BindingUtils.bindInputText(this.inputPhone, this.inputPhoneObservable);
 
-        this.createEstablishmentButton = this.querySelector("#establishment-creation") as LoadingButton;
-        this.createEstablishmentButton.new((p_onCompleted) => { this.createEstablishment(p_onCompleted); });
+        this.createEstablishmentButton = new LoadingButton(this.querySelector("#establishment-creation"), (p_onCompleted) => { this.createEstablishment(p_onCompleted); });
     }
 
     onAddEstablishmentButtonClick() {
@@ -152,8 +151,8 @@ class EstablishementDisplay extends HTMLElement {
     private phoneElement: InputTextUpdateElement;
 
     private modificationUnlockButton: HTMLButtonElement;
-    private submitChangeButton: HTMLButtonElement;
-    private deleteButton: HTMLButtonElement;
+    private submitChangeButton: LoadingButton;
+    private deleteButton: LoadingButton;
 
     private isModificationEnabled: Observable<boolean>;
     private modificationButtonText: Observable<string>;
@@ -182,16 +181,14 @@ class EstablishementDisplay extends HTMLElement {
         l_establihsmentDisplay.phoneElement.init(p_sourceEstablishment.establishment.phone);
 
         l_establihsmentDisplay.modificationUnlockButton = l_establihsmentDisplay.querySelector("#modification-unlock");
-        l_establihsmentDisplay.submitChangeButton = l_establihsmentDisplay.querySelector("#submit") as HTMLButtonElement;
-        l_establihsmentDisplay.deleteButton = l_establihsmentDisplay.querySelector("#delete") as HTMLButtonElement;
+        l_establihsmentDisplay.submitChangeButton = new LoadingButton(l_establihsmentDisplay.querySelector("#submit"), (p_onCompleted) => {l_establihsmentDisplay.onSubmitPressed(p_onCompleted)} );
+
+        l_establihsmentDisplay.deleteButton = new LoadingButton(l_establihsmentDisplay.querySelector("#delete"), (p_onCompleted) => {l_establihsmentDisplay.onDeletePressed(p_onCompleted)});
 
         l_establihsmentDisplay.modificationButtonText.subscribe((arg0) => { l_establihsmentDisplay.modificationUnlockButton.textContent = arg0 });
 
         l_establihsmentDisplay.isModificationEnabled.subscribe_withInit((arg0) => { l_establihsmentDisplay.onIsModificationEnabledChanged(arg0); })
         l_establihsmentDisplay.modificationUnlockButton.addEventListener("click", () => { l_establihsmentDisplay.isModificationEnabled.value = !l_establihsmentDisplay.isModificationEnabled.value });
-
-        l_establihsmentDisplay.submitChangeButton.addEventListener("click", () => { l_establihsmentDisplay.onSubmitPressed(); });
-        l_establihsmentDisplay.deleteButton.addEventListener("click", () => { l_establihsmentDisplay.onDeletePressed(); })
 
         return l_establihsmentDisplay;
     }
@@ -210,8 +207,8 @@ class EstablishementDisplay extends HTMLElement {
             this.phoneElement.enableModifications();
             this.pointElement.enableModifications();
             this.modificationButtonText.value = "LOCK MODIFICATIONS";
-            this.submitChangeButton.disabled = false;
-            this.deleteButton.disabled = false;
+            this.submitChangeButton.button.disabled = false;
+            this.deleteButton.button.disabled = false;
         }
         else {
             this.nameElement.disableModifications();
@@ -219,12 +216,12 @@ class EstablishementDisplay extends HTMLElement {
             this.phoneElement.disableModifications();
             this.pointElement.disableModifications();
             this.modificationButtonText.value = "UNLOCK MODIFICATIONS";
-            this.submitChangeButton.disabled = true;
-            this.deleteButton.disabled = true;
+            this.submitChangeButton.button.disabled = true;
+            this.deleteButton.button.disabled = true;
         }
     }
 
-    onSubmitPressed() {
+    onSubmitPressed(p_onCompleted : () => void) {
         let l_establishmentDelta: EstablishmentDelta | null;
         let l_establishmentAddressDelta: EstablishmentAddressDelta | null;
         if (this.nameElement.hasChanged.value || this.phoneElement.hasChanged.value) {
@@ -249,16 +246,22 @@ class EstablishementDisplay extends HTMLElement {
                 this.phoneElement.setCurrentAsInitialValue();
                 this.pointElement.setCurrentAsInitialValue();
                 this.isModificationEnabled.value = false;
+                p_onCompleted();
             }
-            , null);
+            , () => {
+                p_onCompleted();
+            });
     }
 
 
-    onDeletePressed() {
+    onDeletePressed(p_onCompleted : () => void) {
         EstablishmentService.DeleteEstablishment(this.establishmentServer.establishment.id, 
             () => {
                 this.dispatchEvent(new EstablishementDisplay_AskToReload_Event());
-            }, null);
+                p_onCompleted();
+            }, () => {
+                p_onCompleted();
+            });
     }
 }
 

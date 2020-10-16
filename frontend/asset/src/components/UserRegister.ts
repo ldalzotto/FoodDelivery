@@ -35,8 +35,7 @@ class UserRegister extends HTMLElement
         this.usernameInput = this.querySelector("#username") as HTMLInputElement;
         this.passwordInput = this.querySelector("#password") as HTMLInputElement;
         this.emailInput = this.querySelector("#email") as HTMLInputElement;
-        this.submitButton = this.querySelector("#submit") as LoadingButton;
-        this.submitButton.new((p_onComplented) => {this.sumitRegistration(p_onComplented);} );
+        this.submitButton = new LoadingButton(this.querySelector("#submit"), (p_onComplented) => {this.sumitRegistration(p_onComplented);} );
 
         this.submitMessage = this.querySelector("#submit-message") as HTMLDivElement;
 
