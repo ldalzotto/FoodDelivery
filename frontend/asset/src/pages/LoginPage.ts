@@ -1,5 +1,6 @@
 import {UserLogin, UserLogin_LoggedInEvent} from "../components/UserLogin.js"
 import {Navigation} from "../services/Navigation.js"
+import {PageHeader} from "../components/PageHeader.js"
 
 class LoginPage extends HTMLElement
 {
@@ -9,8 +10,9 @@ class LoginPage extends HTMLElement
 
     constructor()
     {
-        super();        
+        super();  
         this.appendChild((document.getElementById(LoginPage.Type) as HTMLTemplateElement).content.cloneNode(true));
+        new PageHeader(this.querySelector(PageHeader.Type));   
 
         this.userLogin = this.querySelector(UserLogin.Type);
         this.userLogin.addEventListener(UserLogin_LoggedInEvent.Type, () => {

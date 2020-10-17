@@ -1,3 +1,4 @@
+import { PageHeader } from "../components/PageHeader.js";
 import {Navigation} from "../services/Navigation.js"
 
 class RegisterPage extends HTMLElement
@@ -8,6 +9,7 @@ class RegisterPage extends HTMLElement
     {
         super();        
         this.appendChild((document.getElementById(RegisterPage.Type) as HTMLTemplateElement).content.cloneNode(true));
+        new PageHeader(this.querySelector(PageHeader.Type));
     }
 }
 

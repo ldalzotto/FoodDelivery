@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 @RequestMapping(value = "/")
 public class GeoController {
-    @CrossOrigin(origins = "http://localhost:8081")
+    @CrossOrigin(origins = {"http://localhost:8081", "http://192.168.1.11:8081"})
     @RequestMapping(value = "/city/match", method = RequestMethod.GET)
     public @ResponseBody
     ResponseEntity<?> GetAllCitiesMatching(
@@ -16,7 +16,7 @@ public class GeoController {
         return ResponseEntity.ok().body(GeoService.GetAllCitiesMatching(p_matchValue, p_limit));
     }
 
-    @CrossOrigin(origins = "http://localhost:8081")
+    @CrossOrigin(origins = {"http://localhost:8081", "http://192.168.1.11:8081"})
     @RequestMapping(value = "/city", method = RequestMethod.GET)
     public @ResponseBody
     ResponseEntity<?> GetCity(

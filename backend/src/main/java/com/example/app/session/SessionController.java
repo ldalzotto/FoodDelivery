@@ -14,7 +14,7 @@ import java.util.UUID;
 @RequestMapping(value = "/")
 public class SessionController {
 
-    @CrossOrigin(origins = "http://localhost:8081")
+    @CrossOrigin(origins = {"http://localhost:8081", "http://192.168.1.11:8081"})
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public @ResponseBody
     ResponseEntity<?> Login(@RequestBody LoginInput p_login) {
@@ -35,7 +35,7 @@ public class SessionController {
         return ResponseEntity.ok(l_session);
     }
 
-    @CrossOrigin(origins = "http://localhost:8081", allowCredentials = "true")
+    @CrossOrigin(origins = {"http://localhost:8081", "http://192.168.1.11:8081"}, allowCredentials = "true")
     @RequestMapping(value = "/logout", method = RequestMethod.POST)
     public @ResponseBody
     ResponseEntity<?> Logout(

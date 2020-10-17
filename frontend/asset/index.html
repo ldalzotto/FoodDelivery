@@ -1,7 +1,12 @@
 <!doctype html>
 <html>
   <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
     <title>This is the title of the webpage!</title>
+    
+    <link rel="stylesheet" href="css/normalize.min.css" />
+    <link rel="stylesheet" href="css/index.css"/>
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
     integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
@@ -41,16 +46,19 @@
 
   </head>
   <body>
+    
     <div id="app">
 
     </div>
     
     <template id="page-header">
-      <button id="login-button">LOGIN</button>
-      <button id="logout-button">LOGOUT</button>
-      <button id="register-button">REGISTER</button>
-      <button id="profile-button">PROFILE</button>
-      <hr/>
+        <div class="row nav-container">
+          <div class="column nav-item" id="login-button">LOGIN</div>
+          <div class="column nav-item" id="logout-button">LOGOUT</div>
+          <div class="column nav-item" id="register-button">REGISTER</div>
+          <div class="column nav-item" id="profile-button">PROFILE</div>
+        </div>
+        <hr style="margin: 0px; padding: 0px;"/>
     </template>
 
     <template id="root-page">
@@ -59,7 +67,7 @@
 
     <template id="login-page">
       <page-header></page-header>
-      <user-login></user-login>
+      <user-login class="container"></user-login>
     </template>
 
     <template id="register-page">
@@ -81,27 +89,32 @@
     </template>
 
     <template id="user-login">
-        <div id="not-logged-in-element">
-          <div>Login : </div>
-          <input id="login" type="text"/>
-          <br/><br/>
-          <div> Password : </div>
-          <input id="password" type="text"/>
-          <br/><br/>
-          <button id="log-button">GO</button>
+        <div class="row row-layout-mainsection" id="not-logged-in-element">
+          <h2>Login</h2>
+          <input id="login" type="text" placeholder="username"/>
+          <div class="error-message font-3" id="login-error-message">Username not found.</div>
+          <div class="blank-2"></div>
+          <input id="password" type="text" placeholder="password"/>
+          <div class="error-message font-3" id="password-error-message">Incorrect password.</div>
+          <div class="blank-2"></div>
+          <button id="log-button">LOGIN</button>
+          <div class="blank-3"></div>
         </div>
         <div id="logged-in-element" class="test-color">You are already logged in !</div>
     </template>
 
     <template id="user-register">
-      <div>Username : </div>
-      <input id="username" type="text" />
-      <div>Password : </div>
-      <input id="password" type="text" />
-      <div>Email : </div>
-      <input id="email" type="text" />
-      <br/><br/>
-      <div>
+      <div class="row row-layout-mainsection">
+        <h2>Register</h2>
+        <input id="username" type="text" placeholder="username"/>
+        <div class="error-message font-3" id="password-error-message">Username already exists.</div>
+        <div class="blank-2"></div>       
+        <input id="password" type="text" placeholder="password"/>
+        <div class="error-message font-3" id="password-error-message">Password is mandatory.</div>
+        <div class="blank-2"></div>
+        <input id="email" type="text" placeholder="email"/>
+        <div class="error-message font-3" id="password-error-message">Invalid format.</div>
+        <div class="blank-2"></div>
         <loading-button id="submit" button-text="SUBMIT"></loading-button>
         <div id="submit-message"></div>
       </div>

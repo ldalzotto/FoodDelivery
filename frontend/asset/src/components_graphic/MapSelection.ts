@@ -32,8 +32,8 @@ class MapSelection
 
         this._root = p_parent.appendChild(this._root);
 
-        this._root.style.width = "600px";
-        this._root.style.height = "600px";
+        this._root.style.width = "300px";
+        this._root.style.height = "300px";
 
         setTimeout(() => {
             this.map = L.map(this._root).setView([this._latLng._Lat, this._latLng._Lng], 13);

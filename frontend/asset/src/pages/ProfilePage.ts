@@ -1,3 +1,4 @@
+import { PageHeader } from "../components/PageHeader.js";
 import {ProfileContextContent, ProfileSelector, ProfileSelector_SelectionEvent, ProfileSelector_SelectedSection} from "../components/ProfileSelector.js"
 
 class ProfilePage extends HTMLElement
@@ -6,8 +7,9 @@ class ProfilePage extends HTMLElement
 
     constructor()
     {
-        super();        
+        super();      
         this.appendChild((document.getElementById("profile-page") as HTMLTemplateElement).content.cloneNode(true));
+        new PageHeader(this.querySelector(PageHeader.Type));  
 
         let l_selector : ProfileSelector = this.querySelector(ProfileSelector.Type) as ProfileSelector;
         l_selector.addEventListener(ProfileSelector_SelectionEvent.Type, (p_event : ProfileSelector_SelectionEvent) => { this.onProfileSelectedSectionChanged(p_event); })

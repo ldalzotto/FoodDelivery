@@ -3,12 +3,15 @@ import {BindingIndex, BindingUtils, Observable} from "../binding/Binding.js"
 import {Navigation} from "../services/Navigation.js"
 import {LoginService} from "../services/Login.js"
 
-class PageHeader extends HTMLElement
+class PageHeader
 {
-    private loginButton : HTMLButtonElement;
-    private logoutButton : HTMLButtonElement;
-    private registerButton : HTMLButtonElement;
-    private profileButton : HTMLButtonElement;
+    public static readonly Type : string = "page-header";
+    private _root : HTMLElement;
+
+    private loginButton : HTMLElement;
+    private logoutButton : HTMLElement;
+    private registerButton : HTMLElement;
+    private profileButton : HTMLElement;
 
     private GState_IsLoggedIn_handle : BindingIndex;
 
@@ -17,23 +20,23 @@ class PageHeader extends HTMLElement
     private registerButtonDisplayed : Observable<boolean>;
     private profileButtonDisplayed : Observable<boolean>;
 
-    constructor()
+    constructor(p_root : HTMLElement)
     {
-        super();
+        this._root = p_root;
 
-        let l_template : HTMLTemplateElement = document.getElementById("page-header") as HTMLTemplateElement;
-        this.appendChild(l_template.content.cloneNode(true));
+        let l_template : HTMLTemplateElement = document.getElementById(PageHeader.Type) as HTMLTemplateElement;
+        this._root.appendChild(l_template.content.cloneNode(true));
 
-        this.loginButton = this.querySelector("#login-button") as HTMLButtonElement;
+        this.loginButton = this._root.querySelector("#login-button");
         this.loginButton.addEventListener('click', () => {this.onLoginButtonClick();});
 
-        this.logoutButton = this.querySelector("#logout-button") as HTMLButtonElement;
+        this.logoutButton = this._root.querySelector("#logout-button");
         this.logoutButton.addEventListener('click', () => {this.onLogoutButtonClick();});
 
-        this.registerButton = this.querySelector("#register-button") as HTMLButtonElement;
+        this.registerButton = this._root.querySelector("#register-button");
         this.registerButton.addEventListener('click', () => { this.onRegisterButtonClick(); });
 
-        this.profileButton = this.querySelector("#profile-button") as HTMLButtonElement;
+        this.profileButton = this._root.querySelector("#profile-button");
         this.profileButton.addEventListener('click', () => {this.onProfileButtonClick();});
 
 
@@ -88,9 +91,5 @@ class PageHeader extends HTMLElement
     }
 }
 
-function pageHeader_init()
-{
-    customElements.define('page-header', PageHeader);
-}
 
-export {pageHeader_init}
+export {PageHeader}

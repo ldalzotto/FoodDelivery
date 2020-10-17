@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(value = "/")
 public class EstablishmentsController {
 
-    @CrossOrigin(origins = "http://localhost:8081", allowCredentials = "true")
+    @CrossOrigin(origins = {"http://localhost:8081", "http://192.168.1.11:8081"}, allowCredentials = "true")
     @RequestMapping(value = "/establishment", method = RequestMethod.POST)
     public @ResponseBody
     ResponseEntity<?> CreateEstablishment(
@@ -37,7 +37,7 @@ public class EstablishmentsController {
         return ResponseEntity.ok().body(EstablishmentService.InsertEstablishment(p_establishment));
     }
 
-    @CrossOrigin(origins = "http://localhost:8081", allowCredentials = "true")
+    @CrossOrigin(origins = {"http://localhost:8081", "http://192.168.1.11:8081"}, allowCredentials = "true")
     @RequestMapping(value = "/establishments", method = RequestMethod.GET)
     public @ResponseBody
     ResponseEntity<?> GetEstablishments(
@@ -54,7 +54,7 @@ public class EstablishmentsController {
         return ResponseEntity.ok().body(EstablishmentService.GetEstablishments(p_user_id));
     }
 
-    @CrossOrigin(origins = "http://localhost:8081", allowCredentials = "true")
+    @CrossOrigin(origins = {"http://localhost:8081", "http://192.168.1.11:8081"}, allowCredentials = "true")
     @RequestMapping(value = "/establishment/update", method = RequestMethod.POST)
     public @ResponseBody
     ResponseEntity<?> UpdateEstablishment(
@@ -74,7 +74,7 @@ public class EstablishmentsController {
         return ResponseEntity.ok().body(null);
     }
 
-    @CrossOrigin(origins = "http://localhost:8081", allowCredentials = "true")
+    @CrossOrigin(origins = {"http://localhost:8081", "http://192.168.1.11:8081"}, allowCredentials = "true")
     @RequestMapping(value = "/establishment/delete", method = RequestMethod.POST)
     public @ResponseBody
     ResponseEntity<?> DeleteEstablishment(

@@ -116,6 +116,11 @@ class LoginService
     }
 }
 
+class PostLogin_ErrorCodes
+{
+    public static readonly UserNotFound = "LOGIN_USER_NOT_FOUND";
+    public static readonly IncorrectPassword = "LOGIN_INCORRECT_PASSWORD";
+}
 
 
-export {ServerError, LoginInput, LoginService}
+export {ServerError, LoginInput, LoginService, PostLogin_ErrorCodes}

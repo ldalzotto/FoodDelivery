@@ -17,7 +17,7 @@ import java.util.Properties;
 @RequestMapping(value = "/")
 public class UserController {
 
-    @CrossOrigin(origins = "http://localhost:8081")
+    @CrossOrigin(origins = {"http://localhost:8081", "http://192.168.1.11:8081"})
     @RequestMapping(value = "/user", method = RequestMethod.GET)
     public @ResponseBody ResponseEntity<?> GetUser(
             @CookieValue("session_token") String p_sessionToken,
@@ -39,7 +39,7 @@ public class UserController {
         return ResponseEntity.ok(new UserInterface(l_user));
     }
 
-    @CrossOrigin(origins = "http://localhost:8081")
+    @CrossOrigin(origins = {"http://localhost:8081", "http://192.168.1.11:8081"})
     @RequestMapping(value = "/user/register", method = RequestMethod.POST)
     public @ResponseBody
     ResponseEntity<?> RegisterUser(@RequestBody User p_user) {
@@ -66,7 +66,7 @@ public class UserController {
         return ResponseEntity.ok(new UserInterface(l_insertedUser.User));
     }
 
-    @CrossOrigin(origins = "http://localhost:8081")
+    @CrossOrigin(origins = {"http://localhost:8081", "http://192.168.1.11:8081"})
     @RequestMapping(value = "/user/validate", method = RequestMethod.POST)
     public ResponseEntity<?> ValidateUser(
             @RequestParam("userId") long p_uerId,
