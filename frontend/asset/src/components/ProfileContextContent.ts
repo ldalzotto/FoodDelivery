@@ -216,7 +216,7 @@ class EstablishementDisplay extends HTMLElement {
             this.phoneElement.enableModifications();
             this.pointElement.enableModifications();
             this.cityElement.enableModifications();
-            this.modificationButtonText.value = "LOCK MODIFICATIONS";
+            this.modificationButtonText.value = "L";
             this.submitChangeButton.button.disabled = false;
             this.deleteButton.button.disabled = false;
         }
@@ -226,7 +226,7 @@ class EstablishementDisplay extends HTMLElement {
             this.phoneElement.disableModifications();
             this.pointElement.disableModifications();
             this.cityElement.disableModifications();
-            this.modificationButtonText.value = "UNLOCK MODIFICATIONS";
+            this.modificationButtonText.value = "U";
             this.submitChangeButton.button.disabled = true;
             this.deleteButton.button.disabled = true;
         }

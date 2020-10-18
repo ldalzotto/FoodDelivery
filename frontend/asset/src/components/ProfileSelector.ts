@@ -24,7 +24,7 @@ class ProfileSelector extends HTMLElement
 {
     static readonly Type : string = "profile-selector";
 
-    private establishmentButton : HTMLButtonElement;
+    private establishmentButton : HTMLElement;
 
     private selectedSection : ProfileSelector_SelectedSection = ProfileSelector_SelectedSection.NONE;
     private selectedSection_watcher : MWatcher<ProfileSelector_SelectedSection>;
@@ -35,7 +35,7 @@ class ProfileSelector extends HTMLElement
         let l_template : HTMLTemplateElement = document.getElementById(ProfileSelector.Type) as HTMLTemplateElement;
         this.appendChild(l_template.content.cloneNode(true));
         
-        this.establishmentButton = this.querySelector("#establishment-button") as HTMLButtonElement;
+        this.establishmentButton = this.querySelector("#establishment-button");
         this.establishmentButton.addEventListener("click", () => {this.onEstablishmentButtonClick();});
 
         this.selectedSection_watcher = new MWatcher(ProfileSelector_SelectedSection.NONE);

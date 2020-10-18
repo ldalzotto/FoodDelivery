@@ -12,32 +12,6 @@
     integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
     crossorigin=""/>
     
-    <style>
-      .profile-grid
-      {
-          display: grid;
-          grid-template-columns: 15% 85%;
-          grid-template-rows: 600px auto;
-      }
-
-      .profile-grid .left-column 
-      {
-          border-width: 1px;
-          border-right: double;
-      }
-
-      .profile-grid .context-content
-      {
-        margin: 5px;
-      }
-
-      .establishment-details
-      {
-        border-style: dotted;
-      }
-
-    </style>
-    
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
     integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
     crossorigin=""></script>
@@ -121,7 +95,10 @@
     </template>
 
     <template id="profile-selector">
-        <button id="establishment-button">ESTABLISHMENTS</button>
+      <div class="row nav-container">
+        <div class="column nav-item" id="establishment-button">ESTABLISHMENTS</div>
+      </div>
+      <hr style="margin: 0px; padding: 0px;"/>
     </template>
 
     <template id="profile-context-content">
@@ -129,44 +106,58 @@
     </template>
 
     <template id="profile-establishment-context">
-      <div>Profile Establishment</div>
-      <!--<div id="establishment-creation" button-text="CREATE"></div>-->
       <establishment-creation></establishment-creation>
       <br/>
-      <div id="establishments-list"></div>
+      <div id="establishments-list" class="row"></div>
     </template>
 
     <template id="establishment-creation">
-      <button id="add-establishment-button">REGISTER NEW ESTABLISHMENT</button>
-      <div id="add-establishment-form">
-        <div>Name : </div> <input id="name" type="text"/>
-        <div>Address street name : </div> <input id="street-name" type="text"/>
-        <city-selection id="city"></city-selection>
-        <map-selection id="latlng"></map-selection>
-        <div>Phone : </div> <input id="phone" type="text"/>
-        <br/><br/>
-        <loading-button id="establishment-creation" button-text="CREATE"></loading-button>
+      <div class="row row-layout-mainsection">
+        <button id="add-establishment-button">+</button>
       </div>
+        <div id="add-establishment-form">
+          <div>Name : </div> <input id="name" type="text"/>
+          <div>Address street name : </div> <input id="street-name" type="text"/>
+          <city-selection id="city"></city-selection>
+          <map-selection id="latlng"></map-selection>
+          <div>Phone : </div> <input id="phone" type="text"/>
+          <br/><br/>
+          <loading-button id="establishment-creation" button-text="CREATE"></loading-button>
+      </div>
+      
+     
     </template>
 
     <template id="establishment-display">
-      <div class="establishment-details">
-        <div style="display: flex;">
-          <div>Name : </div> <input-text-update id="name"/>
+      <div class="row row-layout-mainsection establishment-display-panel">
+        <div class="row">
+          <div class="column one">
+            <div class="row">
+              <button class="column one-twelfth" id="modification-unlock"></button>
+              <loading-button class="column one-twelfth" id="submit" button-text="S"></loading-button>
+              <loading-button class="column one-twelfth" id="delete" button-text="D"></loading-button>
+            </div>
+            <div class="blank-3"></div>
+            <div class="row">
+              <div class="column one-third">Name : </div> <input-text-update class="column two-third" id="name"/>
+            </div>
+            <div class="blank-3"></div>
+            <div class="row">
+              <div class="column one-third">Address : </div> <input-text-update class="column two-third" id="address"/>
+            </div>
+            <div class="blank-3"></div>
+            <div class="row">
+              <div class="column one-third">City : </div><city-selection class="column two-third" readonly="" id="city"></city-selection>
+            </div>
+            <div class="blank-3"></div>
+            <div class="row">
+              <div class="column one-third">Phone : </div> <input-text-update class="column two-third" id="phone"/>
+            </div>
+            <div class="blank-2"></div>
+            <map-selection class="map-test" id="point"></map-selection>
+           
+          </div>
         </div>
-        <div style="display: flex;">
-          <div>Address : </div> <input-text-update id="address"/>
-        </div>
-        <div style="display: flex;">
-          <div>City : </div><city-selection readonly="" id="city"></city-selection>
-        </div>
-        <map-selection id="point"></map-selection>
-        <div style="display: flex;">
-          <div>Phone : </div> <input-text-update id="phone"/>
-        </div>
-        <button id="modification-unlock"></button>
-        <loading-button id="submit" button-text="SUBMIT CHANGES"></loading-button>
-        <loading-button id="delete" button-text="DELETE"></loading-button>
       </div>
       <br/>
     </template>

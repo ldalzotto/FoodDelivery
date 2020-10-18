@@ -28,9 +28,10 @@ html {
     width: 80%;
 }
 
-.one, .one-third, .two-thirds, .one-fourth, .one-twelfth, .half
+
+.auto 
 {
-    width: 100%;
+    width: auto;
 }
 
 .column
@@ -39,37 +40,43 @@ html {
 }
 
 
+
+.one
+{
+    width: 100%;
+}
+.half
+{
+    width: calc(100% / 2);
+}
+.one-third
+{
+    width: calc(100% / 3);
+}
+.two-third
+{
+    width: calc(100% / 3 * 2);
+}
+.one-fourth
+{
+    width: calc(100% / 4);
+}
+.two-forth
+{
+    width: calc(100% / 4 * 2);
+}
+.one-twelfth
+{
+    width: calc(100% / 12);
+}
+.two-thirds
+{
+    width: calc(100% / 3 * 2);
+}
+
 @media screen and (min-width: 800px)
 {
-    .one
-    {
-        width: 100%;
-    }
-    .half
-    {
-        width: calc(100% / 2);
-    }
-    .one-third
-    {
-        width: calc(100% / 3);
-    }
-    .one-fourth
-    {
-        width: calc(100% / 4);
-    }
-    .one-twelfth
-    {
-        width: calc(100% / 12);
-    }
-    .two-thirds
-    {
-        width: calc(100% / 3 * 2);
-    }
 
-    .row-layout-mainsection
-    {
-        width: 300px;
-    }
 }
 
 /******************* SIZED ELEMENTS *******************/
@@ -155,4 +162,18 @@ button
 .error-message
 {
     color: red;
+}
+
+.establishment-display-panel
+{
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.map-test
+{
+    width: auto;
+    height: 300px;
+    margin-left: auto;
+    margin-right: auto;
 }
