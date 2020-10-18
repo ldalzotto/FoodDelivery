@@ -20,7 +20,6 @@ class ProfileEstablishmentContext extends HTMLElement {
     static Initialize() {
         customElements.define(ProfileEstablishmentContext.Type, ProfileEstablishmentContext);
         customElements.define(EstablishmentRegistration.Type, EstablishmentRegistration);
-        customElements.define(EstablishementDisplay.Type, EstablishementDisplay);
     }
 
     constructor() {
@@ -41,9 +40,11 @@ class ProfileEstablishmentContext extends HTMLElement {
         EstablishmentService.GetEstablishments(
             (p_establishments: EstablishmentWithAddress[]) => {
                 for (let i = 0; i < p_establishments.length; i++) {
-                    let l_establishmentDisplay: EstablishementDisplay = EstablishementDisplay.build(p_establishments[i]);
-                    this.establishmentListsElement.appendChild(l_establishmentDisplay);
-                    l_establishmentDisplay.addEventListener(EstablishementDisplay_AskToReload_Event.Type, () => {this.reloadEstablishments();});
+                    let l_establishmentDisplay_root = document.createElement("div");
+                    this.establishmentListsElement.appendChild(l_establishmentDisplay_root);
+
+                    let l_establishmentDisplay: EstablishementDisplay = EstablishementDisplay.build(l_establishmentDisplay_root, p_establishments[i]);
+                    l_establishmentDisplay.root.addEventListener(EstablishementDisplay_AskToReload_Event.Type, () => {this.reloadEstablishments();});
                 }
             }, null
         );
@@ -97,7 +98,7 @@ class EstablishmentRegistration extends HTMLElement {
         this.inputName = this.querySelector("#name") as HTMLInputElement;
         this.inputAddressStreetName = this.querySelector("#street-name") as HTMLInputElement;
         this.citySelection = new CitySelection(this.querySelector("#city"));
-        this.latLngMap = new MapSelection(this.querySelector("#latlng"), 0, 0);
+        this.latLngMap = new MapSelection(this.querySelector("#latlng"), 48.85, 2.35);
         this.inputPhone = this.querySelector("#phone") as HTMLInputElement;
 
         this.inputNameObservable = new Observable<string>("");
@@ -113,6 +114,10 @@ class EstablishmentRegistration extends HTMLElement {
 
     onAddEstablishmentButtonClick() {
         this.addEstablishmentFormDisplayed.value = !this.addEstablishmentFormDisplayed.value;
+        if(this.addEstablishmentFormDisplayed.value)
+        {
+            this.latLngMap.invalidateSize();
+        }
     }
 
     createEstablishment(p_onCompleted: () => void) {
@@ -142,8 +147,11 @@ class EstablishmentRegistration extends HTMLElement {
     }
 }
 
-class EstablishementDisplay extends HTMLElement {
+class EstablishementDisplay {
     static readonly Type: string = "establishment-display";
+
+    private _root : HTMLElement;
+    public get root(){return this._root;}
 
     private nameElement: InputTextUpdateElement;
     private addressElement: InputTextUpdateElement;
@@ -163,20 +171,25 @@ class EstablishementDisplay extends HTMLElement {
     private establishmentUpdateDelta: EstablishmentDelta;
     private establishmentAddressUpdateDelta: EstablishmentAddressDelta;
 
-    public static build(p_sourceEstablishment: EstablishmentWithAddress): EstablishementDisplay {
+    public static build(p_root : HTMLElement, p_sourceEstablishment: EstablishmentWithAddress): EstablishementDisplay {
         let l_establihsmentDisplay: EstablishementDisplay = new EstablishementDisplay();
+
+        l_establihsmentDisplay._root = p_root;
+        
+        let l_template: HTMLTemplateElement = document.getElementById(EstablishementDisplay.Type) as HTMLTemplateElement;
+        l_establihsmentDisplay._root.appendChild(l_template.content.cloneNode(true));
 
         l_establihsmentDisplay.establishmentServer = p_sourceEstablishment;
         l_establihsmentDisplay.isModificationEnabled = new Observable<boolean>(false);
         l_establihsmentDisplay.modificationButtonText = new Observable<string>("");
 
-        l_establihsmentDisplay.nameElement = new InputTextUpdateElement(l_establihsmentDisplay.querySelector("#name"));
+        l_establihsmentDisplay.nameElement = new InputTextUpdateElement(l_establihsmentDisplay._root.querySelector("#name"));
         l_establihsmentDisplay.nameElement.init(p_sourceEstablishment.establishment.name);
 
-        l_establihsmentDisplay.addressElement = new InputTextUpdateElement(l_establihsmentDisplay.querySelector("#address"));
+        l_establihsmentDisplay.addressElement = new InputTextUpdateElement(l_establihsmentDisplay._root.querySelector("#address"));
         l_establihsmentDisplay.addressElement.init(p_sourceEstablishment.establishment_address.street_full_name);
 
-        l_establihsmentDisplay.cityElement = new CitySelectionUpdate(l_establihsmentDisplay.querySelector("#city"));
+        l_establihsmentDisplay.cityElement = new CitySelectionUpdate(l_establihsmentDisplay._root.querySelector("#city"));
         GeoService.GetCity(p_sourceEstablishment.establishment_address.city_id, (p_city:City|null, p_err) => {
             if(p_city)
             {
@@ -184,15 +197,15 @@ class EstablishementDisplay extends HTMLElement {
             }
         })
 
-        l_establihsmentDisplay.pointElement = new MapSelectionUpdate(l_establihsmentDisplay.querySelector("#point"), p_sourceEstablishment.establishment_address.lat, p_sourceEstablishment.establishment_address.lng);
+        l_establihsmentDisplay.pointElement = new MapSelectionUpdate(l_establihsmentDisplay._root.querySelector("#point"), p_sourceEstablishment.establishment_address.lat, p_sourceEstablishment.establishment_address.lng);
 
-        l_establihsmentDisplay.phoneElement = new InputTextUpdateElement(l_establihsmentDisplay.querySelector("#phone"));
+        l_establihsmentDisplay.phoneElement = new InputTextUpdateElement(l_establihsmentDisplay._root.querySelector("#phone"));
         l_establihsmentDisplay.phoneElement.init(p_sourceEstablishment.establishment.phone);
 
-        l_establihsmentDisplay.modificationUnlockButton = l_establihsmentDisplay.querySelector("#modification-unlock");
-        l_establihsmentDisplay.submitChangeButton = new LoadingButton(l_establihsmentDisplay.querySelector("#submit"), (p_onCompleted) => {l_establihsmentDisplay.onSubmitPressed(p_onCompleted)} );
+        l_establihsmentDisplay.modificationUnlockButton = l_establihsmentDisplay._root.querySelector("#modification-unlock");
+        l_establihsmentDisplay.submitChangeButton = new LoadingButton(l_establihsmentDisplay._root.querySelector("#submit"), (p_onCompleted) => {l_establihsmentDisplay.onSubmitPressed(p_onCompleted)} );
 
-        l_establihsmentDisplay.deleteButton = new LoadingButton(l_establihsmentDisplay.querySelector("#delete"), (p_onCompleted) => {l_establihsmentDisplay.onDeletePressed(p_onCompleted)});
+        l_establihsmentDisplay.deleteButton = new LoadingButton(l_establihsmentDisplay._root.querySelector("#delete"), (p_onCompleted) => {l_establihsmentDisplay.onDeletePressed(p_onCompleted)});
 
         l_establihsmentDisplay.modificationButtonText.subscribe((arg0) => { l_establihsmentDisplay.modificationUnlockButton.textContent = arg0 });
 
@@ -200,13 +213,6 @@ class EstablishementDisplay extends HTMLElement {
         l_establihsmentDisplay.modificationUnlockButton.addEventListener("click", () => { l_establihsmentDisplay.isModificationEnabled.value = !l_establihsmentDisplay.isModificationEnabled.value });
 
         return l_establihsmentDisplay;
-    }
-
-    constructor() {
-        super()
-
-        let l_template: HTMLTemplateElement = document.getElementById(EstablishementDisplay.Type) as HTMLTemplateElement;
-        this.appendChild(l_template.content.cloneNode(true));
     }
 
     onIsModificationEnabledChanged(p_isModificationEnabled: boolean) {
@@ -276,7 +282,7 @@ class EstablishementDisplay extends HTMLElement {
     onDeletePressed(p_onCompleted : () => void) {
         EstablishmentService.DeleteEstablishment(this.establishmentServer.establishment.id, 
             () => {
-                this.dispatchEvent(new EstablishementDisplay_AskToReload_Event());
+                this._root.dispatchEvent(new EstablishementDisplay_AskToReload_Event());
                 p_onCompleted();
             }, () => {
                 p_onCompleted();

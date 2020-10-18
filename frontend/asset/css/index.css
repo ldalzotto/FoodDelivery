@@ -14,7 +14,7 @@ html {
     max-width: 1200px;
 }
 
-.row::before, .row::after
+.row::before, .row::after, .row-begin, .row-end
 {
     display: table;
     content: ' ';

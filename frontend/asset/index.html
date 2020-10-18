@@ -106,30 +106,47 @@
     </template>
 
     <template id="profile-establishment-context">
-      <establishment-creation></establishment-creation>
-      <br/>
-      <div id="establishments-list" class="row"></div>
+      <div class="row row-layout-mainsection">
+        <establishment-creation></establishment-creation>
+        <br/>
+        <div id="establishments-list" class="row"></div>
+      </div>
     </template>
 
     <template id="establishment-creation">
-      <div class="row row-layout-mainsection">
+      <div class="row">
         <button id="add-establishment-button">+</button>
-      </div>
+        
         <div id="add-establishment-form">
-          <div>Name : </div> <input id="name" type="text"/>
-          <div>Address street name : </div> <input id="street-name" type="text"/>
-          <city-selection id="city"></city-selection>
-          <map-selection id="latlng"></map-selection>
-          <div>Phone : </div> <input id="phone" type="text"/>
+          <div class="row">
+            <div class="column one-third">Name : </div> <input class="two-third" id="name" type="text"/>
+          </div>
+          <div class="blank-3"></div>
+          <div class="row">
+            <div class="column one-third">Address : </div> <input class="two-third" id="street-name" type="text"/>
+          </div>
+          <div class="blank-3"></div>
+          <div class="row">
+            <div class="column one-third">City : </div> <city-selection class="column two-third" readonly="" id="city"></city-selection>
+          </div>
+          <div class="blank-3"></div>
+          <div class="row">
+            <div class="column one-third">Phone : </div> <input class="column two-third" id="phone" type="text"/>
+          </div>
+          <div class="blank-2"></div>
+          <map-selection class="map-test" id="latlng"></map-selection>
+          
+          
           <br/><br/>
           <loading-button id="establishment-creation" button-text="CREATE"></loading-button>
+        </div>
       </div>
+        
       
      
     </template>
 
     <template id="establishment-display">
-      <div class="row row-layout-mainsection establishment-display-panel">
         <div class="row">
           <div class="column one">
             <div class="row">
@@ -158,7 +175,6 @@
            
           </div>
         </div>
-      </div>
       <br/>
     </template>
 

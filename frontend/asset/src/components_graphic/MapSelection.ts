@@ -1,8 +1,9 @@
 import { Observable } from "../binding/Binding.js";
+import {WindowElement, WindowElement_ResizeEvent} from "../Window.js"
 
 declare namespace L
 {
-    function map(params:HTMLElement):any;
+    function map(params:HTMLElement, options : any):any;
     function tileLayer(p_url:string, p_cond : any):any;
     function marker(p_latlong:any):any;
 }
@@ -22,6 +23,7 @@ class MapSelection
     public onLatLngChanged : Observable<null> = new Observable<null>(null);
 
     private displayedMarker : any;
+    private isFocused : boolean;
 
     constructor(p_parent : HTMLElement, p_initialLat : number, p_initialLng : number)
     {
@@ -38,7 +40,8 @@ class MapSelection
         this._root.style.padding = "inherit";
 
         setTimeout(() => {
-            this.map = L.map(this._root).setView([this._latLng._Lat, this._latLng._Lng], 13);
+            this.isFocused = false;
+            this.map = L.map(this._root, {scrollWheelZoom: false}).setView([this._latLng._Lat, this._latLng._Lng], 13);
             L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoicGxvbWJhIiwiYSI6ImNrZzgwcnZ2OTA2NXcyd215bDhveXc2dmYifQ.40bIOrEnYw6UTl9TKkZJOw',
             {
                 attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
@@ -51,7 +54,11 @@ class MapSelection
             this.map.on('click', (event:any) => {this.onMapClick(event);} );
             this.setSelectionMarker(this._latLng._Lat, this._latLng._Lng, true);
 
+            this.map.on('focus', () => {this.onMapFocus();});
+            this.map.on('blur', () => {this.onMapBlur();});
             this.onLatLngChanged.subscribe((p_null) => {this.onLatLngChangedFn();})
+
+            WindowElement.addEventListener(WindowElement_ResizeEvent, () => {this.onWindowResize();});
         }, 0);
 
     }
@@ -70,9 +77,34 @@ class MapSelection
             }
     }
 
+    public invalidateSize() 
+    {
+        this.map.invalidateSize(false);
+    }
+
     onMapClick(event:any)
     {
-        this.setLatLng(event.latlng.lat, event.latlng.lng);
+        if(this.isFocused)
+        {
+            this.setLatLng(event.latlng.lat, event.latlng.lng);
+        }
+    }
+
+    onMapFocus()
+    {
+        this.isFocused = true;
+        this.map.scrollWheelZoom.enable();
+    }
+
+    onMapBlur()
+    {
+        this.isFocused = false;
+        this.map.scrollWheelZoom.disable();
+    }
+
+    onWindowResize()
+    {
+        this.invalidateSize();
     }
 
     setLatLng(p_lat : number, p_long : number)
