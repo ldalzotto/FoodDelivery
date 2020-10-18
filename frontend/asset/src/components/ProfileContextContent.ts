@@ -1,7 +1,7 @@
 import { LoadingButton } from "../components_graphic/LoadingButton.js"
 import { ServerError } from "../server/Server.js";
 import {
-    EstablishmentService, Establishment, EstablishmentAddress, EstablishmentWithAddress,
+    EstablishmentService, Establishment, EstablishmentAddress, EstablishmentWithAddress, EstablishmentWithDependenciesV2,
     EstablishmentDelta, EstablishmentAddressDelta
 } from "../services/Establishment.js"
 import { BindingUtils, Observable } from "../binding/Binding.js"
@@ -38,12 +38,13 @@ class ProfileEstablishmentContext extends HTMLElement {
     public reloadEstablishments() {
         this.establishmentListsElement.innerHTML = "";
         EstablishmentService.GetEstablishments(
-            (p_establishments: EstablishmentWithAddress[]) => {
-                for (let i = 0; i < p_establishments.length; i++) {
+            (p_establishments: EstablishmentWithDependenciesV2) => {
+                for (let i = 0; i < p_establishments.establishments.length; i++) {
                     let l_establishmentDisplay_root = document.createElement("div");
                     this.establishmentListsElement.appendChild(l_establishmentDisplay_root);
 
-                    let l_establishmentDisplay: EstablishementDisplay = EstablishementDisplay.build(l_establishmentDisplay_root, p_establishments[i]);
+                    let l_establishmentDisplay: EstablishementDisplay = EstablishementDisplay.build(l_establishmentDisplay_root, p_establishments.establishments[i], p_establishments.establishment_addresses[i],
+                         p_establishments.cities[p_establishments.establishment_address_TO_city[i]]);
                     l_establishmentDisplay.root.addEventListener(EstablishementDisplay_AskToReload_Event.Type, () => {this.reloadEstablishments();});
                 }
             }, null
@@ -166,12 +167,12 @@ class EstablishementDisplay {
     private isModificationEnabled: Observable<boolean>;
     private modificationButtonText: Observable<string>;
 
-    private establishmentServer: EstablishmentWithAddress;
+    private establishmentServer: Establishment;
 
     private establishmentUpdateDelta: EstablishmentDelta;
     private establishmentAddressUpdateDelta: EstablishmentAddressDelta;
 
-    public static build(p_root : HTMLElement, p_sourceEstablishment: EstablishmentWithAddress): EstablishementDisplay {
+    public static build(p_root : HTMLElement, p_sourceEstablishment : Establishment, p_sourceEstablishmentAddress : EstablishmentAddress, p_city : City): EstablishementDisplay {
         let l_establihsmentDisplay: EstablishementDisplay = new EstablishementDisplay();
 
         l_establihsmentDisplay._root = p_root;
@@ -184,23 +185,18 @@ class EstablishementDisplay {
         l_establihsmentDisplay.modificationButtonText = new Observable<string>("");
 
         l_establihsmentDisplay.nameElement = new InputTextUpdateElement(l_establihsmentDisplay._root.querySelector("#name"));
-        l_establihsmentDisplay.nameElement.init(p_sourceEstablishment.establishment.name);
+        l_establihsmentDisplay.nameElement.init(p_sourceEstablishment.name);
 
         l_establihsmentDisplay.addressElement = new InputTextUpdateElement(l_establihsmentDisplay._root.querySelector("#address"));
-        l_establihsmentDisplay.addressElement.init(p_sourceEstablishment.establishment_address.street_full_name);
+        l_establihsmentDisplay.addressElement.init(p_sourceEstablishmentAddress.street_full_name);
 
         l_establihsmentDisplay.cityElement = new CitySelectionUpdate(l_establihsmentDisplay._root.querySelector("#city"));
-        GeoService.GetCity(p_sourceEstablishment.establishment_address.city_id, (p_city:City|null, p_err) => {
-            if(p_city)
-            {
-                l_establihsmentDisplay.cityElement.setInitialValue(p_city);
-            }
-        })
+        l_establihsmentDisplay.cityElement.setInitialValue(p_city);
 
-        l_establihsmentDisplay.pointElement = new MapSelectionUpdate(l_establihsmentDisplay._root.querySelector("#point"), p_sourceEstablishment.establishment_address.lat, p_sourceEstablishment.establishment_address.lng);
+        l_establihsmentDisplay.pointElement = new MapSelectionUpdate(l_establihsmentDisplay._root.querySelector("#point"), p_sourceEstablishmentAddress.lat, p_sourceEstablishmentAddress.lng);
 
         l_establihsmentDisplay.phoneElement = new InputTextUpdateElement(l_establihsmentDisplay._root.querySelector("#phone"));
-        l_establihsmentDisplay.phoneElement.init(p_sourceEstablishment.establishment.phone);
+        l_establihsmentDisplay.phoneElement.init(p_sourceEstablishment.phone);
 
         l_establihsmentDisplay.modificationUnlockButton = l_establihsmentDisplay._root.querySelector("#modification-unlock");
         l_establihsmentDisplay.submitChangeButton = new LoadingButton(l_establihsmentDisplay._root.querySelector("#submit"), (p_onCompleted) => {l_establihsmentDisplay.onSubmitPressed(p_onCompleted)} );
@@ -263,7 +259,7 @@ class EstablishementDisplay {
             }
         }
 
-        EstablishmentService.UpdateEstablishment_Widht_Address(this.establishmentServer.establishment.id, l_establishmentDelta, l_establishmentAddressDelta,
+        EstablishmentService.UpdateEstablishment_Widht_Address(this.establishmentServer.id, l_establishmentDelta, l_establishmentAddressDelta,
             () => {
                 this.nameElement.setCurrentAsInitialValue();
                 this.addressElement.setCurrentAsInitialValue();
@@ -280,7 +276,7 @@ class EstablishementDisplay {
 
 
     onDeletePressed(p_onCompleted : () => void) {
-        EstablishmentService.DeleteEstablishment(this.establishmentServer.establishment.id, 
+        EstablishmentService.DeleteEstablishment(this.establishmentServer.id, 
             () => {
                 this._root.dispatchEvent(new EstablishementDisplay_AskToReload_Event());
                 p_onCompleted();

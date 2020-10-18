@@ -9,6 +9,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import java.sql.PreparedStatement;
+import java.util.ArrayList;
 import java.util.List;
 
 public class EstablishmentQuery {
@@ -172,32 +173,38 @@ public class EstablishmentQuery {
         }
     }
 
-    public static List<EstablishmentWithAddress> GetAllEstablishments_with_EstablishmentAddress(long p_user_id)
+    public static EstablishmentWithDependenciesV2 GetAllEstablishments_with_EstablishmentAddress(long p_user_id)
     {
-        return
+        EstablishmentWithDependenciesV2 l_return = new EstablishmentWithDependenciesV2();
+        l_return.establishments = new ArrayList<>();
+        l_return.establishment_addresses = new ArrayList<>();
+
             ConfigurationBeans.jdbcTemplate.query(con -> {
                 PreparedStatement l_ps = con.prepareStatement("select * from establishments, establishment_address where establishments.user_id == ? and establishments.address_id == establishment_address.id;");
                 l_ps.setLong(1, p_user_id);
                 return l_ps;
-            }, (rs, rowNum) -> {
-                EstablishmentWithAddress l_establishmentWithAddress = new EstablishmentWithAddress();
+            }, (rs) -> {
+                Establishment l_establishment = new Establishment();
 
-                l_establishmentWithAddress.establishment = new Establishment();
-                l_establishmentWithAddress.establishment.id = rs.getLong(1);
-                l_establishmentWithAddress.establishment.name = rs.getString(2);
-                l_establishmentWithAddress.establishment.address_id = rs.getLong(3);
-                l_establishmentWithAddress.establishment.phone = rs.getString(4);
-                l_establishmentWithAddress.establishment.user_id = rs.getLong(5);
+                l_establishment.id = rs.getLong(1);
+                l_establishment.name = rs.getString(2);
+                l_establishment.address_id = rs.getLong(3);
+                l_establishment.phone = rs.getString(4);
+                l_establishment.user_id = rs.getLong(5);
 
-                l_establishmentWithAddress.establishment_address = new EstablishmentAddress();
-                l_establishmentWithAddress.establishment_address.id = rs.getLong(6);
-                l_establishmentWithAddress.establishment_address.street_full_name = rs.getString(7);
-                l_establishmentWithAddress.establishment_address.city_id = rs.getLong(8);
-                l_establishmentWithAddress.establishment_address.lat = rs.getFloat(9);
-                l_establishmentWithAddress.establishment_address.lng = rs.getFloat(10);
+                EstablishmentAddress l_establishmentAddress = new EstablishmentAddress();
 
-                return l_establishmentWithAddress;
+                l_establishmentAddress.id = rs.getLong(6);
+                l_establishmentAddress.street_full_name = rs.getString(7);
+                l_establishmentAddress.city_id = rs.getLong(8);
+                l_establishmentAddress.lat = rs.getFloat(9);
+                l_establishmentAddress.lng = rs.getFloat(10);
+
+                l_return.establishments.add(l_establishment);
+                l_return.establishment_addresses.add(l_establishmentAddress);
             });
+
+        return l_return;
     }
 
     public static void DeleteEstablishment_with_Address(long p_establishment)
@@ -217,4 +224,28 @@ public class EstablishmentQuery {
             });
         }
     }
+
+    /*
+    public static EstablishmentWithDependencies GetAllEstablishment_with_EstablishmentAddress_and_Cities(long p_establishment_id)
+    {
+        List<EstablishmentWithDependencies> l_establishments_with_address = GetAllEstablishments_with_EstablishmentAddress(p_establishment_id);
+        Set<Long> l_distinct_citites = new HashSet<Long>();
+        for(int i=0;i<l_establishments_with_address.size();i++)
+        {
+            l_distinct_citites.add(l_establishments_with_address.get(i).establishment_address.city_id);
+        }
+
+        if(l_establishments_with_address.size() > 0)
+        {
+            SqlParameterSource parameters = new MapSqlParameterSource("city_id", l_distinct_citites);
+            ConfigurationBeans.jdbcTemplate.query(con -> {
+               PreparedStatement l_ps = con.prepareStatement("select * from city where city.id in (:city_id)");
+               l_ps
+            }, (rs, rowNum) -> {
+                City l_city = new City();
+            });
+        }
+    }
+    */
+
 }

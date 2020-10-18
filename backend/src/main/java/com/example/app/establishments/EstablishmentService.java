@@ -1,9 +1,11 @@
 package com.example.app.establishments;
 
 import com.example.app.establishments.domain.*;
+import com.example.app.geo.GeoQuery;
 import org.springframework.dao.DataAccessException;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class EstablishmentService {
 
@@ -61,9 +63,37 @@ public class EstablishmentService {
 
     }
 
-    public static List<EstablishmentWithAddress> GetEstablishments(long p_userId)
+    public static EstablishmentWithDependenciesV2 GetEstablishments(long p_userId)
     {
-        return EstablishmentQuery.GetAllEstablishments_with_EstablishmentAddress(p_userId);
+        EstablishmentWithDependenciesV2 l_establishmentWithDependencies = EstablishmentQuery.GetAllEstablishments_with_EstablishmentAddress(p_userId);
+
+        Set<Long> l_distinct_citites = new HashSet<Long>();
+        for(int i=0;i<l_establishmentWithDependencies.establishment_addresses.size();i++)
+        {
+            l_distinct_citites.add(l_establishmentWithDependencies.establishment_addresses.get(i).city_id);
+        }
+
+        if(l_distinct_citites.size() > 0) {
+            l_establishmentWithDependencies.cities = GeoQuery.GetCities_by_id(l_distinct_citites);
+            if(l_establishmentWithDependencies.cities.size() > 0)
+            {
+                l_establishmentWithDependencies.establishment_address_TO_city = new long[l_establishmentWithDependencies.establishment_addresses.size()];
+                for(int i=0;i<l_establishmentWithDependencies.establishment_addresses.size();i++)
+                {
+                    for(int j=0;j<l_establishmentWithDependencies.cities.size();j++)
+                    {
+                        if(l_establishmentWithDependencies.establishment_addresses.get(i).city_id == l_establishmentWithDependencies.cities.get(j).id)
+                        {
+                            l_establishmentWithDependencies.establishment_address_TO_city[i] = j;
+                            break;
+                        }
+                        l_establishmentWithDependencies.establishment_address_TO_city[i] = -1;
+                    }
+                }
+            }
+        }
+
+        return l_establishmentWithDependencies;
     }
 
     public static void DeleteEstablishment(long p_establishmentId)

@@ -1,4 +1,5 @@
 import {Server, ServerError} from "../server/Server.js"
+import { City } from "./Geo.js";
 
 class EstablishmentService
 {
@@ -11,7 +12,7 @@ class EstablishmentService
         );
     }
 
-    public static GetEstablishments(p_okCallback : (p_establishments : EstablishmentWithAddress[]) => void, p_errorCallback : (p_serverError : ServerError)=>(void))
+    public static GetEstablishments(p_okCallback : (p_establishments : EstablishmentWithDependenciesV2) => void, p_errorCallback : (p_serverError : ServerError)=>(void))
     {
         Server.SendRequest("GET", "http://localhost:8080/establishments", null, true,
            p_okCallback, p_errorCallback
@@ -78,6 +79,14 @@ class EstablishmentWithAddress
     }
 }
 
+class EstablishmentWithDependenciesV2
+{
+    public establishments : Establishment[];
+    public establishment_addresses : EstablishmentAddress[];
+    public cities : City[];
+    public establishment_address_TO_city : number[];
+}
+
 class EstablishmentDelta
 {
     public name : string | null;
@@ -98,4 +107,4 @@ class EstablishmentWithAddressDelta
     public establishment_address : EstablishmentAddressDelta | null;
 }
 
-export {EstablishmentService, Establishment, EstablishmentAddress, EstablishmentWithAddress, EstablishmentDelta, EstablishmentAddressDelta}
+export {EstablishmentService, Establishment, EstablishmentAddress, EstablishmentWithDependenciesV2, EstablishmentWithAddress, EstablishmentDelta, EstablishmentAddressDelta}
