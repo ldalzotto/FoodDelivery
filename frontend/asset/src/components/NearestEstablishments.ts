@@ -26,7 +26,7 @@ class NearestEstablishments
                 {
                     let l_container = document.createElement("div");
                     this._root.appendChild(l_container);
-                    let l_thumb = new EstablishmentOrderingTumb(l_container, this.establishmentTumbs.length);
+                    let l_thumb = new EstablishmentOrderingTumb(l_container, this.establishmentTumbs.length, p_establishments.establishments[i], p_establishments.delivery_charges[i]);
                     this.establishmentTumbs.push(l_thumb);
                 }
             },
@@ -41,13 +41,20 @@ class EstablishmentOrderingTumb
     private _root : HTMLElement;
     private arrayKey : number;
 
-    constructor(p_root : HTMLElement, p_key : number)
+    constructor(p_root : HTMLElement, p_key : number, p_establishment : Establishment, p_deliveryCharge : number)
     {
         this._root = p_root;
         this.arrayKey = p_key;
         let l_template : HTMLTemplateElement = document.getElementById(EstablishmentOrderingTumb.Type) as HTMLTemplateElement;
         this._root.appendChild(l_template.content.cloneNode(true));
+        
+        let l_nameElement = this._root.querySelector("#name");
+        l_nameElement.textContent = p_establishment.name;
+
+        let l_deliveryChageElement = this._root.querySelector("#delivery-charge");
+        l_deliveryChageElement.textContent = `Delivery charge : ${p_deliveryCharge} €€`;
     }
 }
+
 
 export {NearestEstablishments}

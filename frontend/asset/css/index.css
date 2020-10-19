@@ -177,3 +177,19 @@ button
     margin-left: auto;
     margin-right: auto;
 }
+
+#establishments-thumb
+{
+    width: 100%;
+}
+
+#establishments-thumb > .establishments-thumb-container
+{
+    padding: 5px;
+}
+
+#establishments-thumb >* .head-image
+{
+    height: 100px;
+    background-color: gray;
+}
