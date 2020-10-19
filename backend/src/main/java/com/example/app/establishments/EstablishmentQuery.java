@@ -79,6 +79,30 @@ public class EstablishmentQuery {
         return null;
     }
 
+    public static List<Establishment> GetEstablishments_InsideBoundingSphere(double p_minlat, double p_maxlat, double p_minlng, double p_maxlng)
+    {
+        return
+            ConfigurationBeans.jdbcTemplate.query(con -> {
+                PreparedStatement l_ps = con.prepareStatement("select establishments.* from establishments, establishment_address " +
+                        "where establishment_address.lat between ? and ? " +
+                        "and establishment_address.lng between ? and ? " +
+                        "and establishments.address_id == establishment_address.id ");
+                l_ps.setDouble(1, p_minlat);
+                l_ps.setDouble(2, p_maxlat);
+                l_ps.setDouble(3, p_minlng);
+                l_ps.setDouble(4, p_maxlng);
+                return l_ps;
+            }, (rs, rowNum) -> {
+                Establishment l_establishment = new Establishment();
+                l_establishment.id = rs.getLong(1);
+                l_establishment.name = rs.getString(2);
+                l_establishment.address_id = rs.getLong(3);
+                l_establishment.phone = rs.getString(4);
+                l_establishment.user_id = rs.getLong(5);
+                return l_establishment;
+            });
+    }
+
     public static EstablishmentWithAddress GetEstablishment_with_EstablishmentAddress(long p_establishment_id)
     {
         List<EstablishmentWithAddress> l_foundEstablishments =
@@ -225,27 +249,5 @@ public class EstablishmentQuery {
         }
     }
 
-    /*
-    public static EstablishmentWithDependencies GetAllEstablishment_with_EstablishmentAddress_and_Cities(long p_establishment_id)
-    {
-        List<EstablishmentWithDependencies> l_establishments_with_address = GetAllEstablishments_with_EstablishmentAddress(p_establishment_id);
-        Set<Long> l_distinct_citites = new HashSet<Long>();
-        for(int i=0;i<l_establishments_with_address.size();i++)
-        {
-            l_distinct_citites.add(l_establishments_with_address.get(i).establishment_address.city_id);
-        }
-
-        if(l_establishments_with_address.size() > 0)
-        {
-            SqlParameterSource parameters = new MapSqlParameterSource("city_id", l_distinct_citites);
-            ConfigurationBeans.jdbcTemplate.query(con -> {
-               PreparedStatement l_ps = con.prepareStatement("select * from city where city.id in (:city_id)");
-               l_ps
-            }, (rs, rowNum) -> {
-                City l_city = new City();
-            });
-        }
-    }
-    */
 
 }

@@ -54,6 +54,18 @@ public class EstablishmentsController {
         return ResponseEntity.ok().body(EstablishmentService.GetEstablishments(p_user_id));
     }
 
+    @CrossOrigin(origins = {"http://localhost:8081", "http://192.168.1.11:8081"})
+    @RequestMapping(value = "/establishments/near", method = RequestMethod.GET)
+    public @ResponseBody
+    ResponseEntity<?> GetEstablishmentsNear(
+            @RequestParam("lat") float p_lat,
+            @RequestParam("lng") float p_lng) {
+
+        FunctionalError l_Functional_error = new FunctionalError();
+
+       return ResponseEntity.ok().body(EstablishmentService.GetEstablishmentsNear(p_lat, p_lng));
+    }
+
     @CrossOrigin(origins = {"http://localhost:8081", "http://192.168.1.11:8081"}, allowCredentials = "true")
     @RequestMapping(value = "/establishment/update", method = RequestMethod.POST)
     public @ResponseBody

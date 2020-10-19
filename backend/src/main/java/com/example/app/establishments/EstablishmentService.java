@@ -5,9 +5,12 @@ import com.example.app.geo.GeoQuery;
 import org.springframework.dao.DataAccessException;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class EstablishmentService {
+
+    private static final double EarthRadius = 6371e3;
 
     public static EstablishmentWithAddress InsertEstablishment(EstablishmentWithAddress p_establishment)
     {
@@ -94,6 +97,18 @@ public class EstablishmentService {
         }
 
         return l_establishmentWithDependencies;
+    }
+
+    public static List<Establishment> GetEstablishmentsNear(float p_lat, float p_lng)
+    {
+        float l_radius = 5000; //(meters)
+
+        double l_minLat = p_lat - l_radius/EarthRadius*180/Math.PI;
+        double l_maxLat = p_lat + l_radius/EarthRadius*180/Math.PI;
+        double l_minLng = p_lng - l_radius/EarthRadius*180/Math.PI/Math.cos(p_lat*Math.PI/180);
+        double l_maxLng = p_lng + l_radius/EarthRadius*180/Math.PI/Math.cos(p_lat*Math.PI/180);
+
+        return EstablishmentQuery.GetEstablishments_InsideBoundingSphere(l_minLat, l_maxLat, l_minLng, l_maxLng);
     }
 
     public static void DeleteEstablishment(long p_establishmentId)
