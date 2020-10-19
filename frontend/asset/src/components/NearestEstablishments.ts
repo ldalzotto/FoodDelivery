@@ -45,7 +45,7 @@ class EstablishmentOrderingTumb
     {
         this._root = p_root;
         this.arrayKey = p_key;
-        let l_template : HTMLTemplateElement = document.getElementById(EstablishmentOrderingTumb.Type) as HTMLTemplateElement;
+        let l_template : HTMLTemplateElement = document.querySelector(`template#${EstablishmentOrderingTumb.Type}`) as HTMLTemplateElement;
         this._root.appendChild(l_template.content.cloneNode(true));
         
         let l_nameElement = this._root.querySelector("#name");
