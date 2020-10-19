@@ -1,5 +1,7 @@
 import {MWatcher} from './binding/Binding.js'
 import {Cached} from "./binding/CachedValude.js"
+import { ServerError } from './server/Server.js';
+import { LatLng } from './services/Geo.js';
 import {UserService} from "./services/User.js"
 
 class UserState
@@ -7,6 +9,7 @@ class UserState
     private _isLoggedIn : boolean;
     public isLoggedIn_watcher : MWatcher<boolean>;
     private _user : UserCached;
+    public localUserAddress : LatLng | null;
 
     constructor()
     {
@@ -29,6 +32,7 @@ class User
 {
     public id : number;
     public isValidated : boolean;
+    public coords : LatLng | null;
 }
 
 class UserCached
@@ -36,21 +40,23 @@ class UserCached
     private _value : User;
     private _isValid : boolean;
 
-    getValue(p_callback : (p_user : User) => void)
+    getValue(p_callback : (p_user : User, p_err : ServerError | null) => void)
     {
         if(!this._isValid)
         {
             UserService.GetUser(
                 (p_retrievedUser : User) => {
                     this._value = p_retrievedUser;
-                    p_callback(this._value);
+                    p_callback(this._value, null);
                 }
-                , null);
+                , (p_err : ServerError) => {
+                    p_callback(new User(), p_err);
+                });
             this._isValid = true;
         }
         else
         {
-            p_callback(this._value);
+            p_callback(this._value, null);
         }
     }
 

@@ -12,6 +12,7 @@ class GeoService
         Server.SendRequest("GET", `http://localhost:8080/city?city_id=${p_city_id}`, null, false, 
             (p_body:City) => {p_onCompleted(p_body, null);}, (p_err : ServerError)=>{p_onCompleted(null, p_err);});
     }
+
 }
 
 class City
@@ -22,4 +23,10 @@ class City
     public country_id : number;
 }
 
-export {GeoService, City}
+class LatLng
+{
+    public lat : number;
+    public lng : number;
+}
+
+export {GeoService, City, LatLng}

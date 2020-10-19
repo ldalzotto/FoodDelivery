@@ -42,7 +42,8 @@ public class EstablishmentsController {
     public @ResponseBody
     ResponseEntity<?> GetEstablishments(
             @CookieValue("session_token") String p_sessionToken,
-            @CookieValue("session_user_id") long p_user_id) {
+            @CookieValue("session_user_id") long p_user_id,
+            @RequestParam(value = "calculations", required = false) String p_calculations) {
 
         FunctionalError l_Functional_error = new FunctionalError();
 
@@ -51,7 +52,8 @@ public class EstablishmentsController {
             return ResponseEntity.badRequest().body(l_Functional_error);
         }
 
-        return ResponseEntity.ok().body(EstablishmentService.GetEstablishments(p_user_id));
+        return ResponseEntity.ok().body(EstablishmentService.GetEstablishments(p_user_id,
+                EstablishmentCalculationType.parseString(p_calculations)));
     }
 
     @CrossOrigin(origins = {"http://localhost:8081", "http://192.168.1.11:8081"})
@@ -59,11 +61,13 @@ public class EstablishmentsController {
     public @ResponseBody
     ResponseEntity<?> GetEstablishmentsNear(
             @RequestParam("lat") float p_lat,
-            @RequestParam("lng") float p_lng) {
+            @RequestParam("lng") float p_lng,
+            @RequestParam(value = "calculations", required = false) String p_calculations) {
 
         FunctionalError l_Functional_error = new FunctionalError();
-
-       return ResponseEntity.ok().body(EstablishmentService.GetEstablishmentsNear(p_lat, p_lng));
+        return ResponseEntity.ok().body(EstablishmentService.GetEstablishmentsNear(
+               EstablishmentCalculationType.parseString(p_calculations),
+               p_lat, p_lng));
     }
 
     @CrossOrigin(origins = {"http://localhost:8081", "http://192.168.1.11:8081"}, allowCredentials = "true")

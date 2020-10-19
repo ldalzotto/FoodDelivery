@@ -1,5 +1,6 @@
 import {Server, ServerError} from "../server/Server.js"
-import { City } from "./Geo.js";
+import { QueryParamBuilder } from "../utils/QueryParamsBuilder.js";
+import { City, LatLng } from "./Geo.js";
 
 class EstablishmentService
 {
@@ -12,11 +13,29 @@ class EstablishmentService
         );
     }
 
-    public static GetEstablishments(p_okCallback : (p_establishments : EstablishmentWithDependenciesV2) => void, p_errorCallback : (p_serverError : ServerError)=>(void))
+    public static GetEstablishments(l_calculationTypes : EstablishmentCalculationType[] | null, p_okCallback : (p_establishments : EstablishmentWithDependenciesV2) => void, p_errorCallback : (p_serverError : ServerError)=>(void))
     {
-        Server.SendRequest("GET", "http://localhost:8080/establishments", null, true,
+        let l_queryParams = new QueryParamBuilder();
+        if(l_calculationTypes)
+        {
+            l_queryParams.addParam("calculations", l_calculationTypes.toString());
+        }
+        Server.SendRequest("GET", `http://localhost:8080/establishments${l_queryParams.params}`, null, true,
            p_okCallback, p_errorCallback
         );
+    }
+
+    public static GetEstablishments_Near(l_calculationTypes : EstablishmentCalculationType[] | null, p_latlng : LatLng,
+        p_okCallback : (p_establishments : EstablishmentWithDependenciesV2) => void, p_errorCallback : (p_serverError : ServerError)=>(void))
+    {
+        let l_queryParams = new QueryParamBuilder();
+        l_queryParams.addParam("lat", p_latlng.lat.toString());
+        l_queryParams.addParam("lng", p_latlng.lng.toString());
+        if(l_calculationTypes)
+        {
+            l_queryParams.addParam("calculations", l_calculationTypes.toString());
+        }
+        Server.SendRequest("GET", `http://localhost:8080/establishments/near${l_queryParams.params}`, null, false, p_okCallback, p_errorCallback);
     }
 
     public static UpdateEstablishment_Widht_Address(p_establishmentId : number, p_establishmentDelta : EstablishmentDelta | null, p_addressDelta : EstablishmentAddressDelta | null,
@@ -85,6 +104,13 @@ class EstablishmentWithDependenciesV2
     public establishment_addresses : EstablishmentAddress[];
     public cities : City[];
     public establishment_address_TO_city : number[];
+    public delivery_charges : number[] | null;
+}
+
+enum EstablishmentCalculationType
+{
+    RETRIEVE_CITIES = "RETRIEVE_CITIES",
+    DELIVERY_CHARGE = "DELIVERY_CHARGE"
 }
 
 class EstablishmentDelta
@@ -107,4 +133,4 @@ class EstablishmentWithAddressDelta
     public establishment_address : EstablishmentAddressDelta | null;
 }
 
-export {EstablishmentService, Establishment, EstablishmentAddress, EstablishmentWithDependenciesV2, EstablishmentWithAddress, EstablishmentDelta, EstablishmentAddressDelta}
+export {EstablishmentService, Establishment, EstablishmentAddress, EstablishmentWithDependenciesV2, EstablishmentWithAddress, EstablishmentDelta, EstablishmentAddressDelta, EstablishmentCalculationType}

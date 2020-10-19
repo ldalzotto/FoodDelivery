@@ -21,6 +21,11 @@ class Navigation
     {
         router.navigate(Navigation_Constants.RegisterPath);
     }
+
+    static MoveToEatPage()
+    {
+        router.navigate(Navigation_Constants.EatPath);
+    }
 }
 
 

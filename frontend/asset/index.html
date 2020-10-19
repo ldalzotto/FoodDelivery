@@ -31,6 +31,7 @@
           <div class="column nav-item" id="logout-button">LOGOUT</div>
           <div class="column nav-item" id="register-button">REGISTER</div>
           <div class="column nav-item" id="profile-button">PROFILE</div>
+          <div class="column nav-item" id="eat-button">EAT</div>
         </div>
         <hr style="margin: 0px; padding: 0px;"/>
     </template>
@@ -51,15 +52,18 @@
 
     <template id="profile-page">
       <page-header></page-header>
-      <div class="profile-grid">
-        <profile-selector class="left-column"></profile-selector>
-        <profile-context-content class="context-content"></profile-context-content>
-      </div>
+      <profile-selector></profile-selector>
+      <profile-context-content class="context-content"></profile-context-content>
     </template>
 
     <template id="register-validation-page">
       <page-header></page-header>
       <div id="error-message"></div>
+    </template>
+
+    <template id="eat-page">
+      <page-header></page-header>
+      <div id="content"></div>
     </template>
 
     <template id="user-login">
@@ -176,6 +180,28 @@
           </div>
         </div>
       <br/>
+    </template>
+
+    <template id="user-location">
+      <div class="row">
+        <div class="column one">
+          <div class="row">
+            It seems that we don't know your location. Please, point your location at the following map.
+          </div>
+          <div class="row">
+            <map-selection class="map-test" id="latlng"></map-selection>
+          </div>
+          <button id="submit">SUBMIT</button>
+        </div>
+      </div>
+    </template>
+
+    <template id="nearest-establishments">
+      <div id="establishment-list"></div>
+    </template>
+
+    <template id="establishments-thumb">
+      <div>TEST</div>
     </template>
 
     <template id="select-festch">

@@ -13,6 +13,7 @@ import {LoginPage} from "./pages/LoginPage.js"
 import {ProfilePage} from "./pages/ProfilePage.js"
 import {RegisterPage} from "./pages/RegisterPage.js"
 import {RegisterValidationPage} from "./pages/RegisterValidationPage.js"
+import { EatPage } from "./pages/EatPage.js";
 
 RegisterComponentsGraphic();
 RegisterComponents();
@@ -27,6 +28,7 @@ class Navigation_Constants
     static readonly ProfilePath : string = "/profile";
     static readonly RegisterPath : string = "/register";
     static readonly RegisterValidatePath : string = "/register/validation";
+    static readonly EatPath : string = "/eat";
 }
 
 router.add(new Route(Navigation_Constants.LoginPath, () => {
@@ -57,6 +59,13 @@ router.add(new Route(Navigation_Constants.ProfilePath, () => {
     appElement.innerHTML = "";
     appElement.appendChild(new ProfilePage());
     console.log("PROFILE");
+    return true;
+}));
+
+router.add(new Route(Navigation_Constants.EatPath, () => {
+    appElement.innerHTML = "";
+    appElement.appendChild(new EatPage());
+    console.log("EAT");
     return true;
 }));
 

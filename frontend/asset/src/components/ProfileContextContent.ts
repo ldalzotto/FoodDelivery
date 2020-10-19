@@ -2,7 +2,7 @@ import { LoadingButton } from "../components_graphic/LoadingButton.js"
 import { ServerError } from "../server/Server.js";
 import {
     EstablishmentService, Establishment, EstablishmentAddress, EstablishmentWithAddress, EstablishmentWithDependenciesV2,
-    EstablishmentDelta, EstablishmentAddressDelta
+    EstablishmentDelta, EstablishmentAddressDelta, EstablishmentCalculationType
 } from "../services/Establishment.js"
 import { BindingUtils, Observable } from "../binding/Binding.js"
 import { CitySelection, CitySelectionUpdate } from "./CitySelection.js";
@@ -38,6 +38,7 @@ class ProfileEstablishmentContext extends HTMLElement {
     public reloadEstablishments() {
         this.establishmentListsElement.innerHTML = "";
         EstablishmentService.GetEstablishments(
+            [EstablishmentCalculationType.RETRIEVE_CITIES],
             (p_establishments: EstablishmentWithDependenciesV2) => {
                 for (let i = 0; i < p_establishments.establishments.length; i++) {
                     let l_establishmentDisplay_root = document.createElement("div");
@@ -126,8 +127,8 @@ class EstablishmentRegistration extends HTMLElement {
         let l_establishment: Establishment = new Establishment(this.inputNameObservable.value, this.inputPhoneObservable.value);
         let l_establishmentAddress: EstablishmentAddress = new EstablishmentAddress();
         l_establishmentAddress.street_full_name = this.inputAddressStreetNameObservable.value;
-        l_establishmentAddress.lat = this.latLngMap.latLng._Lat;
-        l_establishmentAddress.lng = this.latLngMap.latLng._Lng;
+        l_establishmentAddress.lat = this.latLngMap.latLng.lat;
+        l_establishmentAddress.lng = this.latLngMap.latLng.lng;
 
         if (l_city) {
             l_establishmentAddress.city_id = l_city.id;
@@ -247,8 +248,8 @@ class EstablishementDisplay {
             l_establishmentAddressDelta = new EstablishmentAddressDelta();
             if (this.addressElement.hasChanged.value) { l_establishmentAddressDelta.street_full_name = this.addressElement.input.value; }
             if (this.pointElement.hasChanged.value) {
-                l_establishmentAddressDelta.lat = this.pointElement.latLng._Lat;
-                l_establishmentAddressDelta.lng = this.pointElement.latLng._Lng;
+                l_establishmentAddressDelta.lat = this.pointElement.latLng.lat;
+                l_establishmentAddressDelta.lng = this.pointElement.latLng.lng;
             }
             if (this.cityElement.hasChanged.value) { 
                 let l_selectedCity = this.cityElement.getSelectedCity();

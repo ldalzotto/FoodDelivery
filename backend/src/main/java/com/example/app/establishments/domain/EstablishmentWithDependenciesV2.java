@@ -10,4 +10,6 @@ public class EstablishmentWithDependenciesV2 {
 
     public List<City> cities;
     public long[] establishment_address_TO_city;
+
+    public double[] delivery_charges;
 }

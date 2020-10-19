@@ -1,11 +1,12 @@
 import { Observable } from "../binding/Binding.js";
+import { LatLng } from "../services/Geo.js";
 import {WindowElement, WindowElement_ResizeEvent} from "../Window.js"
 
 declare namespace L
 {
     function map(params:HTMLElement, options : any):any;
     function tileLayer(p_url:string, p_cond : any):any;
-    function marker(p_latlong:any):any;
+    function marker(platlong:any):any;
 }
 
 class MapSelection
@@ -17,8 +18,8 @@ class MapSelection
 
     private map : any;
 
-    protected _latLng : LatLng = new LatLng();
-    public get latLng(){return this._latLng;}
+    protected _LatLng : LatLng = new LatLng();
+    public get latLng(){return this._LatLng;}
 
     public onLatLngChanged : Observable<null> = new Observable<null>(null);
 
@@ -27,8 +28,8 @@ class MapSelection
 
     constructor(p_parent : HTMLElement, p_initialLat : number, p_initialLng : number)
     {
-        this._latLng._Lat = p_initialLat;
-        this._latLng._Lng = p_initialLng;
+        this.latLng.lat = p_initialLat;
+        this.latLng.lng = p_initialLng;
 
         this._root = document.createElement("div");
 
@@ -41,7 +42,7 @@ class MapSelection
 
         setTimeout(() => {
             this.isFocused = false;
-            this.map = L.map(this._root, {scrollWheelZoom: false}).setView([this._latLng._Lat, this._latLng._Lng], 13);
+            this.map = L.map(this._root, {scrollWheelZoom: false}).setView([this.latLng.lat, this.latLng.lng], 13);
             L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoicGxvbWJhIiwiYSI6ImNrZzgwcnZ2OTA2NXcyd215bDhveXc2dmYifQ.40bIOrEnYw6UTl9TKkZJOw',
             {
                 attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
@@ -52,7 +53,7 @@ class MapSelection
                 accessToken: 'your.mapbox.access.token'
             }).addTo(this.map);
             this.map.on('click', (event:any) => {this.onMapClick(event);} );
-            this.setSelectionMarker(this._latLng._Lat, this._latLng._Lng, true);
+            this.setSelectionMarker(this.latLng.lat, this.latLng.lng, true);
 
             this.map.on('focus', () => {this.onMapFocus();});
             this.map.on('blur', () => {this.onMapBlur();});
@@ -63,17 +64,17 @@ class MapSelection
 
     }
     
-    public setSelectionMarker(p_lat : number, p_long : number, p_moveTo : boolean)
+    public setSelectionMarker(plat : number, p_long : number, p_moveTo : boolean)
     {
             if (this.displayedMarker != undefined) {
                 this.map.removeLayer(this.displayedMarker);
             };
     
-            this.displayedMarker = L.marker([p_lat, p_long]).addTo(this.map);
+            this.displayedMarker = L.marker([plat, p_long]).addTo(this.map);
 
             if(p_moveTo)
             {
-                this.map.setView([p_lat, p_long], 13);
+                this.map.setView([plat, p_long], 13);
             }
     }
 
@@ -107,14 +108,14 @@ class MapSelection
         this.invalidateSize();
     }
 
-    setLatLng(p_lat : number, p_long : number)
+    setLatLng(plat : number, p_long : number)
     {
         if(!this.readonly)
         {
-            if(this._latLng._Lat !== p_lat || this._latLng._Lng !== p_long)
+            if(this.latLng.lat !== plat || this.latLng.lng !== p_long)
             {
-                this._latLng._Lat = p_lat;
-                this._latLng._Lng = p_long;
+                this.latLng.lat = plat;
+                this.latLng.lng = p_long;
     
                 this.onLatLngChanged.notify();
             }
@@ -123,14 +124,8 @@ class MapSelection
     
     onLatLngChangedFn()
     {
-        this.setSelectionMarker(this._latLng._Lat, this._latLng._Lng, false);
+        this.setSelectionMarker(this.latLng.lat, this.latLng.lng, false);
     }
-}
-
-class LatLng
-{
-    public _Lat : number = 0;
-    public _Lng : number = 0;
 }
 
 class MapSelectionUpdate extends MapSelection
@@ -146,8 +141,8 @@ class MapSelectionUpdate extends MapSelection
         super(p_parent, p_initialLat, p_initialLng);
 
         this._initialValue = new LatLng();
-        this._initialValue._Lat = p_initialLat;
-        this._initialValue._Lng = p_initialLng;
+        this._initialValue.lat = p_initialLat;
+        this._initialValue.lng = p_initialLng;
 
         this._hasChanged = new Observable<boolean>(false);
 
@@ -167,14 +162,14 @@ class MapSelectionUpdate extends MapSelection
 
     public setCurrentAsInitialValue()
     {
-        this._initialValue._Lat = this._latLng._Lat;
-        this._initialValue._Lng = this._latLng._Lng;
+        this._initialValue.lat = this.latLng.lat;
+        this._initialValue.lng = this.latLng.lng;
         this.onLatLngChangedUpdate();
     }
 
     onLatLngChangedUpdate()
     {
-        if(this._initialValue._Lat !== this._latLng._Lat || this._initialValue._Lng !== this._latLng._Lng)
+        if(this._initialValue.lat !== this.latLng.lat || this._initialValue.lng !== this.latLng.lng)
             {
                 this._hasChanged.value = true;
             }

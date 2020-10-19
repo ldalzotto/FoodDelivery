@@ -79,11 +79,14 @@ public class EstablishmentQuery {
         return null;
     }
 
-    public static List<Establishment> GetEstablishments_InsideBoundingSphere(double p_minlat, double p_maxlat, double p_minlng, double p_maxlng)
+    public static EstablishmentWithDependenciesV2 GetEstablishments_InsideBoundingSphere_with_EstablishmentAddress(double p_minlat, double p_maxlat, double p_minlng, double p_maxlng)
     {
-        return
+        EstablishmentWithDependenciesV2 l_foundEstablishments = new EstablishmentWithDependenciesV2();
+        l_foundEstablishments.establishments = new ArrayList<>();
+        l_foundEstablishments.establishment_addresses = new ArrayList<>();
+
             ConfigurationBeans.jdbcTemplate.query(con -> {
-                PreparedStatement l_ps = con.prepareStatement("select establishments.* from establishments, establishment_address " +
+                PreparedStatement l_ps = con.prepareStatement("select * from establishments, establishment_address " +
                         "where establishment_address.lat between ? and ? " +
                         "and establishment_address.lng between ? and ? " +
                         "and establishments.address_id == establishment_address.id ");
@@ -92,15 +95,27 @@ public class EstablishmentQuery {
                 l_ps.setDouble(3, p_minlng);
                 l_ps.setDouble(4, p_maxlng);
                 return l_ps;
-            }, (rs, rowNum) -> {
+            }, (rs) -> {
+                EstablishmentWithDependenciesV2 l_est = new EstablishmentWithDependenciesV2();
+
                 Establishment l_establishment = new Establishment();
                 l_establishment.id = rs.getLong(1);
                 l_establishment.name = rs.getString(2);
                 l_establishment.address_id = rs.getLong(3);
                 l_establishment.phone = rs.getString(4);
                 l_establishment.user_id = rs.getLong(5);
-                return l_establishment;
+
+                EstablishmentAddress l_establishmentAddress = new EstablishmentAddress();
+                l_establishmentAddress.id = rs.getLong(6);
+                l_establishmentAddress.street_full_name = rs.getString(7);
+                l_establishmentAddress.city_id = rs.getLong(8);
+                l_establishmentAddress.lat = rs.getFloat(9);
+                l_establishmentAddress.lng = rs.getFloat(10);
+
+                l_foundEstablishments.establishments.add(l_establishment);
+                l_foundEstablishments.establishment_addresses.add(l_establishmentAddress);
             });
+        return l_foundEstablishments;
     }
 
     public static EstablishmentWithAddress GetEstablishment_with_EstablishmentAddress(long p_establishment_id)

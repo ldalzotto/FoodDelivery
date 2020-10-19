@@ -12,6 +12,7 @@ class PageHeader
     private logoutButton : HTMLElement;
     private registerButton : HTMLElement;
     private profileButton : HTMLElement;
+    private eatButton : HTMLElement;
 
     private GState_IsLoggedIn_handle : BindingIndex;
 
@@ -38,6 +39,9 @@ class PageHeader
 
         this.profileButton = this._root.querySelector("#profile-button");
         this.profileButton.addEventListener('click', () => {this.onProfileButtonClick();});
+
+        this.eatButton = this._root.querySelector("#eat-button");
+        this.eatButton.addEventListener('click', () => {this.onEatButtonClick();});
 
 
         this.loginButtonDisplayed = new Observable<boolean>(false);
@@ -88,6 +92,12 @@ class PageHeader
     onProfileButtonClick()
     {
         Navigation.MoveToProfilePage();
+    }
+
+    
+    onEatButtonClick() 
+    {
+        Navigation.MoveToEatPage();
     }
 }
 

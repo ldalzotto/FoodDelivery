@@ -21,6 +21,11 @@ class Session
 {
     public token : string;
     public user_id : string;
+
+    public isValid() : boolean
+    {
+        return this.token && this.token.length !== 0 && this.user_id && this.user_id.length !== 0;
+    }
 }
 
 class LoginService
@@ -85,7 +90,7 @@ class LoginService
     public static LoginUser_FromCookies()
     {
         let l_session = LoginService.GetSessionFromCookie();
-        if(l_session.token && l_session.token.length !== 0 && l_session.user_id && l_session.user_id.length !== 0)
+        if(l_session.isValid())
         {
             GUserState.isLoggedIn = true;
         }

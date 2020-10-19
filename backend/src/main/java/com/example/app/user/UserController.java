@@ -17,7 +17,7 @@ import java.util.Properties;
 @RequestMapping(value = "/")
 public class UserController {
 
-    @CrossOrigin(origins = {"http://localhost:8081", "http://192.168.1.11:8081"})
+    @CrossOrigin(origins = {"http://localhost:8081", "http://192.168.1.11:8081"}, allowCredentials = "true")
     @RequestMapping(value = "/user", method = RequestMethod.GET)
     public @ResponseBody ResponseEntity<?> GetUser(
             @CookieValue("session_token") String p_sessionToken,
