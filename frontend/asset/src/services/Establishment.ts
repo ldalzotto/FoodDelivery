@@ -1,6 +1,7 @@
 import {Server, ServerError} from "../server/Server.js"
 import { QueryParamBuilder } from "../utils/QueryParamsBuilder.js";
 import { City, LatLng } from "./Geo.js";
+import { ImageUrl } from "./Image.js";
 
 class EstablishmentService
 {
@@ -99,6 +100,8 @@ class EstablishmentGet
     public cities : City[];
     public establishment_address_TO_city : number[];
     public delivery_charges : number[] | null;
+    public thumbnails : ImageUrl[] | null;
+    public establishment_TO_thumbnail : number[] | null;
 }
 
 
@@ -106,7 +109,8 @@ class EstablishmentGet
 enum EstablishmentCalculationType
 {
     RETRIEVE_CITIES = "RETRIEVE_CITIES",
-    DELIVERY_CHARGE = "DELIVERY_CHARGE"
+    DELIVERY_CHARGE = "DELIVERY_CHARGE",
+    RETRIEVE_THUMBNAIL = "RETRIEVE_THUMBNAIL"
 }
 
 class EstablishmentDelta

@@ -8,6 +8,8 @@ import org.springframework.jdbc.support.KeyHolder;
 import java.sql.PreparedStatement;
 
 public class ImageQuery {
+    //TODO -> If the same image is uploaded 2 times, it will create different static_image resource.
+    //        Finding a way to create unique id (instead of the auto generated one) from input image.
     public static ImageCreated PostImage(byte[] p_image)
     {
         KeyHolder l_keyHolder = new GeneratedKeyHolder();

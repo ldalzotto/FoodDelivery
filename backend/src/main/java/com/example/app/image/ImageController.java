@@ -27,7 +27,7 @@ public class ImageController {
     @CrossOrigin(origins = {"http://localhost:8081", "http://192.168.1.11:8081"})
     @RequestMapping(value = "/image", method = RequestMethod.GET, produces =  MediaType.IMAGE_PNG_VALUE)
     public @ResponseBody
-    byte[] ImageGet(@RequestParam("id") long p_id) {
+    byte[] ImageGet(@RequestParam("image_id") long p_id) {
         return ImageQuery.GetImage(p_id).data;
     }
 
