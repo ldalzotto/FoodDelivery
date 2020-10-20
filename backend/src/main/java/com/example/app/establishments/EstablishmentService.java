@@ -5,6 +5,7 @@ import com.example.app.geo.GeoQuery;
 import com.example.app.geo.domain.City;
 import com.example.app.image.ImageQuery;
 import com.example.app.image.domain.ImageCreated;
+import com.example.app.image.domain.ImageUrl;
 import com.example.utils.Parameter;
 import org.springframework.dao.DataAccessException;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,7 +34,7 @@ public class EstablishmentService {
                 {
                     try
                     {
-                        ImageCreated l_image = ImageQuery.PostImage(p_thumbImage.getBytes(), "");
+                        ImageCreated l_image = ImageQuery.PostImage(p_thumbImage.getBytes());
                         p_establishment.thumb_id = l_image.image_id;
                     } catch (IOException p_ex)
                     {
@@ -90,21 +91,7 @@ public class EstablishmentService {
         l_return.setEstablishments(l_establishments.Value);
         l_return.setEstablishmentAddresses(l_establishmentAddresses.Value);
 
-        if(p_caluclations != null) {
-            for (int i = 0; i < p_caluclations.size(); i++) {
-                EstablishmentCalculationType l_calculationType = p_caluclations.get(i);
-                switch (l_calculationType)
-                {
-                    case RETRIEVE_CITIES:
-                    {
-                        LinkCitiesToEstablishments_Return l_citiesLinked = LinkCitiesToEstablishments(l_establishments.Value, l_establishmentAddresses.Value);
-                        l_return.setCities(l_citiesLinked.cities);
-                        l_return.setEstablishmentAddressToCity(l_citiesLinked.establishment_address_TO_city);
-                    }
-                    break;
-                }
-            }
-        }
+        ProcessEstablishmentCalculations(p_caluclations, l_return);
 
         return l_return;
     }
@@ -130,6 +117,13 @@ public class EstablishmentService {
         l_return.setEstablishments(l_establishments.Value);
         l_return.setEstablishmentAddresses(l_establishmentAddresses.Value);
 
+        ProcessEstablishmentCalculations(p_caluclations, l_return);
+
+        return l_return;
+    }
+
+    private static void ProcessEstablishmentCalculations(List<EstablishmentCalculationType> p_caluclations, EstablishmentGet in_out_establishmentGet)
+    {
         if(p_caluclations != null)
         {
             for(int i=0;i<p_caluclations.size();i++)
@@ -139,21 +133,23 @@ public class EstablishmentService {
                 {
                     case RETRIEVE_CITIES:
                     {
-                        LinkCitiesToEstablishments_Return l_citiesLinked = LinkCitiesToEstablishments(l_establishments.Value, l_establishmentAddresses.Value);
-                        l_return.setCities(l_citiesLinked.cities);
-                        l_return.setEstablishmentAddressToCity(l_citiesLinked.establishment_address_TO_city);
+                        LinkCitiesToEstablishments_Return l_citiesLinked = LinkCitiesToEstablishments(in_out_establishmentGet.getEstablishments(),
+                                in_out_establishmentGet.getEstablishmentAddresses());
+                        in_out_establishmentGet.setCities(l_citiesLinked.cities);
+                        in_out_establishmentGet.setEstablishmentAddressToCity(l_citiesLinked.establishment_address_TO_city);
                     }
                     break;
                     case DELIVERY_CHARGE:
                     {
-                        if(l_establishmentAddresses.Value != null)
+                        List<EstablishmentAddress> l_establishmentAddresses =in_out_establishmentGet.getEstablishmentAddresses();
+                        if(l_establishmentAddresses != null)
                         {
                             double[] l_deliveryCharges = null;
-                            if(l_establishmentAddresses.Value.size() > 0)
+                            if(l_establishmentAddresses.size() > 0)
                             {
-                                l_deliveryCharges = new double[l_establishmentAddresses.Value.size()];
+                                l_deliveryCharges = new double[l_establishmentAddresses.size()];
                             }
-                            for(int j=0;j<l_establishmentAddresses.Value.size();j++)
+                            for(int j=0;j<l_establishmentAddresses.size();j++)
                             {
                                 /*
                                 EstablishmentAddress l_address = l_nearEstablishments.establishment_addresses.get(j);
@@ -171,17 +167,20 @@ public class EstablishmentService {
                                 l_deliveryCharges[j] = new BigDecimal(Math.random()).setScale(2, RoundingMode.HALF_UP).doubleValue();
                             }
 
-                            l_return.setDeliveryCharges(l_deliveryCharges);
+                            in_out_establishmentGet.setDeliveryCharges(l_deliveryCharges);
                         }
 
 
                     }
                     break;
+                    case RETRIEVE_THUMBNAIL:
+                    {
+                        LinkThumbnailToEstablishment(in_out_establishmentGet);
+                    }
+                    break;
                 }
             }
         }
-
-        return l_return;
     }
 
     private static LinkCitiesToEstablishments_Return LinkCitiesToEstablishments(List<Establishment> p_establishments, List<EstablishmentAddress> p_establishmentAddress)
@@ -214,6 +213,63 @@ public class EstablishmentService {
         }
 
         return l_return;
+    }
+
+    private static void LinkThumbnailToEstablishment(EstablishmentGet p_establishmentGet)
+    {
+        if(p_establishmentGet!=null)
+        {
+            List<Establishment> l_establishments = p_establishmentGet.getEstablishments();
+            if(l_establishments!=null)
+            {
+                Set<Long> l_distinctThumbnails = new HashSet<>();
+                for(int i=0;i<l_establishments.size();i++)
+                {
+                    if(l_establishments.get(i).thumb_id != null)
+                    {
+                       l_distinctThumbnails.add(l_establishments.get(i).thumb_id);
+                    }
+                }
+
+                if(l_distinctThumbnails.size() > 0)
+                {
+                    List<ImageUrl> l_establishmentThumb = new ArrayList<>();
+                    for(Long l_thumbId : l_distinctThumbnails)
+                    {
+                        ImageUrl l_url = new ImageUrl();
+                        l_url.image_id = l_thumbId;
+                        l_url.url = String.format("http://localhost:8080/image?image_id=%d", l_thumbId);
+                        l_establishmentThumb.add(l_url);
+                    }
+                    p_establishmentGet.setThumbnails(l_establishmentThumb);
+
+                    long[] l_establishment_TO_thumb = new long[l_establishments.size()];
+
+                    for(int i=0;i<l_establishments.size();i++) {
+                        Establishment l_establishment = l_establishments.get(i);
+                        if(l_establishment.thumb_id!=null)
+                        {
+                            for(int j=0;j<l_establishmentThumb.size();j++)
+                            {
+                                if(l_establishmentThumb.get(j).image_id == l_establishment.thumb_id)
+                                {
+                                    l_establishment_TO_thumb[i] = j;
+                                    break;
+                                }
+                                l_establishment_TO_thumb[i] = -1;
+                            }
+                        }
+                        else
+                        {
+                            l_establishment_TO_thumb[i] = -1;
+                        }
+                    }
+
+                    p_establishmentGet.setEstablishmentToThumbnail(l_establishment_TO_thumb);
+                }
+
+            }
+        }
     }
 
     public static void DeleteEstablishment(long p_establishmentId)

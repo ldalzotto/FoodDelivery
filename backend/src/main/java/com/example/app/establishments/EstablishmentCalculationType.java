@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public enum EstablishmentCalculationType {
-        DELIVERY_CHARGE, RETRIEVE_CITIES;
+        DELIVERY_CHARGE, RETRIEVE_CITIES, RETRIEVE_THUMBNAIL;
 
     public static List<EstablishmentCalculationType> parseString(String p_types)
     {

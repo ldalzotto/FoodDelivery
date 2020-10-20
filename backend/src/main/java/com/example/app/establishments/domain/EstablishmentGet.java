@@ -1,6 +1,7 @@
 package com.example.app.establishments.domain;
 
 import com.example.app.geo.domain.City;
+import com.example.app.image.domain.ImageUrl;
 
 import java.util.HashMap;
 import java.util.List;
@@ -45,5 +46,21 @@ public class EstablishmentGet extends HashMap<String, Object> {
     public double[] getDeliveryCharges()
     {
         return (double[])this.getOrDefault("delivery_charges", null);
+    }
+    public void setThumbnails(List<ImageUrl> p_thumbnails)
+    {
+        this.put("thumbnails", p_thumbnails);
+    }
+    public List<String> getThumbnails()
+    {
+        return (List<String>)this.getOrDefault("thumbnails", null);
+    }
+    public void setEstablishmentToThumbnail(long[] p_establishmentToThumbnail)
+    {
+        this.put("establishment_TO_thumbnail", p_establishmentToThumbnail);
+    }
+    public long[] getEstablishmentToThumbnail()
+    {
+        return (long[])this.getOrDefault("establishment_TO_thumbnail", null);
     }
 }
