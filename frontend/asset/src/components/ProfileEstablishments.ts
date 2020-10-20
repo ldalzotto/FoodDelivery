@@ -12,7 +12,7 @@ import { InputTextUpdateElement } from "../components_graphic/InputTextUpdateEle
 
 
 class ProfileEstablishmentContext extends HTMLElement {
-    static readonly Type: string = "profile-establishment-context";
+    static readonly Type: string = "profile-establishments";
 
     private establishmentRegistration: EstablishmentRegistration;
     private establishmentListsElement: HTMLElement;

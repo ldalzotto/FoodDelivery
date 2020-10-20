@@ -1,6 +1,6 @@
 import {MWatcher} from "../binding/Binding.js"
 import { ProfileNavigation } from "../services/Navigation.js";
-import {ProfileEstablishmentContext} from "./ProfileContextContent.js"
+import {ProfileEstablishmentContext} from "./ProfileEstablishments.js"
 
 class ProfileSelector_SelectionEvent extends Event
 {

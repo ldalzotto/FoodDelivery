@@ -1,7 +1,7 @@
 import {userLogin_init} from "./UserLogin.js"
 import {UserRegister} from "./UserRegister.js"
 import {ProfileSelector} from "./ProfileSelector.js"
-import {ProfileEstablishmentContext} from "./ProfileContextContent.js"
+import {ProfileEstablishmentContext} from "./ProfileEstablishments.js"
 import {CitySelection} from "./CitySelection.js"
 
 function RegisterComponents()
