@@ -8,9 +8,9 @@ class EstablishmentService
     public static CreateEstablishment_With_Address(p_establishment : Establishment, p_address : EstablishmentAddress, p_thumbImage : File | null,
         p_okCallback ?: (arg0 : null)=>(void), p_errorCallback ?: (p_serverError : ServerError)=>(void))
     {
-        let l_establishment_with_Address = new EstablishmentWithAddress(p_establishment, p_address); 
         let l_form : FormData = new FormData();
-        l_form.append("establishment", JSON.stringify(l_establishment_with_Address));
+        l_form.append("establishment", JSON.stringify(p_establishment));
+        l_form.append("establishment_address", JSON.stringify(p_address));
         if(p_thumbImage)
         {
             l_form.append("establishment_thumb", p_thumbImage);
@@ -18,7 +18,7 @@ class EstablishmentService
         Server.SendRequest_Form("POST", "http://localhost:8080/establishment",l_form, true, p_okCallback, p_errorCallback);
     }
 
-    public static GetEstablishments(l_calculationTypes : EstablishmentCalculationType[] | null, p_okCallback : (p_establishments : EstablishmentWithDependenciesV2) => void, p_errorCallback : (p_serverError : ServerError)=>(void))
+    public static GetEstablishments(l_calculationTypes : EstablishmentCalculationType[] | null, p_okCallback : (p_establishments : EstablishmentGet) => void, p_errorCallback : (p_serverError : ServerError)=>(void))
     {
         let l_queryParams = new QueryParamBuilder();
         if(l_calculationTypes)
@@ -31,7 +31,7 @@ class EstablishmentService
     }
 
     public static GetEstablishments_Near(l_calculationTypes : EstablishmentCalculationType[] | null, p_latlng : LatLng,
-        p_okCallback : (p_establishments : EstablishmentWithDependenciesV2) => void, p_errorCallback : (p_serverError : ServerError)=>(void))
+        p_okCallback : (p_establishments : EstablishmentGet) => void, p_errorCallback : (p_serverError : ServerError)=>(void))
     {
         let l_queryParams = new QueryParamBuilder();
         l_queryParams.addParam("lat", p_latlng.lat.toString());
@@ -46,12 +46,10 @@ class EstablishmentService
     public static UpdateEstablishment_Widht_Address(p_establishmentId : number, p_establishmentDelta : EstablishmentDelta | null, p_addressDelta : EstablishmentAddressDelta | null,
         p_okCallback ?: (arg0 : null)=>(void), p_errorCallback ?: (p_serverError : ServerError)=>(void))
     {
-        let l_delta = new EstablishmentWithAddressDelta();
-        l_delta.establishment = p_establishmentDelta;
-        l_delta.establishment_address = p_addressDelta;
         let l_form : FormData = new FormData();
         l_form.append("establishment_id", JSON.stringify(p_establishmentId));
-        l_form.append("establishment_delta", JSON.stringify(l_delta));
+        l_form.append("establishment_delta", JSON.stringify(p_establishmentDelta));
+        l_form.append("establishment_address_delta", JSON.stringify(p_addressDelta));
         Server.SendRequest_Form("POST", `http://localhost:8080/establishment/update`, l_form, true, p_okCallback, p_errorCallback);
     }
 
@@ -94,19 +92,7 @@ class EstablishmentAddress
     }
 }
 
-class EstablishmentWithAddress 
-{
-    public establishment : Establishment;
-    public establishment_address : EstablishmentAddress;
-
-    constructor(p_establishment : Establishment, p_address : EstablishmentAddress)
-    {
-        this.establishment = p_establishment;
-        this.establishment_address = p_address;
-    }
-}
-
-class EstablishmentWithDependenciesV2
+class EstablishmentGet
 {
     public establishments : Establishment[];
     public establishment_addresses : EstablishmentAddress[];
@@ -114,6 +100,8 @@ class EstablishmentWithDependenciesV2
     public establishment_address_TO_city : number[];
     public delivery_charges : number[] | null;
 }
+
+
 
 enum EstablishmentCalculationType
 {
@@ -135,10 +123,4 @@ class EstablishmentAddressDelta
     public lng : number | null;
 }
 
-class EstablishmentWithAddressDelta
-{
-    public establishment : EstablishmentDelta | null;
-    public establishment_address : EstablishmentAddressDelta | null;
-}
-
-export {EstablishmentService, Establishment, EstablishmentAddress, EstablishmentWithDependenciesV2, EstablishmentWithAddress, EstablishmentDelta, EstablishmentAddressDelta, EstablishmentCalculationType}
+export {EstablishmentService, Establishment, EstablishmentAddress, EstablishmentGet as EstablishmentWithDependenciesV2, EstablishmentDelta, EstablishmentAddressDelta, EstablishmentCalculationType}

@@ -3,6 +3,7 @@ package com.example.app.establishments;
 import com.example.app.establishments.domain.*;
 import com.example.main.ConfigurationBeans;
 import com.example.utils.IntegerHeap;
+import com.example.utils.Parameter;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -64,11 +65,11 @@ public class EstablishmentQuery {
         return null;
     }
 
-    public static EstablishmentWithDependenciesV2 GetEstablishments_InsideBoundingSphere_with_EstablishmentAddress(double p_minlat, double p_maxlat, double p_minlng, double p_maxlng)
+    public static void GetEstablishments_InsideBoundingSphere_with_EstablishmentAddress(double p_minlat, double p_maxlat, double p_minlng, double p_maxlng,
+                                                                                        Parameter<List<Establishment>> out_establishments, Parameter<List<EstablishmentAddress>> out_establishmentAddresses)
     {
-        EstablishmentWithDependenciesV2 l_foundEstablishments = new EstablishmentWithDependenciesV2();
-        l_foundEstablishments.establishments = new ArrayList<>();
-        l_foundEstablishments.establishment_addresses = new ArrayList<>();
+        out_establishments.Value = new ArrayList<>();
+        out_establishmentAddresses.Value = new ArrayList<>();
 
             ConfigurationBeans.jdbcTemplate.query(con -> {
                 PreparedStatement l_ps = con.prepareStatement("select * from establishments, establishment_address " +
@@ -82,38 +83,29 @@ public class EstablishmentQuery {
                 return l_ps;
             }, (rs) -> {
                 IntegerHeap l_rs_index = new IntegerHeap(1);
-                EstablishmentWithDependenciesV2 l_est = new EstablishmentWithDependenciesV2();
 
                 Establishment l_establishment = EstablishmentQueryUtils.RetrieveEstablishment(rs, l_rs_index);
                 EstablishmentAddress l_establishmentAddress = EstablishmentQueryUtils.RetrieveEstablishmentAddress(rs, l_rs_index);
 
-                l_foundEstablishments.establishments.add(l_establishment);
-                l_foundEstablishments.establishment_addresses.add(l_establishmentAddress);
+                out_establishments.Value.add(l_establishment);
+                out_establishmentAddresses.Value.add(l_establishmentAddress);
             });
-        return l_foundEstablishments;
     }
 
-    public static EstablishmentWithAddress GetEstablishment_with_EstablishmentAddress(long p_establishment_id)
+    public static void GetEstablishment_with_EstablishmentAddress(long p_establishment_id, Parameter<Establishment> out_establishment,
+                                                                  Parameter<EstablishmentAddress> out_establishmentAddress)
     {
-        List<EstablishmentWithAddress> l_foundEstablishments =
                 ConfigurationBeans.jdbcTemplate.query(con -> {
                     PreparedStatement l_ps = con.prepareStatement("select * from establishments, establishment_address where establishments.id == ? and establishments.address_id == establishment_address.id limit 1;");
                     l_ps.setLong(1, p_establishment_id);
                     return l_ps;
-                }, (rs, rowNum) -> {
+                }, (rs) -> {
                     IntegerHeap l_rs_index = new IntegerHeap(1);
 
-                    EstablishmentWithAddress l_establishmentWithAddress = new EstablishmentWithAddress();
-                    l_establishmentWithAddress.establishment = EstablishmentQueryUtils.RetrieveEstablishment(rs, l_rs_index);
-                    l_establishmentWithAddress.establishment_address = EstablishmentQueryUtils.RetrieveEstablishmentAddress(rs, l_rs_index);
+                    out_establishment.Value = EstablishmentQueryUtils.RetrieveEstablishment(rs, l_rs_index);
+                    out_establishmentAddress.Value = EstablishmentQueryUtils.RetrieveEstablishmentAddress(rs, l_rs_index);
 
-                    return l_establishmentWithAddress;
                 });
-        if(l_foundEstablishments.size() > 0)
-        {
-           return l_foundEstablishments.get(0);
-        }
-        return null;
     }
 
     public static void UpdateEstablishment(Establishment p_establishment)
@@ -165,11 +157,11 @@ public class EstablishmentQuery {
         }
     }
 
-    public static EstablishmentWithDependenciesV2 GetAllEstablishments_with_EstablishmentAddress(long p_user_id)
+    public static void GetAllEstablishments_with_EstablishmentAddress(long p_user_id, Parameter<List<Establishment>> out_establishment,
+                                                                      Parameter<List<EstablishmentAddress>> out_establishmentAddress)
     {
-        EstablishmentWithDependenciesV2 l_return = new EstablishmentWithDependenciesV2();
-        l_return.establishments = new ArrayList<>();
-        l_return.establishment_addresses = new ArrayList<>();
+        out_establishment.Value = new ArrayList<>();
+        out_establishmentAddress.Value = new ArrayList<>();
 
             ConfigurationBeans.jdbcTemplate.query(con -> {
                 PreparedStatement l_ps = con.prepareStatement("select * from establishments, establishment_address where establishments.user_id == ? and establishments.address_id == establishment_address.id;");
@@ -180,11 +172,9 @@ public class EstablishmentQuery {
                 Establishment l_establishment = EstablishmentQueryUtils.RetrieveEstablishment(rs, l_rs_index);
                 EstablishmentAddress l_establishmentAddress = EstablishmentQueryUtils.RetrieveEstablishmentAddress(rs, l_rs_index);
 
-                l_return.establishments.add(l_establishment);
-                l_return.establishment_addresses.add(l_establishmentAddress);
+                out_establishment.Value.add(l_establishment);
+                out_establishmentAddress.Value.add(l_establishmentAddress);
             });
-
-        return l_return;
     }
 
     public static void DeleteEstablishment_with_Address(long p_establishment)

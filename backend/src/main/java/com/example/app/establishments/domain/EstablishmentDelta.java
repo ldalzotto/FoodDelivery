@@ -1,5 +1,7 @@
 package com.example.app.establishments.domain;
 
+import org.springframework.boot.json.BasicJsonParser;
+
 import java.util.HashMap;
 
 public class EstablishmentDelta {
@@ -16,5 +18,10 @@ public class EstablishmentDelta {
             return l_establishmentDelta;
         }
         return null;
+    }
+
+    public static EstablishmentDelta parse(String p_parsedJson)
+    {
+        return EstablishmentDelta.parse((HashMap<String, Object>)new BasicJsonParser().parseMap(p_parsedJson));
     }
 }

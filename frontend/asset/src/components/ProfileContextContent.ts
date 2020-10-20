@@ -1,7 +1,7 @@
 import { LoadingButton } from "../components_graphic/LoadingButton.js"
 import { ServerError } from "../server/Server.js";
 import {
-    EstablishmentService, Establishment, EstablishmentAddress, EstablishmentWithAddress, EstablishmentWithDependenciesV2,
+    EstablishmentService, Establishment, EstablishmentAddress, EstablishmentWithDependenciesV2,
     EstablishmentDelta, EstablishmentAddressDelta, EstablishmentCalculationType
 } from "../services/Establishment.js"
 import { BindingUtils, Observable } from "../binding/Binding.js"

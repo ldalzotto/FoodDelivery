@@ -1,8 +1,6 @@
 package com.example.app.establishments;
 
-import com.example.app.establishments.domain.EstablishmentAddress;
-import com.example.app.establishments.domain.EstablishmentWithAddress;
-import com.example.app.establishments.domain.EstablishmentWithAddressDelta;
+import com.example.app.establishments.domain.*;
 import com.example.app.session.SessionErrorHandler;
 import com.example.app.session.SessionService;
 import com.example.main.FunctionalError;
@@ -21,10 +19,12 @@ public class EstablishmentsController {
     ResponseEntity<?> CreateEstablishment(
             @CookieValue("session_token") String p_sessionToken,
             @CookieValue("session_user_id") long p_user_id,
-            @RequestParam("establishment") String p_establishment,
+            @RequestParam(Establishment.JSON_KEY) String p_establishment,
+            @RequestParam(EstablishmentAddress.JSON_KEY) String p_establishmentAddress,
             @RequestParam(value = "establishment_thumb", required = false) MultipartFile p_thumbImage) {
 
-        EstablishmentWithAddress l_establishment = EstablishmentWithAddress.parse(p_establishment);
+        Establishment l_establishment = Establishment.parse(p_establishment);
+        EstablishmentAddress l_establishmentAddress = EstablishmentAddress.parse(p_establishmentAddress);
 
         FunctionalError l_Functional_error = new FunctionalError();
 
@@ -38,8 +38,9 @@ public class EstablishmentsController {
             return ResponseEntity.badRequest().body(l_Functional_error);
         }
         */
-        l_establishment.establishment.user_id = p_user_id;
-        return ResponseEntity.ok().body(EstablishmentService.InsertEstablishment(l_establishment, p_thumbImage));
+        l_establishment.user_id = p_user_id;
+        EstablishmentService.InsertEstablishment(l_establishment, l_establishmentAddress, p_thumbImage);
+        return ResponseEntity.ok().body(null);
     }
 
     @CrossOrigin(origins = {"http://localhost:8081", "http://192.168.1.11:8081"}, allowCredentials = "true")
@@ -82,17 +83,20 @@ public class EstablishmentsController {
             @CookieValue("session_token") String p_sessionToken,
             @CookieValue("session_user_id") long p_user_id,
             @RequestParam("establishment_id") long p_establishment_id,
-            @RequestParam("establishment_delta") String p_establishmentDelta) {
+            @RequestParam("establishment_delta") String p_establishmentDelta,
+            @RequestParam("establishment_address_delta") String p_establishmentAddressDelta) {
 
-        EstablishmentWithAddressDelta l_establishmentDelta = EstablishmentWithAddressDelta.parse(p_establishmentDelta);
         FunctionalError l_Functional_error = new FunctionalError();
+
+        EstablishmentDelta l_establishmentDelta = EstablishmentDelta.parse(p_establishmentDelta);
+        EstablishmentAddressDelta l_establishmentAddressDelta = EstablishmentAddressDelta.parse(p_establishmentAddressDelta);
 
         if (!SessionErrorHandler.HandleSessionValidationToken(
                 SessionService.validateSessionToken(p_sessionToken, p_user_id), l_Functional_error)) {
             return ResponseEntity.badRequest().body(l_Functional_error);
         }
 
-        EstablishmentService.UpdateEstablishment(p_establishment_id, l_establishmentDelta);
+        EstablishmentService.UpdateEstablishment(p_establishment_id, l_establishmentDelta, l_establishmentAddressDelta);
         return ResponseEntity.ok().body(null);
     }
 

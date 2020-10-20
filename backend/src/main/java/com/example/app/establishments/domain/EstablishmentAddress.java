@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class EstablishmentAddress {
+
+    public static final String JSON_KEY = "establishment_address";
+
     public long id;
     public String street_full_name;
     public long city_id;
@@ -36,5 +39,10 @@ public class EstablishmentAddress {
             return l_establishment;
         }
         return null;
+    }
+
+    public static EstablishmentAddress parse(String p_jsonString)
+    {
+        return EstablishmentAddress.parse((HashMap<String, Object>)new BasicJsonParser().parseMap(p_jsonString));
     }
 }

@@ -5,38 +5,36 @@ import com.example.app.geo.GeoQuery;
 import com.example.app.geo.domain.City;
 import com.example.app.image.ImageQuery;
 import com.example.app.image.domain.ImageCreated;
+import com.example.utils.Parameter;
 import org.springframework.dao.DataAccessException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class EstablishmentService {
 
     private static final double EarthRadius = 6371e3;
 
-    public static EstablishmentWithAddress InsertEstablishment(EstablishmentWithAddress p_establishment, MultipartFile p_thumbImage)
+    public static void InsertEstablishment(Establishment p_establishment,
+                                                               EstablishmentAddress p_establishmentAddress, MultipartFile p_thumbImage)
     {
-        EstablishmentWithAddress l_return = new EstablishmentWithAddress();
-
         boolean l_addressInsert = false;
 
         try{
                 //insert address
-                l_return.establishment_address = EstablishmentQuery.InsertEstablishmentAddress(p_establishment.establishment_address);
+                EstablishmentAddress l_insertedEstablishmentAddress = EstablishmentQuery.InsertEstablishmentAddress(p_establishmentAddress);
                 l_addressInsert = true;
-                p_establishment.establishment.address_id = l_return.establishment_address.id;
+                p_establishment.address_id = l_insertedEstablishmentAddress.id;
 
                 if(p_thumbImage != null)
                 {
                     try
                     {
                         ImageCreated l_image = ImageQuery.PostImage(p_thumbImage.getBytes(), "");
-                        p_establishment.establishment.thumb_id = l_image.image_id;
+                        p_establishment.thumb_id = l_image.image_id;
                     } catch (IOException p_ex)
                     {
                         System.out.print(p_ex.toString());
@@ -44,49 +42,53 @@ public class EstablishmentService {
                 }
 
                 //insert establishment
-                l_return.establishment = EstablishmentQuery.InsertEstablishment(p_establishment.establishment);
+                EstablishmentQuery.InsertEstablishment(p_establishment);
 
         } catch (DataAccessException ex) {
             //ROLLBACK
             if(l_addressInsert)
             {
-                EstablishmentQuery.DeleteEstablishmentAddress(l_return.establishment_address.id);
+                EstablishmentQuery.DeleteEstablishmentAddress(p_establishment.address_id);
             }
 
             throw ex;
         }
-
-        return l_return;
     }
 
-    public static void UpdateEstablishment(long p_establishmentId, EstablishmentWithAddressDelta p_establishmentDelta)
+    public static void UpdateEstablishment(long p_establishmentId, EstablishmentDelta p_establishmentDelta,
+                                           EstablishmentAddressDelta p_establishmentAddressDelta)
     {
-        EstablishmentWithAddress l_estWithAddressServer = EstablishmentQuery.GetEstablishment_with_EstablishmentAddress(p_establishmentId);
+        Parameter<Establishment> l_establishmentServer = new Parameter<>();
+        Parameter<EstablishmentAddress> l_establishmentAddressServer = new Parameter<>();
+        EstablishmentQuery.GetEstablishment_with_EstablishmentAddress(p_establishmentId, l_establishmentServer, l_establishmentAddressServer);
 
-        if(l_estWithAddressServer!=null)
-        {
-            if(p_establishmentDelta.establishment!=null)
+            if(p_establishmentDelta !=null)
             {
-                if(p_establishmentDelta.establishment.name != null){l_estWithAddressServer.establishment.name = p_establishmentDelta.establishment.name;}
-                if(p_establishmentDelta.establishment.phone != null){l_estWithAddressServer.establishment.phone = p_establishmentDelta.establishment.phone;}
-                EstablishmentQuery.UpdateEstablishment(l_estWithAddressServer.establishment);
+                if(p_establishmentDelta.name != null){l_establishmentServer.Value.name = p_establishmentDelta.name;}
+                if(p_establishmentDelta.phone != null){l_establishmentServer.Value.phone = p_establishmentDelta.phone;}
+                EstablishmentQuery.UpdateEstablishment(l_establishmentServer.Value);
             }
 
-            if(p_establishmentDelta.establishment_address!=null)
+            if(p_establishmentAddressDelta!=null)
             {
-                if(p_establishmentDelta.establishment_address.street_full_name != null){l_estWithAddressServer.establishment_address.street_full_name = p_establishmentDelta.establishment_address.street_full_name;}
-                if(p_establishmentDelta.establishment_address.city_id != null){l_estWithAddressServer.establishment_address.city_id = p_establishmentDelta.establishment_address.city_id;}
-                if(p_establishmentDelta.establishment_address.lat != null){l_estWithAddressServer.establishment_address.lat = p_establishmentDelta.establishment_address.lat;}
-                if(p_establishmentDelta.establishment_address.lng != null){l_estWithAddressServer.establishment_address.lng = p_establishmentDelta.establishment_address.lng;}
-                EstablishmentQuery.UpdateEstablishmentAddress(l_estWithAddressServer.establishment_address);
+                if(p_establishmentAddressDelta.street_full_name != null){l_establishmentAddressServer.Value.street_full_name = p_establishmentAddressDelta.street_full_name;}
+                if(p_establishmentAddressDelta.city_id != null){l_establishmentAddressServer.Value.city_id = p_establishmentAddressDelta.city_id;}
+                if(p_establishmentAddressDelta.lat != null){l_establishmentAddressServer.Value.lat = p_establishmentAddressDelta.lat;}
+                if(p_establishmentAddressDelta.lng != null){l_establishmentAddressServer.Value.lng = p_establishmentAddressDelta.lng;}
+                EstablishmentQuery.UpdateEstablishmentAddress(l_establishmentAddressServer.Value);
             }
-        }
-
     }
 
-    public static EstablishmentWithDependenciesV2 GetEstablishments(long p_userId, List<EstablishmentCalculationType> p_caluclations)
+    public static EstablishmentGet GetEstablishments(long p_userId, List<EstablishmentCalculationType> p_caluclations)
     {
-        EstablishmentWithDependenciesV2 l_establishmentWithDependencies = EstablishmentQuery.GetAllEstablishments_with_EstablishmentAddress(p_userId);
+        EstablishmentGet l_return = new EstablishmentGet();
+
+        Parameter<List<Establishment>> l_establishments = new Parameter<>();
+        Parameter<List<EstablishmentAddress>> l_establishmentAddresses = new Parameter<>();
+        EstablishmentQuery.GetAllEstablishments_with_EstablishmentAddress(p_userId,l_establishments, l_establishmentAddresses);
+
+        l_return.setEstablishments(l_establishments.Value);
+        l_return.setEstablishmentAddresses(l_establishmentAddresses.Value);
 
         if(p_caluclations != null) {
             for (int i = 0; i < p_caluclations.size(); i++) {
@@ -95,19 +97,19 @@ public class EstablishmentService {
                 {
                     case RETRIEVE_CITIES:
                     {
-                        LinkCitiesToEstablishments_Return l_citiesLinked = LinkCitiesToEstablishments(l_establishmentWithDependencies.establishments, l_establishmentWithDependencies.establishment_addresses);
-                        l_establishmentWithDependencies.cities = l_citiesLinked.cities;
-                        l_establishmentWithDependencies.establishment_address_TO_city = l_citiesLinked.establishment_address_TO_city;
+                        LinkCitiesToEstablishments_Return l_citiesLinked = LinkCitiesToEstablishments(l_establishments.Value, l_establishmentAddresses.Value);
+                        l_return.setCities(l_citiesLinked.cities);
+                        l_return.setEstablishmentAddressToCity(l_citiesLinked.establishment_address_TO_city);
                     }
                     break;
                 }
             }
         }
 
-        return l_establishmentWithDependencies;
+        return l_return;
     }
 
-    public static EstablishmentWithDependenciesV2 GetEstablishmentsNear(List<EstablishmentCalculationType> p_caluclations, float p_lat, float p_lng)
+    public static EstablishmentGet GetEstablishmentsNear(List<EstablishmentCalculationType> p_caluclations, float p_lat, float p_lng)
     {
         float l_radius = 5000; //(meters)
 
@@ -116,7 +118,17 @@ public class EstablishmentService {
         double l_minLng = p_lng - l_radius/EarthRadius*180/Math.PI/Math.cos(p_lat*Math.PI/180);
         double l_maxLng = p_lng + l_radius/EarthRadius*180/Math.PI/Math.cos(p_lat*Math.PI/180);
 
-        EstablishmentWithDependenciesV2 l_nearEstablishments = EstablishmentQuery.GetEstablishments_InsideBoundingSphere_with_EstablishmentAddress(l_minLat, l_maxLat, l_minLng, l_maxLng);
+        EstablishmentGet l_return = new EstablishmentGet();
+        // l_maps.put();
+
+        Parameter<List<Establishment>> l_establishments = new Parameter<>();
+        Parameter<List<EstablishmentAddress>> l_establishmentAddresses = new Parameter<>();
+
+        EstablishmentQuery.GetEstablishments_InsideBoundingSphere_with_EstablishmentAddress(l_minLat, l_maxLat, l_minLng, l_maxLng,
+                l_establishments, l_establishmentAddresses);
+
+        l_return.setEstablishments(l_establishments.Value);
+        l_return.setEstablishmentAddresses(l_establishmentAddresses.Value);
 
         if(p_caluclations != null)
         {
@@ -127,20 +139,21 @@ public class EstablishmentService {
                 {
                     case RETRIEVE_CITIES:
                     {
-                        LinkCitiesToEstablishments_Return l_citiesLinked = LinkCitiesToEstablishments(l_nearEstablishments.establishments, l_nearEstablishments.establishment_addresses);
-                        l_nearEstablishments.cities = l_citiesLinked.cities;
-                        l_nearEstablishments.establishment_address_TO_city = l_citiesLinked.establishment_address_TO_city;
+                        LinkCitiesToEstablishments_Return l_citiesLinked = LinkCitiesToEstablishments(l_establishments.Value, l_establishmentAddresses.Value);
+                        l_return.setCities(l_citiesLinked.cities);
+                        l_return.setEstablishmentAddressToCity(l_citiesLinked.establishment_address_TO_city);
                     }
                     break;
                     case DELIVERY_CHARGE:
                     {
-                        if(l_nearEstablishments.establishment_addresses != null)
+                        if(l_establishmentAddresses.Value != null)
                         {
-                            if(l_nearEstablishments.establishment_addresses.size() > 0)
+                            double[] l_deliveryCharges = null;
+                            if(l_establishmentAddresses.Value.size() > 0)
                             {
-                                l_nearEstablishments.delivery_charges = new double[l_nearEstablishments.establishment_addresses.size()];
+                                l_deliveryCharges = new double[l_establishmentAddresses.Value.size()];
                             }
-                            for(int j=0;j<l_nearEstablishments.establishment_addresses.size();j++)
+                            for(int j=0;j<l_establishmentAddresses.Value.size();j++)
                             {
                                 /*
                                 EstablishmentAddress l_address = l_nearEstablishments.establishment_addresses.get(j);
@@ -155,8 +168,10 @@ public class EstablishmentService {
                                 double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
                                 double d = EarthRadius * c;
                                  */
-                                l_nearEstablishments.delivery_charges[j] = new BigDecimal(Math.random()).setScale(2, RoundingMode.HALF_UP).doubleValue();
+                                l_deliveryCharges[j] = new BigDecimal(Math.random()).setScale(2, RoundingMode.HALF_UP).doubleValue();
                             }
+
+                            l_return.setDeliveryCharges(l_deliveryCharges);
                         }
 
 
@@ -166,7 +181,7 @@ public class EstablishmentService {
             }
         }
 
-        return l_nearEstablishments;
+        return l_return;
     }
 
     private static LinkCitiesToEstablishments_Return LinkCitiesToEstablishments(List<Establishment> p_establishments, List<EstablishmentAddress> p_establishmentAddress)
