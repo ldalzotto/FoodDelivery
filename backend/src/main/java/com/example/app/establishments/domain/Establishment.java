@@ -11,6 +11,7 @@ public class Establishment {
     public String name;
     public long address_id;
     public String phone;
+    public Long thumb_id;
     public long user_id;
 
     public Establishment copy()
@@ -20,6 +21,7 @@ public class Establishment {
         l_return.name = this.name;
         l_return.address_id = this.address_id;
         l_return.phone = this.phone;
+        l_return.thumb_id = this.thumb_id;
         l_return.user_id = this.user_id;
         return l_return;
     }
@@ -48,6 +50,7 @@ public class Establishment {
             l_establishment.id = (long)p_parsedJson.getOrDefault("id", 0L);
             l_establishment.name = (String) p_parsedJson.getOrDefault("name", null);
             l_establishment.address_id = (long)p_parsedJson.getOrDefault("address_id", 0L);
+            l_establishment.thumb_id = (Long) p_parsedJson.getOrDefault("thumb_id", null);
             l_establishment.phone = (String) p_parsedJson.getOrDefault("phone", null);
             return l_establishment;
         }

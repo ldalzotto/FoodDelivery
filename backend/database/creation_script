@@ -1,3 +1,13 @@
+
+drop table if exists static_images;
+
+create table if not exists static_images
+(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    format TEXT NOT NULL,
+    data BLOB NOT NULL
+);
+
 drop table if exists users;
 
 create table if not exists users
@@ -65,7 +75,9 @@ create table if not exists establishments
     name TEXT NOT NULL,
     address_id INTEGER NOT NULL,
     phone TEXT NOT NULL,
+    thumb_id INTEGER,
     user_id INTEGER NOT NULL,
+    FOREIGN KEY(thumb_id) REFERENCES static_images(id),
     FOREIGN KEY(user_id) REFERENCES users(id),
     FOREIGN KEY(address_id) REFERENCES establishment_address(id)
 );
@@ -81,15 +93,6 @@ create table if not exists sessions
     is_cancelled INTEGER NOT NULL,
     FOREIGN KEY(user_id) REFERENCES users(id)
 );
-
-drop table if exists static_images;
-
-create table if not exists static_images
-(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    format TEXT NOT NULL,
-    data BLOB NOT NULL
-)
 
 insert into country (id, name) values (1, 'France');
 

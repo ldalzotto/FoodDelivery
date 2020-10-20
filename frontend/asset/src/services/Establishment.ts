@@ -5,12 +5,16 @@ import { City, LatLng } from "./Geo.js";
 class EstablishmentService
 {
 
-    public static CreateEstablishment_With_Address(p_establishment : Establishment, p_address : EstablishmentAddress,
+    public static CreateEstablishment_With_Address(p_establishment : Establishment, p_address : EstablishmentAddress, p_thumbImage : File | null,
         p_okCallback ?: (arg0 : null)=>(void), p_errorCallback ?: (p_serverError : ServerError)=>(void))
     {
         let l_establishment_with_Address = new EstablishmentWithAddress(p_establishment, p_address); 
         let l_form : FormData = new FormData();
         l_form.append("establishment", JSON.stringify(l_establishment_with_Address));
+        if(p_thumbImage)
+        {
+            l_form.append("establishment_thumb", p_thumbImage);
+        }
         Server.SendRequest_Form("POST", "http://localhost:8080/establishment",l_form, true, p_okCallback, p_errorCallback);
     }
 

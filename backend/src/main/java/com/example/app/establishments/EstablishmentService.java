@@ -3,11 +3,14 @@ package com.example.app.establishments;
 import com.example.app.establishments.domain.*;
 import com.example.app.geo.GeoQuery;
 import com.example.app.geo.domain.City;
+import com.example.app.image.ImageQuery;
+import com.example.app.image.domain.ImageCreated;
 import org.springframework.dao.DataAccessException;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.DecimalFormat;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -16,18 +19,29 @@ public class EstablishmentService {
 
     private static final double EarthRadius = 6371e3;
 
-    public static EstablishmentWithAddress InsertEstablishment(EstablishmentWithAddress p_establishment)
+    public static EstablishmentWithAddress InsertEstablishment(EstablishmentWithAddress p_establishment, MultipartFile p_thumbImage)
     {
         EstablishmentWithAddress l_return = new EstablishmentWithAddress();
 
         boolean l_addressInsert = false;
 
         try{
-
                 //insert address
                 l_return.establishment_address = EstablishmentQuery.InsertEstablishmentAddress(p_establishment.establishment_address);
                 l_addressInsert = true;
                 p_establishment.establishment.address_id = l_return.establishment_address.id;
+
+                if(p_thumbImage != null)
+                {
+                    try
+                    {
+                        ImageCreated l_image = ImageQuery.PostImage(p_thumbImage.getBytes(), "");
+                        p_establishment.establishment.thumb_id = l_image.image_id;
+                    } catch (IOException p_ex)
+                    {
+                        System.out.print(p_ex.toString());
+                    }
+                }
 
                 //insert establishment
                 l_return.establishment = EstablishmentQuery.InsertEstablishment(p_establishment.establishment);

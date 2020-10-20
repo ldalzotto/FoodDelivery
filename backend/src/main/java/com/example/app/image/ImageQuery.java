@@ -1,5 +1,6 @@
 package com.example.app.image;
 
+import com.example.app.image.domain.ImageCreated;
 import com.example.main.ConfigurationBeans;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -38,10 +39,7 @@ public class ImageQuery {
 }
 
 
-class ImageCreated
-{
-    public long image_id;
-}
+
 
 class StaticImage
 {

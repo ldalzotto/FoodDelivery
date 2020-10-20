@@ -9,6 +9,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import java.sql.PreparedStatement;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,11 +44,21 @@ public class EstablishmentQuery {
         Establishment l_return = p_establishment.copy();
         KeyHolder l_keyHolder = new GeneratedKeyHolder();
         ConfigurationBeans.jdbcTemplate.update(con -> {
-            PreparedStatement l_ps = con.prepareStatement("insert into establishments(name, address_id, phone, user_id) VALUES (?, ?, ?, ?)");
+            PreparedStatement l_ps = con.prepareStatement("insert into establishments(name, address_id, phone, thumb_id, user_id) VALUES (?, ?, ?, ?, ?)");
             l_ps.setString(1, p_establishment.name);
             l_ps.setLong(2, p_establishment.address_id);
             l_ps.setString(3, p_establishment.phone);
-            l_ps.setLong(4, p_establishment.user_id);
+
+            if(p_establishment.thumb_id!=null)
+            {
+                l_ps.setLong(4, p_establishment.thumb_id);
+            }
+            else
+            {
+                l_ps.setNull(4, Types.INTEGER);
+            }
+
+            l_ps.setLong(5, p_establishment.user_id);
             return l_ps;
         }, l_keyHolder);
         l_return.id = l_keyHolder.getKey().longValue();
@@ -67,7 +78,8 @@ public class EstablishmentQuery {
             l_establishment.name = rs.getString(2);
             l_establishment.address_id = rs.getLong(3);
             l_establishment.phone = rs.getString(4);
-            l_establishment.user_id = rs.getLong(5);
+            l_establishment.thumb_id = rs.getLong(5);
+            l_establishment.user_id = rs.getLong(6);
             return l_establishment;
         });
 
@@ -103,14 +115,15 @@ public class EstablishmentQuery {
                 l_establishment.name = rs.getString(2);
                 l_establishment.address_id = rs.getLong(3);
                 l_establishment.phone = rs.getString(4);
-                l_establishment.user_id = rs.getLong(5);
+                l_establishment.thumb_id = rs.getLong(5);
+                l_establishment.user_id = rs.getLong(6);
 
                 EstablishmentAddress l_establishmentAddress = new EstablishmentAddress();
-                l_establishmentAddress.id = rs.getLong(6);
-                l_establishmentAddress.street_full_name = rs.getString(7);
-                l_establishmentAddress.city_id = rs.getLong(8);
-                l_establishmentAddress.lat = rs.getFloat(9);
-                l_establishmentAddress.lng = rs.getFloat(10);
+                l_establishmentAddress.id = rs.getLong(7);
+                l_establishmentAddress.street_full_name = rs.getString(8);
+                l_establishmentAddress.city_id = rs.getLong(9);
+                l_establishmentAddress.lat = rs.getFloat(10);
+                l_establishmentAddress.lng = rs.getFloat(11);
 
                 l_foundEstablishments.establishments.add(l_establishment);
                 l_foundEstablishments.establishment_addresses.add(l_establishmentAddress);
@@ -133,14 +146,15 @@ public class EstablishmentQuery {
                     l_establishmentWithAddress.establishment.name = rs.getString(2);
                     l_establishmentWithAddress.establishment.address_id = rs.getLong(3);
                     l_establishmentWithAddress.establishment.phone = rs.getString(4);
-                    l_establishmentWithAddress.establishment.user_id = rs.getLong(5);
+                    l_establishmentWithAddress.establishment.thumb_id = rs.getLong(5);
+                    l_establishmentWithAddress.establishment.user_id = rs.getLong(6);
 
                     l_establishmentWithAddress.establishment_address = new EstablishmentAddress();
-                    l_establishmentWithAddress.establishment_address.id = rs.getLong(6);
-                    l_establishmentWithAddress.establishment_address.street_full_name = rs.getString(7);
-                    l_establishmentWithAddress.establishment_address.city_id = rs.getLong(8);
-                    l_establishmentWithAddress.establishment_address.lat = rs.getFloat(9);
-                    l_establishmentWithAddress.establishment_address.lng = rs.getFloat(10);
+                    l_establishmentWithAddress.establishment_address.id = rs.getLong(7);
+                    l_establishmentWithAddress.establishment_address.street_full_name = rs.getString(8);
+                    l_establishmentWithAddress.establishment_address.city_id = rs.getLong(9);
+                    l_establishmentWithAddress.establishment_address.lat = rs.getFloat(10);
+                    l_establishmentWithAddress.establishment_address.lng = rs.getFloat(11);
 
                     return l_establishmentWithAddress;
                 });
@@ -163,12 +177,21 @@ public class EstablishmentQuery {
                 return l_ps;
             });
             ConfigurationBeans.jdbcTemplate.update(con -> {
-                PreparedStatement l_ps = con.prepareStatement("insert into establishments(id, name, address_id, phone, user_id) values (?,?,?,?,?)");
+                PreparedStatement l_ps = con.prepareStatement("insert into establishments(id, name, address_id, phone, thumb_id, user_id) values (?,?,?,?,?,?)");
                 l_ps.setLong(1, p_establishment.id);
                 l_ps.setString(2, p_establishment.name);
                 l_ps.setLong(3, p_establishment.address_id);
                 l_ps.setString(4, p_establishment.phone);
-                l_ps.setLong(5, p_establishment.user_id);
+                if(p_establishment.thumb_id != null)
+                {
+                    l_ps.setLong(5, p_establishment.thumb_id);
+                }
+                else
+                {
+                    l_ps.setNull(5, Types.INTEGER);
+                }
+
+                l_ps.setLong(6, p_establishment.user_id);
                 return l_ps;
             });
 
@@ -229,15 +252,16 @@ public class EstablishmentQuery {
                 l_establishment.name = rs.getString(2);
                 l_establishment.address_id = rs.getLong(3);
                 l_establishment.phone = rs.getString(4);
-                l_establishment.user_id = rs.getLong(5);
+                l_establishment.thumb_id = rs.getLong(5);
+                l_establishment.user_id = rs.getLong(6);
 
                 EstablishmentAddress l_establishmentAddress = new EstablishmentAddress();
 
-                l_establishmentAddress.id = rs.getLong(6);
-                l_establishmentAddress.street_full_name = rs.getString(7);
-                l_establishmentAddress.city_id = rs.getLong(8);
-                l_establishmentAddress.lat = rs.getFloat(9);
-                l_establishmentAddress.lng = rs.getFloat(10);
+                l_establishmentAddress.id = rs.getLong(7);
+                l_establishmentAddress.street_full_name = rs.getString(8);
+                l_establishmentAddress.city_id = rs.getLong(9);
+                l_establishmentAddress.lat = rs.getFloat(10);
+                l_establishmentAddress.lng = rs.getFloat(11);
 
                 l_return.establishments.add(l_establishment);
                 l_return.establishment_addresses.add(l_establishmentAddress);

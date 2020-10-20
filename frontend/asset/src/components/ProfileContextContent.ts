@@ -75,6 +75,7 @@ class EstablishmentRegistration extends HTMLElement {
     private citySelection: CitySelection;
     private latLngMap: MapSelection;
     private inputPhone: HTMLInputElement;
+    private inputThumbImage : HTMLInputElement;
 
     private inputNameObservable: Observable<string>;
 
@@ -102,6 +103,7 @@ class EstablishmentRegistration extends HTMLElement {
         this.citySelection = new CitySelection(this.querySelector("#city"));
         this.latLngMap = new MapSelection(this.querySelector("#latlng"), 48.85, 2.35);
         this.inputPhone = this.querySelector("#phone") as HTMLInputElement;
+        this.inputThumbImage = this.querySelector("#thumb") as HTMLInputElement;
 
         this.inputNameObservable = new Observable<string>("");
         this.inputAddressStreetNameObservable = new Observable<string>("");
@@ -135,7 +137,7 @@ class EstablishmentRegistration extends HTMLElement {
         }
 
         EstablishmentService.CreateEstablishment_With_Address(
-            l_establishment, l_establishmentAddress,
+            l_establishment, l_establishmentAddress, this.inputThumbImage.files[0],
             () => {
                 this.dispatchEvent(new EstablishmentRegistration_AddedEstablishment());
                 p_onCompleted();

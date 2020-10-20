@@ -16,6 +16,7 @@ import java.sql.PreparedStatement;
 @Controller
 @RequestMapping(value = "/")
 public class ImageController {
+    /*
     @CrossOrigin(origins = {"http://localhost:8081", "http://192.168.1.11:8081"})
     @RequestMapping(value = "/image", method = RequestMethod.POST)
     public @ResponseBody
@@ -51,6 +52,7 @@ public class ImageController {
         });
         return l_image.image;
     }
+    */
 }
 
 class ImageByteWrapper

@@ -9,6 +9,7 @@ import com.example.main.FunctionalError;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 @RequestMapping(value = "/")
@@ -20,7 +21,8 @@ public class EstablishmentsController {
     ResponseEntity<?> CreateEstablishment(
             @CookieValue("session_token") String p_sessionToken,
             @CookieValue("session_user_id") long p_user_id,
-            @RequestParam("establishment") String p_establishment) {
+            @RequestParam("establishment") String p_establishment,
+            @RequestParam(value = "establishment_thumb", required = false) MultipartFile p_thumbImage) {
 
         EstablishmentWithAddress l_establishment = EstablishmentWithAddress.parse(p_establishment);
 
@@ -37,7 +39,7 @@ public class EstablishmentsController {
         }
         */
         l_establishment.establishment.user_id = p_user_id;
-        return ResponseEntity.ok().body(EstablishmentService.InsertEstablishment(l_establishment));
+        return ResponseEntity.ok().body(EstablishmentService.InsertEstablishment(l_establishment, p_thumbImage));
     }
 
     @CrossOrigin(origins = {"http://localhost:8081", "http://192.168.1.11:8081"}, allowCredentials = "true")
