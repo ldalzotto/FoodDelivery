@@ -1,5 +1,6 @@
 package com.example.app.establishments;
 
+import com.example.app.establishments.domain.EstablishmentAddress;
 import com.example.app.establishments.domain.EstablishmentWithAddress;
 import com.example.app.establishments.domain.EstablishmentWithAddressDelta;
 import com.example.app.session.SessionErrorHandler;
@@ -19,7 +20,9 @@ public class EstablishmentsController {
     ResponseEntity<?> CreateEstablishment(
             @CookieValue("session_token") String p_sessionToken,
             @CookieValue("session_user_id") long p_user_id,
-            @RequestBody EstablishmentWithAddress p_establishment) {
+            @RequestParam("establishment") String p_establishment) {
+
+        EstablishmentWithAddress l_establishment = EstablishmentWithAddress.parse(p_establishment);
 
         FunctionalError l_Functional_error = new FunctionalError();
 
@@ -33,8 +36,8 @@ public class EstablishmentsController {
             return ResponseEntity.badRequest().body(l_Functional_error);
         }
         */
-        p_establishment.establishment.user_id = p_user_id;
-        return ResponseEntity.ok().body(EstablishmentService.InsertEstablishment(p_establishment));
+        l_establishment.establishment.user_id = p_user_id;
+        return ResponseEntity.ok().body(EstablishmentService.InsertEstablishment(l_establishment));
     }
 
     @CrossOrigin(origins = {"http://localhost:8081", "http://192.168.1.11:8081"}, allowCredentials = "true")
@@ -77,8 +80,9 @@ public class EstablishmentsController {
             @CookieValue("session_token") String p_sessionToken,
             @CookieValue("session_user_id") long p_user_id,
             @RequestParam("establishment_id") long p_establishment_id,
-            @RequestBody EstablishmentWithAddressDelta p_establishmentDelta) {
+            @RequestParam("establishment_delta") String p_establishmentDelta) {
 
+        EstablishmentWithAddressDelta l_establishmentDelta = EstablishmentWithAddressDelta.parse(p_establishmentDelta);
         FunctionalError l_Functional_error = new FunctionalError();
 
         if (!SessionErrorHandler.HandleSessionValidationToken(
@@ -86,7 +90,7 @@ public class EstablishmentsController {
             return ResponseEntity.badRequest().body(l_Functional_error);
         }
 
-        EstablishmentService.UpdateEstablishment(p_establishment_id, p_establishmentDelta);
+        EstablishmentService.UpdateEstablishment(p_establishment_id, l_establishmentDelta);
         return ResponseEntity.ok().body(null);
     }
 

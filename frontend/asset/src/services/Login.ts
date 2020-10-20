@@ -70,7 +70,7 @@ class LoginService
     {
         if(!GUserState.isLoggedIn)
         {
-            Server.SendRequest("POST", "http://localhost:8080/login", p_loginInput, false,
+            Server.SendRequest_Json("POST", "http://localhost:8080/login", p_loginInput, false,
                 (res : LoginResponse) => {
                     LoginService.PushLoginCookie(res);
                     GUserState.isLoggedIn = true;
@@ -100,7 +100,7 @@ class LoginService
     {
         if(GUserState.isLoggedIn)
         {
-            Server.SendRequest("POST", "http://localhost:8080/logout", null, true,
+            Server.SendRequest_Json("POST", "http://localhost:8080/logout", null, true,
             (res : null) => {
                 GUserState.isLoggedIn = false;
                 GUserState.user.invalidate();

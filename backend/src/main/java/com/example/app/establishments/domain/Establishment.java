@@ -1,6 +1,10 @@
 package com.example.app.establishments.domain;
 import com.example.main.FunctionalError;
 import com.example.main.ValidationMessage;
+import org.springframework.boot.json.BasicJsonParser;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class Establishment {
     public long id;
@@ -34,5 +38,19 @@ public class Establishment {
         }
 
         return true;
+    }
+
+    public static Establishment parse(HashMap<String, Object> p_parsedJson)
+    {
+        if(p_parsedJson!=null)
+        {
+            Establishment l_establishment = new Establishment();
+            l_establishment.id = (long)p_parsedJson.getOrDefault("id", 0L);
+            l_establishment.name = (String) p_parsedJson.getOrDefault("name", null);
+            l_establishment.address_id = (long)p_parsedJson.getOrDefault("address_id", 0L);
+            l_establishment.phone = (String) p_parsedJson.getOrDefault("phone", null);
+            return l_establishment;
+        }
+        return null;
     }
 }

@@ -82,6 +82,14 @@ create table if not exists sessions
     FOREIGN KEY(user_id) REFERENCES users(id)
 );
 
+drop table if exists static_images;
+
+create table if not exists static_images
+(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    format TEXT NOT NULL,
+    data BLOB NOT NULL
+)
 
 insert into country (id, name) values (1, 'France');
 

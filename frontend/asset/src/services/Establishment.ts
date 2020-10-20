@@ -8,9 +8,10 @@ class EstablishmentService
     public static CreateEstablishment_With_Address(p_establishment : Establishment, p_address : EstablishmentAddress,
         p_okCallback ?: (arg0 : null)=>(void), p_errorCallback ?: (p_serverError : ServerError)=>(void))
     {
-        Server.SendRequest("POST", "http://localhost:8080/establishment", new EstablishmentWithAddress(p_establishment, p_address), true, 
-            p_okCallback, p_errorCallback
-        );
+        let l_establishment_with_Address = new EstablishmentWithAddress(p_establishment, p_address); 
+        let l_form : FormData = new FormData();
+        l_form.append("establishment", JSON.stringify(l_establishment_with_Address));
+        Server.SendRequest_Form("POST", "http://localhost:8080/establishment",l_form, true, p_okCallback, p_errorCallback);
     }
 
     public static GetEstablishments(l_calculationTypes : EstablishmentCalculationType[] | null, p_okCallback : (p_establishments : EstablishmentWithDependenciesV2) => void, p_errorCallback : (p_serverError : ServerError)=>(void))
@@ -20,7 +21,7 @@ class EstablishmentService
         {
             l_queryParams.addParam("calculations", l_calculationTypes.toString());
         }
-        Server.SendRequest("GET", `http://localhost:8080/establishments${l_queryParams.params}`, null, true,
+        Server.SendRequest_Json("GET", `http://localhost:8080/establishments${l_queryParams.params}`, null, true,
            p_okCallback, p_errorCallback
         );
     }
@@ -35,7 +36,7 @@ class EstablishmentService
         {
             l_queryParams.addParam("calculations", l_calculationTypes.toString());
         }
-        Server.SendRequest("GET", `http://localhost:8080/establishments/near${l_queryParams.params}`, null, false, p_okCallback, p_errorCallback);
+        Server.SendRequest_Json("GET", `http://localhost:8080/establishments/near${l_queryParams.params}`, null, false, p_okCallback, p_errorCallback);
     }
 
     public static UpdateEstablishment_Widht_Address(p_establishmentId : number, p_establishmentDelta : EstablishmentDelta | null, p_addressDelta : EstablishmentAddressDelta | null,
@@ -44,12 +45,15 @@ class EstablishmentService
         let l_delta = new EstablishmentWithAddressDelta();
         l_delta.establishment = p_establishmentDelta;
         l_delta.establishment_address = p_addressDelta;
-        Server.SendRequest("POST", `http://localhost:8080/establishment/update?establishment_id=${p_establishmentId}`, l_delta, true, p_okCallback, p_errorCallback);
+        let l_form : FormData = new FormData();
+        l_form.append("establishment_id", JSON.stringify(p_establishmentId));
+        l_form.append("establishment_delta", JSON.stringify(l_delta));
+        Server.SendRequest_Form("POST", `http://localhost:8080/establishment/update`, l_form, true, p_okCallback, p_errorCallback);
     }
 
     public static DeleteEstablishment(p_establishmentId : number, p_okCallback ?: (arg0 : null)=>(void), p_errorCallback ?: (p_serverError : ServerError)=>(void))
     {
-        Server.SendRequest("POST", `http://localhost:8080/establishment/delete?establishment_id=${p_establishmentId}`, null, true, p_okCallback, p_errorCallback);
+        Server.SendRequest_Json("POST", `http://localhost:8080/establishment/delete?establishment_id=${p_establishmentId}`, null, true, p_okCallback, p_errorCallback);
     }
 
 }

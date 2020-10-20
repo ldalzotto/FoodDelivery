@@ -21,8 +21,8 @@ public class EstablishmentQuery {
             PreparedStatement l_ps = con.prepareStatement("insert into establishment_address(street_full_name, city_id, lat, lng) VALUES (?,?,?,?)");
             l_ps.setString(1, p_address.street_full_name);
             l_ps.setLong(2, p_address.city_id);
-            l_ps.setFloat(3, p_address.lat);
-            l_ps.setFloat(4, p_address.lng);
+            l_ps.setDouble(3, p_address.lat);
+            l_ps.setDouble(4, p_address.lng);
             return l_ps;
         }, l_addressKeyHolder);
         l_return.id = l_addressKeyHolder.getKey().longValue();
@@ -198,8 +198,8 @@ public class EstablishmentQuery {
                 l_ps.setLong(1, p_establishmentAddress.id);
                 l_ps.setString(2, p_establishmentAddress.street_full_name);
                 l_ps.setLong(3, p_establishmentAddress.city_id);
-                l_ps.setFloat(4, p_establishmentAddress.lat);
-                l_ps.setFloat(5, p_establishmentAddress.lng);
+                l_ps.setDouble(4, p_establishmentAddress.lat);
+                l_ps.setDouble(5, p_establishmentAddress.lng);
                 return l_ps;
             });
 
