@@ -1,4 +1,5 @@
 import {MWatcher} from "../binding/Binding.js"
+import { ProfileNavigation } from "../services/Navigation.js";
 import {ProfileEstablishmentContext} from "./ProfileContextContent.js"
 
 class ProfileSelector_SelectionEvent extends Event
@@ -20,36 +21,34 @@ enum ProfileSelector_SelectedSection
     ESTABLISHMENT
 }
 
-class ProfileSelector extends HTMLElement
+class ProfileSelector
 {
     static readonly Type : string = "profile-selector";
 
+    private _root : HTMLElement;
+    public get root(){return this._root;}
     private establishmentButton : HTMLElement;
 
     private selectedSection : ProfileSelector_SelectedSection = ProfileSelector_SelectedSection.NONE;
     private selectedSection_watcher : MWatcher<ProfileSelector_SelectedSection>;
 
-    constructor(){
-        super();
+    constructor(p_root : HTMLElement){
+        this._root = p_root;
 
         let l_template : HTMLTemplateElement = document.getElementById(ProfileSelector.Type) as HTMLTemplateElement;
-        this.appendChild(l_template.content.cloneNode(true));
+        this._root.appendChild(l_template.content.cloneNode(true));
         
-        this.establishmentButton = this.querySelector("#establishment-button");
+        this.establishmentButton = this._root.querySelector("#establishment-button");
         this.establishmentButton.addEventListener("click", () => {this.onEstablishmentButtonClick();});
 
         this.selectedSection_watcher = new MWatcher(ProfileSelector_SelectedSection.NONE);
         this.selectedSection_watcher.subscribe((p_old, p_new) => this.onSelectedSectionChanged(p_old, p_new));
     }
 
-    public static Initialize()
-    {
-        customElements.define(ProfileSelector.Type, ProfileSelector);
-    }
-
     onEstablishmentButtonClick()
     {
         this.setSelectedSection(ProfileSelector_SelectedSection.ESTABLISHMENT);
+        ProfileNavigation.MoveToEstablishment();
     }
 
     private setSelectedSection(p_section : ProfileSelector_SelectedSection)
@@ -57,42 +56,12 @@ class ProfileSelector extends HTMLElement
         this.selectedSection = p_section;
         this.selectedSection_watcher.value = p_section;
     }
-
+    
     private onSelectedSectionChanged(p_old : ProfileSelector_SelectedSection, p_new : ProfileSelector_SelectedSection)
     {
-        this.dispatchEvent(new ProfileSelector_SelectionEvent(p_new));
-    }
-}
-
-class ProfileContextContent extends HTMLElement
-{
-    static readonly Type : string = "profile-context-content";
-
-    private currentContextContent : ProfileEstablishmentContext;
-
-    constructor(){
-        super();
-
-        let l_template : HTMLTemplateElement = document.getElementById(ProfileContextContent.Type) as HTMLTemplateElement;
-        this.appendChild(l_template.content.cloneNode(true));
-    }
-
-    public static Initialize()
-    {
-        customElements.define(ProfileContextContent.Type, ProfileContextContent);
-    }
-
-    public displaySection(p_section : ProfileSelector_SelectedSection)
-    {
-        switch(p_section)
-        {
-            case ProfileSelector_SelectedSection.ESTABLISHMENT:
-                this.currentContextContent = new ProfileEstablishmentContext();
-                this.appendChild(this.currentContextContent);
-                break;
-        }
+        this._root.dispatchEvent(new ProfileSelector_SelectionEvent(p_new));
     }
 }
 
 
-export {ProfileSelector, ProfileContextContent, ProfileSelector_SelectionEvent, ProfileSelector_SelectedSection};
+export {ProfileSelector, ProfileSelector_SelectionEvent, ProfileSelector_SelectedSection};

@@ -28,5 +28,13 @@ class Navigation
     }
 }
 
+class ProfileNavigation{
 
-export {Navigation}
+    static MoveToEstablishment()
+    {
+        router.navigate(Navigation_Constants.Profile_EstablishmentsPath);
+    }
+}
+
+
+export {Navigation, ProfileNavigation}

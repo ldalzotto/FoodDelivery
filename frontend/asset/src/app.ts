@@ -14,6 +14,7 @@ import {ProfilePage} from "./pages/ProfilePage.js"
 import {RegisterPage} from "./pages/RegisterPage.js"
 import {RegisterValidationPage} from "./pages/RegisterValidationPage.js"
 import { EatPage } from "./pages/EatPage.js";
+import { Profile_EstablishmentPage } from "./pages/Profile_EstablishmentPage.js";
 
 RegisterComponentsGraphic();
 RegisterComponents();
@@ -26,6 +27,7 @@ class Navigation_Constants
     static readonly RootPath : string = "/";
     static readonly LoginPath : string = "/login";
     static readonly ProfilePath : string = "/profile";
+    static readonly Profile_EstablishmentsPath : string = "/profile/establishments";
     static readonly RegisterPath : string = "/register";
     static readonly RegisterValidatePath : string = "/register/validation";
     static readonly EatPath : string = "/eat";
@@ -52,6 +54,13 @@ router.add(new Route(Navigation_Constants.RegisterPath, () => {
     appElement.innerHTML = "";
     appElement.appendChild(new RegisterPage());
     console.log("REGISTER");
+    return true;
+}));
+
+router.add(new Route(Navigation_Constants.Profile_EstablishmentsPath, () => {
+    appElement.innerHTML = "";
+    appElement.appendChild(new Profile_EstablishmentPage());
+    console.log("PROFILE_ESTABLISHMENT");
     return true;
 }));
 
