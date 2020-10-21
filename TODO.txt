@@ -1,0 +1,18 @@
+# Dishes :
+-## Server-Side : 
+     * Adding/Removing/Update dish to establishment.
+     * Getting all dishes from user-id (for editing).
+-## Front-End : 
+     * Adding a dish page where all dishes are displayed (with thumb).
+
+# Establishment detail :
+     * Refactoring the establishment-detail component so that 
+     * Updating the establishment-detail component so that dishes can be added.
+     * Updating the establishment-detail to display #id next to the name.
+
+# Dish ordering : 
+-## Service-Side :
+     * Creating an order. Link to the user-id is optional but to pay, you have to create an account.
+        -> Having a flow state telling if order is CREATED, PAID, DELIVERED.
+     * Adding a dish to an order.
+     * Having history of order from user-id.

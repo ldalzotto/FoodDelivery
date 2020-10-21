@@ -27,7 +27,11 @@ public class EstablishmentAddressDelta {
 
     public static EstablishmentAddressDelta parse(String p_parsedJson)
     {
-        return EstablishmentAddressDelta.parse((HashMap<String, Object>)new BasicJsonParser().parseMap(p_parsedJson));
+        if(p_parsedJson != null)
+        {
+            return EstablishmentAddressDelta.parse((HashMap<String, Object>)new BasicJsonParser().parseMap(p_parsedJson));
+        }
+        return null;
     }
 
 }

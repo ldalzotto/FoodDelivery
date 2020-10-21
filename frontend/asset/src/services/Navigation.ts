@@ -22,6 +22,11 @@ class Navigation
         router.navigate(Navigation_Constants.RegisterPath);
     }
 
+    static MoveToEstablishmentDetailPage(p_establishmentId : number)
+    {
+        router.navigate(`${Navigation_Constants.Profile_EstablishmentDetailPath}?establishmentId=${p_establishmentId}`);
+    }
+
     static MoveToEatPage()
     {
         router.navigate(Navigation_Constants.EatPath);

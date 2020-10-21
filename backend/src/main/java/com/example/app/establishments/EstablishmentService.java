@@ -56,6 +56,36 @@ public class EstablishmentService {
         }
     }
 
+    public static EstablishmentsGet GetEstablishment(long p_establishmentId, long p_userId, List<EstablishmentCalculationType> p_caluclations)
+    {
+        EstablishmentsGet l_return = new EstablishmentsGet();
+
+        List<Establishment> l_establishments = null;
+        List<EstablishmentAddress> l_establishmentAddresses = null;
+        Parameter<Establishment> l_establishment_retrieved = new Parameter<>();
+        Parameter<EstablishmentAddress> l_establishmentAddress_retrieved = new Parameter<>();
+        EstablishmentQuery.GetEstablishment_with_EstablishmentAddress(p_userId,l_establishment_retrieved, l_establishmentAddress_retrieved);
+
+        if(l_establishment_retrieved.Value!=null)
+        {
+            l_establishments = new ArrayList<>(1);
+            l_establishments.add(l_establishment_retrieved.Value);
+        }
+
+        if(l_establishmentAddress_retrieved.Value!=null)
+        {
+            l_establishmentAddresses = new ArrayList<>(1);
+            l_establishmentAddresses.add(l_establishmentAddress_retrieved.Value);
+        }
+
+        l_return.setEstablishments(l_establishments);
+        l_return.setEstablishmentAddresses(l_establishmentAddresses);
+
+        ProcessEstablishmentCalculations(p_caluclations, l_return);
+
+        return l_return;
+    }
+
     public static void UpdateEstablishment(long p_establishmentId, EstablishmentDelta p_establishmentDelta,
                                            EstablishmentAddressDelta p_establishmentAddressDelta)
     {
@@ -80,9 +110,9 @@ public class EstablishmentService {
             }
     }
 
-    public static EstablishmentGet GetEstablishments(long p_userId, List<EstablishmentCalculationType> p_caluclations)
+    public static EstablishmentsGet GetEstablishments(long p_userId, List<EstablishmentCalculationType> p_caluclations)
     {
-        EstablishmentGet l_return = new EstablishmentGet();
+        EstablishmentsGet l_return = new EstablishmentsGet();
 
         Parameter<List<Establishment>> l_establishments = new Parameter<>();
         Parameter<List<EstablishmentAddress>> l_establishmentAddresses = new Parameter<>();
@@ -96,7 +126,7 @@ public class EstablishmentService {
         return l_return;
     }
 
-    public static EstablishmentGet GetEstablishmentsNear(List<EstablishmentCalculationType> p_caluclations, float p_lat, float p_lng)
+    public static EstablishmentsGet GetEstablishmentsNear(List<EstablishmentCalculationType> p_caluclations, float p_lat, float p_lng)
     {
         float l_radius = 5000; //(meters)
 
@@ -105,7 +135,7 @@ public class EstablishmentService {
         double l_minLng = p_lng - l_radius/EarthRadius*180/Math.PI/Math.cos(p_lat*Math.PI/180);
         double l_maxLng = p_lng + l_radius/EarthRadius*180/Math.PI/Math.cos(p_lat*Math.PI/180);
 
-        EstablishmentGet l_return = new EstablishmentGet();
+        EstablishmentsGet l_return = new EstablishmentsGet();
         // l_maps.put();
 
         Parameter<List<Establishment>> l_establishments = new Parameter<>();
@@ -122,7 +152,7 @@ public class EstablishmentService {
         return l_return;
     }
 
-    private static void ProcessEstablishmentCalculations(List<EstablishmentCalculationType> p_caluclations, EstablishmentGet in_out_establishmentGet)
+    private static void ProcessEstablishmentCalculations(List<EstablishmentCalculationType> p_caluclations, EstablishmentsGet in_out_establishmentsGet)
     {
         if(p_caluclations != null)
         {
@@ -133,15 +163,15 @@ public class EstablishmentService {
                 {
                     case RETRIEVE_CITIES:
                     {
-                        LinkCitiesToEstablishments_Return l_citiesLinked = LinkCitiesToEstablishments(in_out_establishmentGet.getEstablishments(),
-                                in_out_establishmentGet.getEstablishmentAddresses());
-                        in_out_establishmentGet.setCities(l_citiesLinked.cities);
-                        in_out_establishmentGet.setEstablishmentAddressToCity(l_citiesLinked.establishment_address_TO_city);
+                        LinkCitiesToEstablishments_Return l_citiesLinked = LinkCitiesToEstablishments(in_out_establishmentsGet.getEstablishments(),
+                                in_out_establishmentsGet.getEstablishmentAddresses());
+                        in_out_establishmentsGet.setCities(l_citiesLinked.cities);
+                        in_out_establishmentsGet.setEstablishmentAddressToCity(l_citiesLinked.establishment_address_TO_city);
                     }
                     break;
                     case DELIVERY_CHARGE:
                     {
-                        List<EstablishmentAddress> l_establishmentAddresses =in_out_establishmentGet.getEstablishmentAddresses();
+                        List<EstablishmentAddress> l_establishmentAddresses = in_out_establishmentsGet.getEstablishmentAddresses();
                         if(l_establishmentAddresses != null)
                         {
                             double[] l_deliveryCharges = null;
@@ -167,7 +197,7 @@ public class EstablishmentService {
                                 l_deliveryCharges[j] = new BigDecimal(Math.random()).setScale(2, RoundingMode.HALF_UP).doubleValue();
                             }
 
-                            in_out_establishmentGet.setDeliveryCharges(l_deliveryCharges);
+                            in_out_establishmentsGet.setDeliveryCharges(l_deliveryCharges);
                         }
 
 
@@ -175,7 +205,7 @@ public class EstablishmentService {
                     break;
                     case RETRIEVE_THUMBNAIL:
                     {
-                        LinkThumbnailToEstablishment(in_out_establishmentGet);
+                        LinkThumbnailToEstablishment(in_out_establishmentsGet);
                     }
                     break;
                 }
@@ -215,11 +245,11 @@ public class EstablishmentService {
         return l_return;
     }
 
-    private static void LinkThumbnailToEstablishment(EstablishmentGet p_establishmentGet)
+    private static void LinkThumbnailToEstablishment(EstablishmentsGet p_establishmentsGet)
     {
-        if(p_establishmentGet!=null)
+        if(p_establishmentsGet !=null)
         {
-            List<Establishment> l_establishments = p_establishmentGet.getEstablishments();
+            List<Establishment> l_establishments = p_establishmentsGet.getEstablishments();
             if(l_establishments!=null)
             {
                 Set<Long> l_distinctThumbnails = new HashSet<>();
@@ -241,7 +271,7 @@ public class EstablishmentService {
                         l_url.url = String.format("http://localhost:8080/image?image_id=%d", l_thumbId);
                         l_establishmentThumb.add(l_url);
                     }
-                    p_establishmentGet.setThumbnails(l_establishmentThumb);
+                    p_establishmentsGet.setThumbnails(l_establishmentThumb);
 
                     long[] l_establishment_TO_thumb = new long[l_establishments.size()];
 
@@ -265,7 +295,7 @@ public class EstablishmentService {
                         }
                     }
 
-                    p_establishmentGet.setEstablishmentToThumbnail(l_establishment_TO_thumb);
+                    p_establishmentsGet.setEstablishmentToThumbnail(l_establishment_TO_thumb);
                 }
 
             }

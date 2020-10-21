@@ -1,4 +1,4 @@
-import { Establishment, EstablishmentCalculationType, EstablishmentService, EstablishmentWithDependenciesV2 } from "../services/Establishment.js";
+import { Establishment, EstablishmentCalculationType, EstablishmentService, EstablishmentGet } from "../services/Establishment.js";
 import { LatLng } from "../services/Geo.js";
 import { ImageUrl } from "../services/Image.js";
 
@@ -22,7 +22,7 @@ class NearestEstablishments
         this.establishmentList = this._root.querySelector("#establishment-list");
         this.establishmentTumbs = [];
         EstablishmentService.GetEstablishments_Near([EstablishmentCalculationType.RETRIEVE_CITIES, EstablishmentCalculationType.DELIVERY_CHARGE, EstablishmentCalculationType.RETRIEVE_THUMBNAIL], p_latlng,
-            (p_establishments : EstablishmentWithDependenciesV2) => {
+            (p_establishments : EstablishmentGet) => {
                 for(let i = 0;i<p_establishments.establishment_addresses.length;i++)
                 {
                     let l_container = document.createElement("div");

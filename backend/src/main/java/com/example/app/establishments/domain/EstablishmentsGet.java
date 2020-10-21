@@ -6,7 +6,7 @@ import com.example.app.image.domain.ImageUrl;
 import java.util.HashMap;
 import java.util.List;
 
-public class EstablishmentGet extends HashMap<String, Object> {
+public class EstablishmentsGet extends HashMap<String, Object> {
     public void setEstablishments(List<Establishment> p_establishments)
     {
         this.put("establishments", p_establishments);

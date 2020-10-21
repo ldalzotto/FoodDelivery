@@ -19,6 +19,20 @@ class EstablishmentService
         Server.SendRequest_Form("POST", "http://localhost:8080/establishment",l_form, true, p_okCallback, p_errorCallback);
     }
 
+    public static GetEstablishment(p_establishmentId : number, 
+        l_calculationTypes : EstablishmentCalculationType[] | null, p_okCallback : (p_establishments : EstablishmentGet) => void, p_errorCallback : (p_serverError : ServerError)=>(void))
+        {
+            let l_queryParams = new QueryParamBuilder();
+            if(l_calculationTypes)
+            {
+                l_queryParams.addParam("calculations", l_calculationTypes.toString());
+                l_queryParams.addParam("establishment_id", p_establishmentId.toString());
+            }
+            Server.SendRequest_Json("GET", `http://localhost:8080/establishment${l_queryParams.params}`, null, true,
+               p_okCallback, p_errorCallback
+            );
+        }
+
     public static GetEstablishments(l_calculationTypes : EstablishmentCalculationType[] | null, p_okCallback : (p_establishments : EstablishmentGet) => void, p_errorCallback : (p_serverError : ServerError)=>(void))
     {
         let l_queryParams = new QueryParamBuilder();
@@ -49,8 +63,8 @@ class EstablishmentService
     {
         let l_form : FormData = new FormData();
         l_form.append("establishment_id", JSON.stringify(p_establishmentId));
-        l_form.append("establishment_delta", JSON.stringify(p_establishmentDelta));
-        l_form.append("establishment_address_delta", JSON.stringify(p_addressDelta));
+        if(p_establishmentDelta){l_form.append("establishment_delta", JSON.stringify(p_establishmentDelta));}
+        if(p_addressDelta){l_form.append("establishment_address_delta", JSON.stringify(p_addressDelta));}
         Server.SendRequest_Form("POST", `http://localhost:8080/establishment/update`, l_form, true, p_okCallback, p_errorCallback);
     }
 
@@ -127,4 +141,4 @@ class EstablishmentAddressDelta
     public lng : number | null;
 }
 
-export {EstablishmentService, Establishment, EstablishmentAddress, EstablishmentGet as EstablishmentWithDependenciesV2, EstablishmentDelta, EstablishmentAddressDelta, EstablishmentCalculationType}
+export {EstablishmentService, Establishment, EstablishmentAddress, EstablishmentGet, EstablishmentDelta, EstablishmentAddressDelta, EstablishmentCalculationType}

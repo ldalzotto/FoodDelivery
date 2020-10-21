@@ -1,14 +1,14 @@
 import { LoadingButton } from "../components_graphic/LoadingButton.js"
 import { ServerError } from "../server/Server.js";
 import {
-    EstablishmentService, Establishment, EstablishmentAddress, EstablishmentWithDependenciesV2,
-    EstablishmentDelta, EstablishmentAddressDelta, EstablishmentCalculationType
+    EstablishmentService, Establishment, EstablishmentAddress, EstablishmentGet, EstablishmentCalculationType
 } from "../services/Establishment.js"
 import { BindingUtils, Observable } from "../binding/Binding.js"
-import { CitySelection, CitySelectionUpdate } from "./CitySelection.js";
-import { City, GeoService } from "../services/Geo.js";
-import { MapSelection, MapSelectionUpdate } from "../components_graphic/MapSelection.js"
-import { InputTextUpdateElement } from "../components_graphic/InputTextUpdateElement.js"
+import { CitySelection } from "./CitySelection.js";
+import { City } from "../services/Geo.js";
+import { MapSelection } from "../components_graphic/MapSelection.js"
+import { ImageUrl } from "../services/Image.js";
+import { Navigation } from "../services/Navigation.js";
 
 
 class ProfileEstablishmentContext extends HTMLElement {
@@ -38,15 +38,17 @@ class ProfileEstablishmentContext extends HTMLElement {
     public reloadEstablishments() {
         this.establishmentListsElement.innerHTML = "";
         EstablishmentService.GetEstablishments(
-            [EstablishmentCalculationType.RETRIEVE_CITIES],
-            (p_establishments: EstablishmentWithDependenciesV2) => {
+            [EstablishmentCalculationType.RETRIEVE_CITIES, EstablishmentCalculationType.RETRIEVE_THUMBNAIL],
+            (p_establishments: EstablishmentGet) => {
                 for (let i = 0; i < p_establishments.establishments.length; i++) {
                     let l_establishmentDisplay_root = document.createElement("div");
                     this.establishmentListsElement.appendChild(l_establishmentDisplay_root);
 
-                    let l_establishmentDisplay: EstablishementDisplay = EstablishementDisplay.build(l_establishmentDisplay_root, p_establishments.establishments[i], p_establishments.establishment_addresses[i],
-                         p_establishments.cities[p_establishments.establishment_address_TO_city[i]]);
-                    l_establishmentDisplay.root.addEventListener(EstablishementDisplay_AskToReload_Event.Type, () => {this.reloadEstablishments();});
+                    let l_establishmentDisplay: EstablishementDisplayV2 = EstablishementDisplayV2.build(l_establishmentDisplay_root, p_establishments.establishments[i], p_establishments.establishment_addresses[i],
+                         p_establishments.cities[p_establishments.establishment_address_TO_city[i]],
+                         p_establishments.thumbnails[p_establishments.establishment_TO_thumbnail[i]]);
+                    l_establishmentDisplay.root.addEventListener(EstablishementDisplayV2_Click.Type, 
+                        (p_event : EstablishementDisplayV2_Click) => {Navigation.MoveToEstablishmentDetailPage(p_event.establishment_id);});
                 }
             }, null
         );
@@ -151,153 +153,41 @@ class EstablishmentRegistration extends HTMLElement {
     }
 }
 
-class EstablishementDisplay {
-    static readonly Type: string = "establishment-display";
+class EstablishementDisplayV2_Click extends Event{
+    static readonly Type: string = "establishment-display-v2-click";
+    public establishment_id : number;
+    constructor(p_establishment_id : number)
+    {
+        super(EstablishementDisplayV2_Click.Type);
+        this.establishment_id = p_establishment_id;
+    }
+}
+
+class EstablishementDisplayV2 {
+    static readonly Type: string = "establishment-display-v2";
 
     private _root : HTMLElement;
     public get root(){return this._root;}
 
-    private nameElement: InputTextUpdateElement;
-    private addressElement: InputTextUpdateElement;
-    private cityElement: CitySelectionUpdate;
-    private pointElement: MapSelectionUpdate;
-    private phoneElement: InputTextUpdateElement;
-
-    private modificationUnlockButton: HTMLButtonElement;
-    private submitChangeButton: LoadingButton;
-    private deleteButton: LoadingButton;
-
-    private isModificationEnabled: Observable<boolean>;
-    private modificationButtonText: Observable<string>;
-
-    private establishmentServer: Establishment;
-
-    private establishmentUpdateDelta: EstablishmentDelta;
-    private establishmentAddressUpdateDelta: EstablishmentAddressDelta;
-
-    public static build(p_root : HTMLElement, p_sourceEstablishment : Establishment, p_sourceEstablishmentAddress : EstablishmentAddress, p_city : City): EstablishementDisplay {
-        let l_establihsmentDisplay: EstablishementDisplay = new EstablishementDisplay();
-
+    public static build(p_root : HTMLElement, p_sourceEstablishment : Establishment, p_sourceEstablishmentAddress : EstablishmentAddress, p_city : City, p_thumbImage : ImageUrl) : EstablishementDisplayV2
+    {
+        let l_establihsmentDisplay = new EstablishementDisplayV2();
         l_establihsmentDisplay._root = p_root;
         
-        let l_template: HTMLTemplateElement = document.getElementById(EstablishementDisplay.Type) as HTMLTemplateElement;
+        let l_template: HTMLTemplateElement = document.getElementById(EstablishementDisplayV2.Type) as HTMLTemplateElement;
         l_establihsmentDisplay._root.appendChild(l_template.content.cloneNode(true));
 
-        l_establihsmentDisplay.establishmentServer = p_sourceEstablishment;
-        l_establihsmentDisplay.isModificationEnabled = new Observable<boolean>(false);
-        l_establihsmentDisplay.modificationButtonText = new Observable<string>("");
+        let l_image =l_establihsmentDisplay._root.querySelector("#thumb") as HTMLImageElement; 
+        l_image.src = p_thumbImage.url;
+        let l_name = l_establihsmentDisplay._root.querySelector("#name");
+        l_name.textContent = p_sourceEstablishment.name;
+        let l_address = l_establihsmentDisplay._root.querySelector("#address");
+        l_address.textContent = p_city.name + ", " + p_sourceEstablishmentAddress.street_full_name;
 
-        l_establihsmentDisplay.nameElement = new InputTextUpdateElement(l_establihsmentDisplay._root.querySelector("#name"));
-        l_establihsmentDisplay.nameElement.init(p_sourceEstablishment.name);
-
-        l_establihsmentDisplay.addressElement = new InputTextUpdateElement(l_establihsmentDisplay._root.querySelector("#address"));
-        l_establihsmentDisplay.addressElement.init(p_sourceEstablishmentAddress.street_full_name);
-
-        l_establihsmentDisplay.cityElement = new CitySelectionUpdate(l_establihsmentDisplay._root.querySelector("#city"));
-        l_establihsmentDisplay.cityElement.setInitialValue(p_city);
-
-        l_establihsmentDisplay.pointElement = new MapSelectionUpdate(l_establihsmentDisplay._root.querySelector("#point"), p_sourceEstablishmentAddress.lat, p_sourceEstablishmentAddress.lng);
-
-        l_establihsmentDisplay.phoneElement = new InputTextUpdateElement(l_establihsmentDisplay._root.querySelector("#phone"));
-        l_establihsmentDisplay.phoneElement.init(p_sourceEstablishment.phone);
-
-        l_establihsmentDisplay.modificationUnlockButton = l_establihsmentDisplay._root.querySelector("#modification-unlock");
-        l_establihsmentDisplay.submitChangeButton = new LoadingButton(l_establihsmentDisplay._root.querySelector("#submit"), (p_onCompleted) => {l_establihsmentDisplay.onSubmitPressed(p_onCompleted)} );
-
-        l_establihsmentDisplay.deleteButton = new LoadingButton(l_establihsmentDisplay._root.querySelector("#delete"), (p_onCompleted) => {l_establihsmentDisplay.onDeletePressed(p_onCompleted)});
-
-        l_establihsmentDisplay.modificationButtonText.subscribe((arg0) => { l_establihsmentDisplay.modificationUnlockButton.textContent = arg0 });
-
-        l_establihsmentDisplay.isModificationEnabled.subscribe_withInit((arg0) => { l_establihsmentDisplay.onIsModificationEnabledChanged(arg0); })
-        l_establihsmentDisplay.modificationUnlockButton.addEventListener("click", () => { l_establihsmentDisplay.isModificationEnabled.value = !l_establihsmentDisplay.isModificationEnabled.value });
+        l_establihsmentDisplay._root.addEventListener("click", () => {l_establihsmentDisplay._root.dispatchEvent(new EstablishementDisplayV2_Click(p_sourceEstablishment.id))});
 
         return l_establihsmentDisplay;
     }
-
-    onIsModificationEnabledChanged(p_isModificationEnabled: boolean) {
-        if (p_isModificationEnabled) {
-            this.nameElement.enableModifications();
-            this.addressElement.enableModifications();
-            this.phoneElement.enableModifications();
-            this.pointElement.enableModifications();
-            this.cityElement.enableModifications();
-            this.modificationButtonText.value = "L";
-            this.submitChangeButton.button.disabled = false;
-            this.deleteButton.button.disabled = false;
-        }
-        else {
-            this.nameElement.disableModifications();
-            this.addressElement.disableModifications();
-            this.phoneElement.disableModifications();
-            this.pointElement.disableModifications();
-            this.cityElement.disableModifications();
-            this.modificationButtonText.value = "U";
-            this.submitChangeButton.button.disabled = true;
-            this.deleteButton.button.disabled = true;
-        }
-    }
-
-    onSubmitPressed(p_onCompleted : () => void) {
-        let l_establishmentDelta: EstablishmentDelta | null;
-        let l_establishmentAddressDelta: EstablishmentAddressDelta | null;
-        if (this.nameElement.hasChanged.value || this.phoneElement.hasChanged.value) {
-            l_establishmentDelta = new EstablishmentDelta();
-            if (this.nameElement.hasChanged.value) { l_establishmentDelta.name = this.nameElement.input.value; }
-            if (this.phoneElement.hasChanged.value) { l_establishmentDelta.phone = this.phoneElement.input.value; }
-        }
-
-        if (this.addressElement.hasChanged.value || this.pointElement.hasChanged.value || this.cityElement.hasChanged.value) {
-            l_establishmentAddressDelta = new EstablishmentAddressDelta();
-            if (this.addressElement.hasChanged.value) { l_establishmentAddressDelta.street_full_name = this.addressElement.input.value; }
-            if (this.pointElement.hasChanged.value) {
-                l_establishmentAddressDelta.lat = this.pointElement.latLng.lat;
-                l_establishmentAddressDelta.lng = this.pointElement.latLng.lng;
-            }
-            if (this.cityElement.hasChanged.value) { 
-                let l_selectedCity = this.cityElement.getSelectedCity();
-                if(l_selectedCity)
-                {
-                    l_establishmentAddressDelta.city_id = this.cityElement.getSelectedCity().id;
-                }
-            }
-        }
-
-        EstablishmentService.UpdateEstablishment_Widht_Address(this.establishmentServer.id, l_establishmentDelta, l_establishmentAddressDelta,
-            () => {
-                this.nameElement.setCurrentAsInitialValue();
-                this.addressElement.setCurrentAsInitialValue();
-                this.phoneElement.setCurrentAsInitialValue();
-                this.pointElement.setCurrentAsInitialValue();
-                this.cityElement.setCurrentAsInitialValue();
-                this.isModificationEnabled.value = false;
-                p_onCompleted();
-            }
-            , () => {
-                p_onCompleted();
-            });
-    }
-
-
-    onDeletePressed(p_onCompleted : () => void) {
-        EstablishmentService.DeleteEstablishment(this.establishmentServer.id, 
-            () => {
-                this._root.dispatchEvent(new EstablishementDisplay_AskToReload_Event());
-                p_onCompleted();
-            }, () => {
-                p_onCompleted();
-            });
-    }
 }
-
-
-class EstablishementDisplay_AskToReload_Event extends Event
-{
-    public static readonly Type : string = "ask-reload";
-    constructor()
-    {
-        super(EstablishementDisplay_AskToReload_Event.Type);
-    }
-}
-
 
 export { ProfileEstablishmentContext }

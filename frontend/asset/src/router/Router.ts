@@ -79,7 +79,7 @@ class Router
     {
         let l_params : RouteQueryParams = {};
         let l_queryMatch_0 = p_path.match(/(\?(.+?)=([^&]*))/g);
-        if(l_queryMatch_0.length > 0)
+        if(l_queryMatch_0 && l_queryMatch_0.length > 0)
         {
             for(let i=0;i<l_queryMatch_0.length;i++)
             {
@@ -95,7 +95,7 @@ class Router
 
         let l_queryMath_1 = p_path.match(/(&(.*)=([^&]*))/g);
 
-        if(l_queryMath_1.length > 0)
+        if(l_queryMath_1 && l_queryMath_1.length > 0)
         {
             for(let i=0;i<l_queryMath_1.length;i++)
             {

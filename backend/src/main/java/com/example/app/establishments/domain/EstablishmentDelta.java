@@ -22,6 +22,10 @@ public class EstablishmentDelta {
 
     public static EstablishmentDelta parse(String p_parsedJson)
     {
-        return EstablishmentDelta.parse((HashMap<String, Object>)new BasicJsonParser().parseMap(p_parsedJson));
+        if(p_parsedJson!=null)
+        {
+            return EstablishmentDelta.parse((HashMap<String, Object>)new BasicJsonParser().parseMap(p_parsedJson));
+        }
+        return null;
     }
 }

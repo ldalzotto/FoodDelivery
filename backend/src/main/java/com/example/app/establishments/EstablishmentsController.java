@@ -44,6 +44,26 @@ public class EstablishmentsController {
     }
 
     @CrossOrigin(origins = {"http://localhost:8081", "http://192.168.1.11:8081"}, allowCredentials = "true")
+    @RequestMapping(value = "/establishment", method = RequestMethod.GET)
+    public @ResponseBody
+    ResponseEntity<?> GetEstablishment(
+            @CookieValue("session_token") String p_sessionToken,
+            @CookieValue("session_user_id") long p_user_id,
+            @RequestParam("establishment_id") long p_establishment_id,
+            @RequestParam(value = "calculations", required = false) String p_calculations) {
+
+        FunctionalError l_Functional_error = new FunctionalError();
+
+        if (!SessionErrorHandler.HandleSessionValidationToken(
+                SessionService.validateSessionToken(p_sessionToken, p_user_id), l_Functional_error)) {
+            return ResponseEntity.badRequest().body(l_Functional_error);
+        }
+
+        return ResponseEntity.ok().body(EstablishmentService.GetEstablishment(p_establishment_id, p_user_id,
+                EstablishmentCalculationType.parseString(p_calculations)));
+    }
+
+    @CrossOrigin(origins = {"http://localhost:8081", "http://192.168.1.11:8081"}, allowCredentials = "true")
     @RequestMapping(value = "/establishments", method = RequestMethod.GET)
     public @ResponseBody
     ResponseEntity<?> GetEstablishments(
@@ -83,8 +103,8 @@ public class EstablishmentsController {
             @CookieValue("session_token") String p_sessionToken,
             @CookieValue("session_user_id") long p_user_id,
             @RequestParam("establishment_id") long p_establishment_id,
-            @RequestParam("establishment_delta") String p_establishmentDelta,
-            @RequestParam("establishment_address_delta") String p_establishmentAddressDelta) {
+            @RequestParam(value = "establishment_delta", required = false) String p_establishmentDelta,
+            @RequestParam(value = "establishment_address_delta", required = false) String p_establishmentAddressDelta) {
 
         FunctionalError l_Functional_error = new FunctionalError();
 

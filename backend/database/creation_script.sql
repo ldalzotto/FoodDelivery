@@ -84,6 +84,29 @@ create table if not exists establishments
     FOREIGN KEY(address_id) REFERENCES establishment_address(id)
 );
 
+drop table if exists dish;
+
+create table if not exists dish
+(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    price REAL NOT NULL,
+    thumb_id INTEGER,
+    user_id INTEGER NOT NULL,
+    FOREIGN KEY(thumb_id) REFERENCES static_images(id),
+    FOREIGN KEY(user_id) REFERENCES users(id)
+);
+
+drop table if exists establishment_dish;
+
+create table if not exists establishment_dish
+(
+    establishment_id INTEGER UNIQUE NOT NULL,
+    dish_id INTEGER NOT NULL,
+    FOREIGN KEY(establishment_id) REFERENCES establishments(id),
+    FOREIGN KEY(dish_id) REFERENCES dish(id)
+);
+
 drop table if exists sessions;
 
 create table if not exists sessions

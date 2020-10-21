@@ -188,7 +188,7 @@ button
     padding: 5px;
 }
 
-#establishments-thumb >* .head-image
+.head-image
 {
     height: 100px;
     background-color: gray;
