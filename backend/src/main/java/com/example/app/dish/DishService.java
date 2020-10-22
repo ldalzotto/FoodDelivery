@@ -29,7 +29,7 @@ public class DishService {
         DishService.processEstablishmentGetCalculations(l_dishGet, p_calculations);
         return l_dishGet;
     }
-    public static void CreateDish(Dish p_dish, long p_establishmentId, MultipartFile p_dishThumb)
+    public static void CreateDish(Dish p_dish, MultipartFile p_dishThumb)
     {
         if(p_dishThumb != null)
         {
@@ -40,7 +40,7 @@ public class DishService {
                 e.printStackTrace();
             }
         }
-        DishQuery.InsertDish(p_dish, p_establishmentId);
+        DishQuery.InsertDish(p_dish);
     }
 
     public static void UpdateDish(long p_dish_id, DishDelta p_dishDelta)

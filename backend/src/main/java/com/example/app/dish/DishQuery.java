@@ -2,6 +2,7 @@ package com.example.app.dish;
 
 import com.example.app.dish.domain.Dish;
 import com.example.main.ConfigurationBeans;
+import com.example.utils.BooleanWrapper;
 import com.example.utils.IntegerHeap;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -72,11 +73,8 @@ public class DishQuery {
         });
     }
 
-    public static void InsertDish(Dish p_dish, long p_establishmentId)
+    public static void InsertDish(Dish p_dish)
     {
-        boolean l_dishInserted = false;
-        try
-        {
             KeyHolder l_keyHolder = new GeneratedKeyHolder();
             ConfigurationBeans.jdbcTemplate.update(con -> {
                 PreparedStatement l_ps = con.prepareStatement("insert into dish(name, price, thumb_id, user_id) values (?,?,?,?)");
@@ -88,28 +86,21 @@ public class DishQuery {
             }, l_keyHolder);
 
             p_dish.id = l_keyHolder.getKey().longValue();
-            l_dishInserted = true;
+    }
 
-            ConfigurationBeans.jdbcTemplate.update(con -> {
-                PreparedStatement l_ps = con.prepareStatement("insert into establishment_dish(establishment_id, dish_id) values (?,?)");
-                l_ps.setLong(1, p_establishmentId);
-                l_ps.setLong(2, p_dish.id);
-                return l_ps;
-            });
-        }
-        catch (DataAccessException ex)
-        {
-            if(l_dishInserted)
-            {
-                ConfigurationBeans.jdbcTemplate.update(con -> {
-                    PreparedStatement l_ps = con.prepareStatement("delete from dish where dish.id = ?");
-                    l_ps.setLong(1, p_dish.id);
-                    return l_ps;
-                });
-            }
-            throw ex;
-        }
-
+    public static boolean DoesDishExists(long p_dishId)
+    {
+        BooleanWrapper l_return = new BooleanWrapper();
+        l_return.value = false;
+        ConfigurationBeans.jdbcTemplate.query(con -> {
+            PreparedStatement l_ps = con.prepareStatement("select count(*) from dish where dish.id == ?");
+            l_ps.setLong(1, p_dishId);
+            return l_ps;
+        }, (rs) -> {
+            long l_count =  rs.getLong(1);
+            if(l_count==0){l_return.value = true;}
+        });
+        return l_return.value;
     }
 
     public static void DeleteDish(long p_dishId)

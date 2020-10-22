@@ -46,7 +46,6 @@ public class DishController {
     ResponseEntity<?> PostDish(
             @CookieValue("session_token") String p_sessionToken,
             @CookieValue("session_user_id") long p_user_id,
-            @RequestParam("establishment_id") long p_establishmentId,
             @RequestParam(value = "dish_thumb", required = false) MultipartFile p_dishThumb,
             @RequestParam("dish") String p_dish
             ) {
@@ -61,7 +60,7 @@ public class DishController {
         Dish l_dish = Dish.parse(p_dish);
         l_dish.user_id = p_user_id;
 
-        DishService.CreateDish(l_dish, p_establishmentId, p_dishThumb);
+        DishService.CreateDish(l_dish, p_dishThumb);
         return ResponseEntity.ok().body(null);
     }
 

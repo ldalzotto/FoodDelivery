@@ -2,6 +2,7 @@ package com.example.app.establishments;
 
 import com.example.app.establishments.domain.*;
 import com.example.main.ConfigurationBeans;
+import com.example.utils.BooleanWrapper;
 import com.example.utils.IntegerHeap;
 import com.example.utils.Parameter;
 import org.springframework.dao.DataAccessException;
@@ -194,6 +195,47 @@ public class EstablishmentQuery {
             });
         }
     }
+
+    public static boolean DoesEstablishmentExists(long p_establishmentId)
+    {
+        BooleanWrapper l_return = new BooleanWrapper();
+        l_return.value = false;
+        ConfigurationBeans.jdbcTemplate.query(con -> {
+            PreparedStatement l_ps = con.prepareStatement("select count(*) from establishments where establishments.id == ?");
+            l_ps.setLong(1, p_establishmentId);
+            return l_ps;
+        }, (rs) -> {
+            long l_count =  rs.getLong(1);
+            if(l_count==0){l_return.value = true;}
+        });
+        return l_return.value;
+    }
+
+    public static boolean DoesEstablishment_have_Dish(long p_establishmentId, long p_dishId)
+    {
+        BooleanWrapper l_return = new BooleanWrapper();
+        l_return.value = false;
+        ConfigurationBeans.jdbcTemplate.query(con -> {
+           PreparedStatement l_ps = con.prepareStatement("select count(*) from establishment_dish where establishment_dish.establishment_id = ? and establishment_dish.dish_id = ?");
+            l_ps.setLong(1, p_establishmentId);
+            l_ps.setLong(2, p_dishId);
+           return l_ps;
+        }, (rs) -> {
+          long l_count =  rs.getLong(1);
+          if(l_count==0){l_return.value = true;}
+        });
+        return l_return.value;
+    }
+
+    public static void CreateLinkBetween_Establishment_Dish(long p_establishmentId, long p_dishId)
+    {
+        ConfigurationBeans.jdbcTemplate.update(con -> {
+            PreparedStatement l_ps = con.prepareStatement("insert into establishment_dish(establishment_id, dish_id) values (?,?)");
+            l_ps.setLong(1, p_establishmentId);
+            l_ps.setLong(2, p_dishId);
+            return l_ps;
+        });
+    }
 }
 
 
@@ -284,3 +326,5 @@ class EstablishmentQueryUtils
         return l_establishmentAddress;
     }
 }
+
+

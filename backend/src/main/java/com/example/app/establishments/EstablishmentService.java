@@ -1,5 +1,6 @@
 package com.example.app.establishments;
 
+import com.example.app.dish.DishQuery;
 import com.example.app.establishments.domain.*;
 import com.example.app.geo.GeoQuery;
 import com.example.app.geo.domain.City;
@@ -150,6 +151,17 @@ public class EstablishmentService {
         ProcessEstablishmentCalculations(p_caluclations, l_return);
 
         return l_return;
+    }
+
+    public static void LinkEstablishmentAndDish(long p_establishmentId, long p_dishId)
+    {
+        if(
+                EstablishmentQuery.DoesEstablishmentExists(p_establishmentId) &&
+                        DishQuery.DoesDishExists(p_dishId) &&
+                EstablishmentQuery.DoesEstablishment_have_Dish(p_establishmentId, p_dishId))
+        {
+            EstablishmentQuery.CreateLinkBetween_Establishment_Dish(p_establishmentId, p_dishId);
+        }
     }
 
     private static void ProcessEstablishmentCalculations(List<EstablishmentCalculationType> p_caluclations, EstablishmentsGet in_out_establishmentsGet)
