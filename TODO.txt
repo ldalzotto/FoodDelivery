@@ -1,14 +1,14 @@
 # Dishes :
 -## Server-Side : 
-     * Adding/Removing/Update dish to establishment.
-     * Getting all dishes from user-id (for editing).
+     - Adding/Removing/Update dish to establishment.
+     - Getting all dishes from user-id (for editing).
 -## Front-End : 
      * Adding a dish page where all dishes are displayed (with thumb).
 
 # Establishment detail :
-     * Refactoring the establishment-detail component so that 
-     * Updating the establishment-detail component so that dishes can be added.
-     * Updating the establishment-detail to display #id next to the name.
+     - Refactoring the establishment-detail component so that it only display thumb, name and address
+     - Clicking on establishment redirect to the establishment/detail&establishment_id=$ page
+     - Updating the establishment-detail to display #id next to the name.
 
 # Dish ordering : 
 -## Service-Side :

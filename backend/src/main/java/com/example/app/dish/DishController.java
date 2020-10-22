@@ -1,6 +1,7 @@
 package com.example.app.dish;
 
 import com.example.app.dish.domain.Dish;
+import com.example.app.dish.domain.DishDelta;
 import com.example.app.session.SessionErrorHandler;
 import com.example.app.session.SessionService;
 import com.example.main.FunctionalError;
@@ -13,15 +14,27 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping(value = "/")
 public class DishController {
 
-    @CrossOrigin(origins = {"http://localhost:8081", "http://192.168.1.11:8081"})
+    @CrossOrigin(origins = {"http://localhost:8081", "http://192.168.1.11:8081"}, allowCredentials = "true")
     @RequestMapping(value = "/dishes", method = RequestMethod.GET)
     public @ResponseBody
     ResponseEntity<?> GetDishes(
-            @RequestParam("establishment_id") long p_establishmentId) {
-        return ResponseEntity.ok().body(DishService.GetDishes(p_establishmentId));
+            @CookieValue(value = "session_user_id", required = false) Long p_user_id,
+            @RequestParam(value = "establishment_id", required = false) Long p_establishmentId) {
+        if(p_establishmentId!=null)
+        {
+            return ResponseEntity.ok().body(DishService.GetDishes_FromEstablishmentId(p_establishmentId));
+        }
+        else if(p_user_id!=null)
+        {
+            return ResponseEntity.ok().body(DishService.GetDishes_FromUserId(p_user_id));
+        }
+        else
+        {
+            return ResponseEntity.ok().body(null);
+        }
     }
 
-    @CrossOrigin(origins = {"http://localhost:8081", "http://192.168.1.11:8081"})
+    @CrossOrigin(origins = {"http://localhost:8081", "http://192.168.1.11:8081"}, allowCredentials = "true")
     @RequestMapping(value = "/dish", method = RequestMethod.POST)
     public @ResponseBody
     ResponseEntity<?> PostDish(
@@ -43,6 +56,51 @@ public class DishController {
         l_dish.user_id = p_user_id;
 
         DishService.CreateDish(l_dish, p_establishmentId, p_dishThumb);
+        return ResponseEntity.ok().body(null);
+    }
+
+    @CrossOrigin(origins = {"http://localhost:8081", "http://192.168.1.11:8081"}, allowCredentials = "true")
+    @RequestMapping(value = "/dish/update", method = RequestMethod.POST)
+    public @ResponseBody
+    ResponseEntity<?> UpdateDish(
+            @CookieValue("session_token") String p_sessionToken,
+            @CookieValue("session_user_id") long p_user_id,
+            @RequestParam("dish_id") long p_dish_id,
+            @RequestParam(value = "dish_thumb", required = false) MultipartFile p_dishThumb,
+            @RequestParam("dish") String p_dishDelta
+    ) {
+
+        FunctionalError l_Functional_error = new FunctionalError();
+
+        if (!SessionErrorHandler.HandleSessionValidationToken(
+                SessionService.validateSessionToken(p_sessionToken, p_user_id), l_Functional_error)) {
+            return ResponseEntity.badRequest().body(l_Functional_error);
+        }
+
+        DishDelta l_dishDelta = DishDelta.parse(p_dishDelta);
+
+        DishService.UpdateDish(p_dish_id, l_dishDelta);
+        return ResponseEntity.ok().body(null);
+    }
+
+
+    @CrossOrigin(origins = {"http://localhost:8081", "http://192.168.1.11:8081"}, allowCredentials = "true")
+    @RequestMapping(value = "/dish/delete", method = RequestMethod.POST)
+    public @ResponseBody
+    ResponseEntity<?> DeleteDish(
+            @CookieValue("session_token") String p_sessionToken,
+            @CookieValue("session_user_id") long p_user_id,
+            @RequestParam("dish_id") long p_dish_id
+    ) {
+
+        FunctionalError l_Functional_error = new FunctionalError();
+
+        if (!SessionErrorHandler.HandleSessionValidationToken(
+                SessionService.validateSessionToken(p_sessionToken, p_user_id), l_Functional_error)) {
+            return ResponseEntity.badRequest().body(l_Functional_error);
+        }
+
+        DishService.DeleteDish(p_dish_id);
         return ResponseEntity.ok().body(null);
     }
 }
