@@ -10,6 +10,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @Controller
 @RequestMapping(value = "/")
 public class DishController {
@@ -19,14 +21,18 @@ public class DishController {
     public @ResponseBody
     ResponseEntity<?> GetDishes(
             @CookieValue(value = "session_user_id", required = false) Long p_user_id,
-            @RequestParam(value = "establishment_id", required = false) Long p_establishmentId) {
+            @RequestParam(value = "establishment_id", required = false) Long p_establishmentId,
+            @RequestParam(value = "calculations", required = false) String p_calculations) {
+
+        List<DishCalculationType> l_calculations = DishCalculationType.parseString(p_calculations);
+
         if(p_establishmentId!=null)
         {
-            return ResponseEntity.ok().body(DishService.GetDishes_FromEstablishmentId(p_establishmentId));
+            return ResponseEntity.ok().body(DishService.GetDishes_FromEstablishmentId(p_establishmentId, l_calculations));
         }
         else if(p_user_id!=null)
         {
-            return ResponseEntity.ok().body(DishService.GetDishes_FromUserId(p_user_id));
+            return ResponseEntity.ok().body(DishService.GetDishes_FromUserId(p_user_id, l_calculations));
         }
         else
         {

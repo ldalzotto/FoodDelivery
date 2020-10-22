@@ -154,7 +154,7 @@ class EstablishmentRegistration extends HTMLElement {
 }
 
 class EstablishementDisplayV2_Click extends Event{
-    static readonly Type: string = "establishment-display-v2-click";
+    static readonly Type: string = "establishment-display-preview-click";
     public establishment_id : number;
     constructor(p_establishment_id : number)
     {
@@ -164,7 +164,7 @@ class EstablishementDisplayV2_Click extends Event{
 }
 
 class EstablishementDisplayV2 {
-    static readonly Type: string = "establishment-display-v2";
+    static readonly Type: string = "establishment-display-preview";
 
     private _root : HTMLElement;
     public get root(){return this._root;}

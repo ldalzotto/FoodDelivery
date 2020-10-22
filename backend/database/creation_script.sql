@@ -101,7 +101,7 @@ drop table if exists establishment_dish;
 
 create table if not exists establishment_dish
 (
-    establishment_id INTEGER UNIQUE NOT NULL,
+    establishment_id INTEGER NOT NULL,
     dish_id INTEGER NOT NULL,
     FOREIGN KEY(establishment_id) REFERENCES establishments(id),
     FOREIGN KEY(dish_id) REFERENCES dish(id)

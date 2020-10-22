@@ -18,7 +18,8 @@ class ProfileSelector_SelectionEvent extends Event
 enum ProfileSelector_SelectedSection
 {
     NONE,
-    ESTABLISHMENT
+    ESTABLISHMENT,
+    DISH
 }
 
 class ProfileSelector
@@ -28,6 +29,7 @@ class ProfileSelector
     private _root : HTMLElement;
     public get root(){return this._root;}
     private establishmentButton : HTMLElement;
+    private dishButton : HTMLElement;
 
     private selectedSection : ProfileSelector_SelectedSection = ProfileSelector_SelectedSection.NONE;
     private selectedSection_watcher : MWatcher<ProfileSelector_SelectedSection>;
@@ -39,16 +41,25 @@ class ProfileSelector
         this._root.appendChild(l_template.content.cloneNode(true));
         
         this.establishmentButton = this._root.querySelector("#establishment-button");
+        this.dishButton = this._root.querySelector("#dish-button");
+
         this.establishmentButton.addEventListener("click", () => {this.onEstablishmentButtonClick();});
+        this.dishButton.addEventListener("click", () => {this.onDishButtonClick();});
+        
 
         this.selectedSection_watcher = new MWatcher(ProfileSelector_SelectedSection.NONE);
         this.selectedSection_watcher.subscribe((p_old, p_new) => this.onSelectedSectionChanged(p_old, p_new));
     }
-
+ 
     onEstablishmentButtonClick()
     {
         this.setSelectedSection(ProfileSelector_SelectedSection.ESTABLISHMENT);
         ProfileNavigation.MoveToEstablishment();
+    }
+
+    onDishButtonClick() {
+        this.setSelectedSection(ProfileSelector_SelectedSection.DISH);
+        ProfileNavigation.MoveToDishes();
     }
 
     private setSelectedSection(p_section : ProfileSelector_SelectedSection)

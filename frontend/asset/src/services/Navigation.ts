@@ -39,6 +39,11 @@ class ProfileNavigation{
     {
         router.navigate(Navigation_Constants.Profile_EstablishmentsPath);
     }
+    
+    static MoveToDishes()
+    {
+        router.navigate(Navigation_Constants.Profile_DishesPath);
+    }
 }
 
 

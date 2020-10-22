@@ -16,6 +16,7 @@ import {RegisterValidationPage} from "./pages/RegisterValidationPage.js"
 import { EatPage } from "./pages/EatPage.js";
 import { Profile_EstablishmentPage } from "./pages/Profile_EstablishmentPage.js";
 import { EstablishmentDetailPage } from "./pages/ProfileEstablishmentDetailPage.js";
+import { ProfileDishesPage } from "./pages/ProfileDishesPage.js";
 
 RegisterComponentsGraphic();
 RegisterComponents();
@@ -30,6 +31,7 @@ class Navigation_Constants
     static readonly ProfilePath : string = "/profile";
     static readonly Profile_EstablishmentsPath : string = "/profile/establishments";
     static readonly Profile_EstablishmentDetailPath : string = "/profile/establishment-detail";
+    static readonly Profile_DishesPath : string = "/profile/dishes";
     static readonly RegisterPath : string = "/register";
     static readonly RegisterValidatePath : string = "/register/validation";
     static readonly EatPath : string = "/eat";
@@ -71,6 +73,13 @@ router.add(new Route(Navigation_Constants.Profile_EstablishmentDetailPath, (p_ur
     let l_queryParams = Router.extractQueryParams(p_url);
     appElement.appendChild(new EstablishmentDetailPage(parseInt(l_queryParams["establishmentId"])));
     console.log("PROFILE_ESTABLISHMENT_DETAIL");
+    return true;
+}));
+
+router.add(new Route(Navigation_Constants.Profile_DishesPath, () => {
+    appElement.innerHTML = "";
+    appElement.appendChild(new ProfileDishesPage());
+    console.log("PROFILE_DISHES");
     return true;
 }));
 

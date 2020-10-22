@@ -1,7 +1,6 @@
 package com.example.app.dish;
 
 import com.example.app.dish.domain.Dish;
-import com.example.app.establishments.domain.Establishment;
 import com.example.main.ConfigurationBeans;
 import com.example.utils.IntegerHeap;
 import org.springframework.dao.DataAccessException;
@@ -34,7 +33,7 @@ public class DishQuery {
         return
                 ConfigurationBeans.jdbcTemplate.query(con -> {
                     PreparedStatement l_ps = con.prepareStatement("select * from dish " +
-                            "where establishment_dish.user_id = ? ");
+                            "where dish.user_id = ? ");
                     l_ps.setLong(1, p_userId);
                     return l_ps;
                 }, (rs, nb) -> {

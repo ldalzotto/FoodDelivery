@@ -60,6 +60,12 @@
       <profile-establishments></profile-establishments>
     </template>
 
+    <template id="profile-dishes-page">
+      <page-header></page-header>
+      <profile-selector></profile-selector>
+      <profile-dishes></profile-dishes>
+    </template>
+
     <template id="establishment-detail-page">
       <page-header></page-header>
       <div id="detail"></div>
@@ -110,6 +116,7 @@
     <template id="profile-selector">
       <div class="row nav-container">
         <div class="column nav-item" id="establishment-button">ESTABLISHMENTS</div>
+        <div class="column nav-item" id="dish-button">DISHES</div>
       </div>
       <hr style="margin: 0px; padding: 0px;"/>
     </template>
@@ -190,7 +197,7 @@
       <br/>
     </template>
 
-    <template id="establishment-display-v2">
+    <template id="establishment-display-preview">
       <div class="row">
         <div class="column one-fourth">
           <img id="thumb" class="head-image"/>
@@ -198,6 +205,18 @@
         <div class="column two-fourth">
           <div id="name"></div>
           <div id="address"></div>
+        </div>
+      </div>
+    </template>
+
+    <template id="dish-preview">
+      <div class="row">
+        <div class="column one-fourth">
+          <img id="thumb" class="head-image">
+        </div>
+        <div class="column two-fourth">
+          <div id="name"></div>
+          <div id="price"></div>
         </div>
       </div>
     </template>
@@ -214,6 +233,10 @@
           <button id="submit">SUBMIT</button>
         </div>
       </div>
+    </template>
+
+    <template id="profile-dishes">
+      <div id="dish-list"></div>
     </template>
 
     <template id="nearest-establishments">

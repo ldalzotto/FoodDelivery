@@ -266,10 +266,7 @@ public class EstablishmentService {
                     List<ImageUrl> l_establishmentThumb = new ArrayList<>();
                     for(Long l_thumbId : l_distinctThumbnails)
                     {
-                        ImageUrl l_url = new ImageUrl();
-                        l_url.image_id = l_thumbId;
-                        l_url.url = String.format("http://localhost:8080/image?image_id=%d", l_thumbId);
-                        l_establishmentThumb.add(l_url);
+                        l_establishmentThumb.add(new ImageUrl(l_thumbId));
                     }
                     p_establishmentsGet.setThumbnails(l_establishmentThumb);
 
@@ -297,7 +294,6 @@ public class EstablishmentService {
 
                     p_establishmentsGet.setEstablishmentToThumbnail(l_establishment_TO_thumb);
                 }
-
             }
         }
     }

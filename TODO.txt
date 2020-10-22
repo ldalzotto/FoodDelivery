@@ -3,7 +3,7 @@
      - Adding/Removing/Update dish to establishment.
      - Getting all dishes from user-id (for editing).
 -## Front-End : 
-     * Adding a dish page where all dishes are displayed (with thumb).
+     - Adding a dish page where all dishes are displayed (with thumb).
 
 # Establishment detail :
      - Refactoring the establishment-detail component so that it only display thumb, name and address
