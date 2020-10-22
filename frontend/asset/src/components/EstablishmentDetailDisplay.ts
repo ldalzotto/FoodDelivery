@@ -3,7 +3,6 @@ import { InputTextUpdateElement } from "../components_graphic/InputTextUpdateEle
 import { LoadingButton } from "../components_graphic/LoadingButton.js";
 import { MapSelectionUpdate } from "../components_graphic/MapSelection.js";
 import { Establishment, EstablishmentAddress, EstablishmentAddressDelta, EstablishmentCalculationType, EstablishmentDelta, EstablishmentGet, EstablishmentService } from "../services/Establishment.js";
-import { City } from "../services/Geo.js";
 import { CitySelectionUpdate } from "./CitySelection.js";
 
 
@@ -34,7 +33,7 @@ class EstablishementDisplay {
     public static build(p_root : HTMLElement, p_establishmentId : number): EstablishementDisplay {
         let l_establihsmentDisplay: EstablishementDisplay = new EstablishementDisplay();
         l_establihsmentDisplay._root = p_root;
-//, p_sourceEstablishment : Establishment, p_sourceEstablishmentAddress : EstablishmentAddress, p_city : City
+
         EstablishmentService.GetEstablishment(p_establishmentId, [EstablishmentCalculationType.RETRIEVE_CITIES, EstablishmentCalculationType.RETRIEVE_THUMBNAIL],
              (p_establishmentGet : EstablishmentGet) => {
                 let l_template: HTMLTemplateElement = document.getElementById(EstablishementDisplay.Type) as HTMLTemplateElement;
