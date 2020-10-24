@@ -73,6 +73,12 @@ class EstablishmentService
         Server.SendRequest_Json("POST", `http://localhost:8080/establishment/delete?establishment_id=${p_establishmentId}`, null, true, p_okCallback, p_errorCallback);
     }
 
+    public static LinkEstablishmentDishUpdate(p_establishmentId : number, p_executionType : EstablishmentDishExecutionType,
+         p_linkedDishes : number[], p_okCallback : (arg0 : null)=>(void), p_errorCallback ?: (p_serverError : ServerError)=>(void))
+    {
+        Server.SendRequest_Json("POST", `http://localhost:8080/establishment/dish-update?establishment_id=${p_establishmentId}&calculation=${p_executionType}`, p_linkedDishes, true, p_okCallback, p_errorCallback);
+    }
+
 }
 
 class Establishment
@@ -141,4 +147,10 @@ class EstablishmentAddressDelta
     public lng : number | null;
 }
 
-export {EstablishmentService, Establishment, EstablishmentAddress, EstablishmentGet, EstablishmentDelta, EstablishmentAddressDelta, EstablishmentCalculationType}
+enum EstablishmentDishExecutionType
+{
+    ADD = 0,
+    REMOVE = 1
+}
+
+export {EstablishmentService, Establishment, EstablishmentAddress, EstablishmentGet, EstablishmentDelta, EstablishmentAddressDelta, EstablishmentCalculationType, EstablishmentDishExecutionType}

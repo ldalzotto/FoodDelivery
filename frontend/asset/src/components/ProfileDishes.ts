@@ -30,9 +30,15 @@ class DishPreview
     static readonly Type: string = "dish-preview";
 
     private _root : HTMLElement;
+    public get root(){return this._root;}
+
+    private _dish : Dish;
+    public get dish(){return this._dish;}
 
     constructor(p_root : HTMLElement, p_dish : Dish, p_thumb : ImageUrl)
     {
+        this._dish = p_dish;
+
         this._root = p_root;
         let l_template: HTMLTemplateElement = document.getElementById(DishPreview.Type) as HTMLTemplateElement;
         this._root.appendChild(l_template.content.cloneNode(true));
@@ -46,4 +52,4 @@ class DishPreview
     }
 }
 
-export {ProfileDishes}
+export {ProfileDishes, DishPreview}

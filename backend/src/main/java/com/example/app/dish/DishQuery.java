@@ -5,13 +5,17 @@ import com.example.main.ConfigurationBeans;
 import com.example.utils.BooleanWrapper;
 import com.example.utils.IntegerHeap;
 import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class DishQuery {
 
@@ -101,6 +105,37 @@ public class DishQuery {
             if(l_count==0){l_return.value = true;}
         });
         return l_return.value;
+    }
+
+    public static List<Long> CheckDishesExistance(List<Long> p_dishesId)
+    {
+        String l_tableName = "_" + UUID.randomUUID().toString().replaceAll("-", "");
+
+        ConfigurationBeans.jdbcTemplate.update(String.format("create table %s(id INTEGER )", l_tableName));
+
+        ConfigurationBeans.jdbcTemplate.batchUpdate(String.format("insert into %s(id) values (?)", l_tableName),
+                new BatchPreparedStatementSetter() {
+                    @Override
+                    public void setValues(PreparedStatement ps, int i) throws SQLException {
+                        ps.setLong(1, p_dishesId.get(i));
+                    }
+
+                    @Override
+                    public int getBatchSize() {
+                        return p_dishesId.size();
+                    }
+                });
+
+        List<Long> l_matchedId =
+            ConfigurationBeans.jdbcTemplate.query(String.format("select dish.* from dish, %s where dish.id == %s.id", l_tableName, l_tableName) ,
+                    (rs, rowNum) -> {
+                return rs.getLong(1);
+            });
+
+
+        ConfigurationBeans.jdbcTemplate.update(String.format("drop table %s", l_tableName));
+
+        return l_matchedId;
     }
 
     public static void DeleteDish(long p_dishId)

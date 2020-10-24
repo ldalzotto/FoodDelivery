@@ -14,6 +14,16 @@ public class DishGet extends HashMap<String, Object> {
     {
         return (List<Dish>)this.getOrDefault("dishes", null);
     }
+
+    public void setDishesIncludedInEstablishment(long[] p_dishesIncludedInEstablishment)
+    {
+        this.put("dishes_included_in_establishment", p_dishesIncludedInEstablishment);
+    }
+    public void setDishesExcludedInEstablishment(long[] p_dishesIncludedInEstablishment)
+    {
+        this.put("dishes_excluded_in_establishment", p_dishesIncludedInEstablishment);
+    }
+
     public void setThumbnails(List<ImageUrl> p_thumbs)
     {
         this.put("thumbnails", p_thumbs);

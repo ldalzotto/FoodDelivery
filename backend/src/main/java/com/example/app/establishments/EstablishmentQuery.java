@@ -1,11 +1,13 @@
 package com.example.app.establishments;
 
+import com.example.app.dish.domain.EstablishmentToDishes;
 import com.example.app.establishments.domain.*;
 import com.example.main.ConfigurationBeans;
 import com.example.utils.BooleanWrapper;
 import com.example.utils.IntegerHeap;
 import com.example.utils.Parameter;
 import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.transaction.TransactionStatus;
@@ -13,6 +15,7 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class EstablishmentQuery {
@@ -206,7 +209,7 @@ public class EstablishmentQuery {
             return l_ps;
         }, (rs) -> {
             long l_count =  rs.getLong(1);
-            if(l_count==0){l_return.value = true;}
+            if(l_count==1){l_return.value = true;}
         });
         return l_return.value;
     }
@@ -227,6 +230,21 @@ public class EstablishmentQuery {
         return l_return.value;
     }
 
+    public static EstablishmentToDishes GetEstablishmentToDish(long p_establishmentId)
+    {
+        EstablishmentToDishes l_establishmentToDishes = new EstablishmentToDishes();
+        l_establishmentToDishes.establishment_id = p_establishmentId;
+        l_establishmentToDishes.dish_id = ConfigurationBeans.jdbcTemplate.query(con -> {
+            PreparedStatement l_ps = con.prepareStatement("select * from establishment_dish where establishment_dish.establishment_id = ?");
+            l_ps.setLong(1, p_establishmentId);
+            return l_ps;
+        }, (rs, nb) -> {
+            return rs.getLong(2);
+        });
+
+        return l_establishmentToDishes;
+    }
+
     public static void CreateLinkBetween_Establishment_Dish(long p_establishmentId, long p_dishId)
     {
         ConfigurationBeans.jdbcTemplate.update(con -> {
@@ -235,6 +253,41 @@ public class EstablishmentQuery {
             l_ps.setLong(2, p_dishId);
             return l_ps;
         });
+    }
+
+    public static void CreateLinkBetween_Establishment_Dish_Bulk(long p_establishmentId, List<Long> p_dishesId)
+    {
+        ConfigurationBeans.jdbcTemplate.batchUpdate("insert into establishment_dish(establishment_id, dish_id) values (?,?)",
+                new BatchPreparedStatementSetter() {
+                    @Override
+                    public void setValues(PreparedStatement ps, int i) throws SQLException {
+                        ps.setLong(1, p_establishmentId);
+                        ps.setLong(2, p_dishesId.get(i));
+                    }
+
+                    @Override
+                    public int getBatchSize() {
+                        return p_dishesId.size();
+                    }
+                });
+    }
+
+    public static void DeleteLinkBetween_Establishment_Dish_Bulk(long p_establishmentId, List<Long> p_dishesId)
+    {
+        ConfigurationBeans.jdbcTemplate.batchUpdate("delete from establishment_dish " +
+                        "where establishment_dish.establishment_id = ? and establishment_dish.dish_id = ?",
+                new BatchPreparedStatementSetter() {
+                    @Override
+                    public void setValues(PreparedStatement ps, int i) throws SQLException {
+                        ps.setLong(1, p_establishmentId);
+                        ps.setLong(2, p_dishesId.get(i));
+                    }
+
+                    @Override
+                    public int getBatchSize() {
+                        return p_dishesId.size();
+                    }
+                });
     }
 }
 

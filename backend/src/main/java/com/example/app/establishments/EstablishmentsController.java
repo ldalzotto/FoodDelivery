@@ -141,6 +141,37 @@ public class EstablishmentsController {
     }
 
     @CrossOrigin(origins = {"http://localhost:8081", "http://192.168.1.11:8081"}, allowCredentials = "true")
+    @RequestMapping(value = "/establishment/dish-update", method = RequestMethod.POST)
+    public @ResponseBody
+    ResponseEntity<?> LinkEstablishmentDishUpdate(
+            @CookieValue("session_token") String p_sessionToken,
+            @CookieValue("session_user_id") long p_user_id,
+            @RequestParam("establishment_id") long p_establishment_id,
+            @RequestParam("calculation") int p_calculation,
+            @RequestBody() Long[] p_linkedDishes) {
+
+        FunctionalError l_Functional_error = new FunctionalError();
+
+        if (!SessionErrorHandler.HandleSessionValidationToken(
+                SessionService.validateSessionToken(p_sessionToken, p_user_id), l_Functional_error)) {
+            return ResponseEntity.badRequest().body(l_Functional_error);
+        }
+
+        EstablishmentDishExecutionType l_calculation = EstablishmentDishExecutionType.fromInt(p_calculation);
+
+        if(l_calculation == EstablishmentDishExecutionType.ADD)
+        {
+            EstablishmentService.AddLinkEstablishmentAndDish(p_establishment_id, p_linkedDishes);
+        }
+        else
+        {
+            EstablishmentService.RemoveLinkEstablishmentAndDish(p_establishment_id, p_linkedDishes);
+        }
+
+        return ResponseEntity.ok().body(null);
+    }
+
+    @CrossOrigin(origins = {"http://localhost:8081", "http://192.168.1.11:8081"}, allowCredentials = "true")
     @RequestMapping(value = "/establishment/delete", method = RequestMethod.POST)
     public @ResponseBody
     ResponseEntity<?> DeleteEstablishment(
@@ -159,4 +190,22 @@ public class EstablishmentsController {
         return ResponseEntity.ok().body(null);
     }
 
+}
+
+enum EstablishmentDishExecutionType
+{
+    DEFAULT, ADD, REMOVE;
+
+  public static EstablishmentDishExecutionType fromInt(int p_value)
+  {
+      switch (p_value)
+      {
+          case 0:
+              return EstablishmentDishExecutionType.ADD;
+          case 1:
+              return EstablishmentDishExecutionType.REMOVE;
+          default:
+              return EstablishmentDishExecutionType.DEFAULT;
+      }
+  }
 }

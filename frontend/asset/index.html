@@ -243,6 +243,23 @@
       <div id="establishment-list"></div>
     </template>
 
+    <template id="dish-add-to-establishment">
+      <div class="row">
+        <div class="column half">
+          <div class="row">
+            <button id="remove">REMOVE SELECTED</button>
+          </div>
+          <div id="owned-dishes" class="dish-modification-panel"></div>
+        </div>
+        <div class="column half">
+          <div class="row">
+            <button id="add">ADD SELECTED</button>
+          </div>
+          <div id="not-owned-dishes" class="dish-modification-panel"></div>
+        </div>
+      </div>
+    </template>
+
     <template id="establishments-thumb">
       <div id="establishments-thumb">
         <div class="row establishments-thumb-container">
@@ -262,6 +279,14 @@
       <input id="input" type="text" />
       <datalist>
       </datalist>
+    </template>
+
+    <template id="scrollable-panel">
+      <div class="row scroll-panel">
+        <div id="container" class="column one">
+
+        </div>
+      </div>
     </template>
 
   </body>

@@ -3,6 +3,8 @@ package com.example.app.dish;
 import com.example.app.dish.domain.Dish;
 import com.example.app.dish.domain.DishDelta;
 import com.example.app.dish.domain.DishGet;
+import com.example.app.dish.domain.EstablishmentToDishes;
+import com.example.app.establishments.EstablishmentQuery;
 import com.example.app.image.ImageQuery;
 import com.example.app.image.domain.ImageCreated;
 import com.example.app.image.domain.ImageUrl;
@@ -22,6 +24,53 @@ public class DishService {
         DishService.processEstablishmentGetCalculations(l_dishGet, p_calculations);
         return l_dishGet;
     }
+
+    public static DishGet GetDished_FromEstablishmentId_Including_AssociatedUserId(long p_establishmentId, long p_userId,
+                                                                                   List<DishCalculationType> p_calculations)
+    {
+        DishGet l_dishGet = new DishGet();
+        l_dishGet.setDishes(DishQuery.GetDishes_From_User(p_userId));
+
+        EstablishmentToDishes l_establishmentToDishes = EstablishmentQuery.GetEstablishmentToDish(p_establishmentId);
+        List<Dish> l_all_dishes = l_dishGet.getDishes();
+
+        long[] l_establishment_included_dishes = new long[l_establishmentToDishes.dish_id.size()];
+        long[] l_establishment_excluded_dishes = new long[l_all_dishes.size() - l_establishmentToDishes.dish_id.size()];
+
+        int l_establishment_included_dishes_counter = 0;
+        int l_establishment_excluded_dishes_counter = 0;
+
+        for(int j=0;j<l_all_dishes.size();j++) {
+            Dish l_dish = l_all_dishes.get(j);
+            boolean l_dishMatched = false;
+            for(int i = 0; i< l_establishmentToDishes.dish_id.size(); i++)
+            {
+                if(l_establishmentToDishes.dish_id.get(i) == l_dish.id)
+                {
+                    l_dishMatched = true;
+                    break;
+                }
+            }
+            if(l_dishMatched)
+            {
+                l_establishment_included_dishes[l_establishment_included_dishes_counter] = j;
+                l_establishment_included_dishes_counter += 1;
+            }
+            else
+            {
+                l_establishment_excluded_dishes[l_establishment_excluded_dishes_counter] = j;
+                l_establishment_excluded_dishes_counter += 1;
+            }
+        }
+
+        l_dishGet.setDishesIncludedInEstablishment(l_establishment_included_dishes);
+        l_dishGet.setDishesExcludedInEstablishment(l_establishment_excluded_dishes);
+
+        DishService.processEstablishmentGetCalculations(l_dishGet, p_calculations);
+
+        return l_dishGet;
+    }
+
     public static DishGet GetDishes_FromUserId(long p_userId, List<DishCalculationType> p_calculations)
     {
         DishGet l_dishGet = new DishGet();
@@ -58,64 +107,68 @@ public class DishService {
 
     public static void processEstablishmentGetCalculations(DishGet p_dishGet, List<DishCalculationType> p_calculations)
     {
-        for(int i=0;i<p_calculations.size();i++)
+        if(p_calculations!=null)
         {
-            switch(p_calculations.get(i))
+            for(int i=0;i<p_calculations.size();i++)
             {
-                case RETRIEVE_THUMBNAIL:
+                switch(p_calculations.get(i))
                 {
-                    if(p_dishGet !=null)
+                    case RETRIEVE_THUMBNAIL:
                     {
-                        List<Dish> l_dishes = p_dishGet.getDishes();
-                        if(l_dishes!=null)
+                        if(p_dishGet !=null)
                         {
-                            Set<Long> l_distinctThumbnails = new HashSet<>();
-                            for(int j=0;j<l_dishes.size();j++)
+                            List<Dish> l_dishes = p_dishGet.getDishes();
+                            if(l_dishes!=null)
                             {
-                                if(l_dishes.get(j).thumb_id != null)
+                                Set<Long> l_distinctThumbnails = new HashSet<>();
+                                for(int j=0;j<l_dishes.size();j++)
                                 {
-                                    l_distinctThumbnails.add(l_dishes.get(j).thumb_id);
-                                }
-                            }
-
-                            if(l_distinctThumbnails.size() > 0)
-                            {
-                                List<ImageUrl> l_establishmentThumb = new ArrayList<>();
-                                for(Long l_thumbId : l_distinctThumbnails)
-                                {
-                                    l_establishmentThumb.add(new ImageUrl(l_thumbId));
-                                }
-                                p_dishGet.setThumbnails(l_establishmentThumb);
-
-                                long[] l_dish_TO_thumb = new long[l_dishes.size()];
-
-                                for(int j=0;j<l_dishes.size();j++) {
-                                    Dish l_dish = l_dishes.get(j);
-                                    if(l_dish.thumb_id!=null)
+                                    if(l_dishes.get(j).thumb_id != null)
                                     {
-                                        for(int k=0;k<l_establishmentThumb.size();k++)
+                                        l_distinctThumbnails.add(l_dishes.get(j).thumb_id);
+                                    }
+                                }
+
+                                if(l_distinctThumbnails.size() > 0)
+                                {
+                                    List<ImageUrl> l_establishmentThumb = new ArrayList<>();
+                                    for(Long l_thumbId : l_distinctThumbnails)
+                                    {
+                                        l_establishmentThumb.add(new ImageUrl(l_thumbId));
+                                    }
+                                    p_dishGet.setThumbnails(l_establishmentThumb);
+
+                                    long[] l_dish_TO_thumb = new long[l_dishes.size()];
+
+                                    for(int j=0;j<l_dishes.size();j++) {
+                                        Dish l_dish = l_dishes.get(j);
+                                        if(l_dish.thumb_id!=null)
                                         {
-                                            if(l_establishmentThumb.get(k).image_id == l_dish.thumb_id)
+                                            for(int k=0;k<l_establishmentThumb.size();k++)
                                             {
-                                                l_dish_TO_thumb[j] = k;
-                                                break;
+                                                if(l_establishmentThumb.get(k).image_id == l_dish.thumb_id)
+                                                {
+                                                    l_dish_TO_thumb[j] = k;
+                                                    break;
+                                                }
+                                                l_dish_TO_thumb[j] = -1;
                                             }
+                                        }
+                                        else
+                                        {
                                             l_dish_TO_thumb[j] = -1;
                                         }
                                     }
-                                    else
-                                    {
-                                        l_dish_TO_thumb[j] = -1;
-                                    }
-                                }
 
-                                p_dishGet.setDishToThumbnail(l_dish_TO_thumb);
+                                    p_dishGet.setDishToThumbnail(l_dish_TO_thumb);
+                                }
                             }
                         }
                     }
+                    break;
                 }
-                break;
             }
         }
+
     }
 }

@@ -41,6 +41,18 @@ public class DishController {
     }
 
     @CrossOrigin(origins = {"http://localhost:8081", "http://192.168.1.11:8081"}, allowCredentials = "true")
+    @RequestMapping(value = "/dishes-with-excluded", method = RequestMethod.GET)
+    public @ResponseBody
+    ResponseEntity<?> GetDishesWithExcluded(
+            @CookieValue(value = "session_user_id", required = false) Long p_user_id,
+            @RequestParam("establishment_id") Long p_establishmentId,
+            @RequestParam(value = "calculations", required = false) String p_calculations) {
+
+        List<DishCalculationType> l_calculations = DishCalculationType.parseString(p_calculations);
+        return ResponseEntity.ok().body(DishService.GetDished_FromEstablishmentId_Including_AssociatedUserId(p_establishmentId, p_user_id, l_calculations));
+    }
+
+    @CrossOrigin(origins = {"http://localhost:8081", "http://192.168.1.11:8081"}, allowCredentials = "true")
     @RequestMapping(value = "/dish", method = RequestMethod.POST)
     public @ResponseBody
     ResponseEntity<?> PostDish(

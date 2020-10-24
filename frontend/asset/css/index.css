@@ -195,3 +195,15 @@ button
     width: 100%;
     object-fit: cover;
 }
+
+.scroll-panel
+{
+    overflow-x: hidden;
+    overflow-y: scroll;
+    height: 100%;
+}
+
+.dish-modification-panel
+{
+    height: 500px;
+}

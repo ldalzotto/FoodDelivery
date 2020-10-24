@@ -1,6 +1,7 @@
 package com.example.app.establishments;
 
 import com.example.app.dish.DishQuery;
+import com.example.app.dish.domain.EstablishmentToDishes;
 import com.example.app.establishments.domain.*;
 import com.example.app.geo.GeoQuery;
 import com.example.app.geo.domain.City;
@@ -161,6 +162,43 @@ public class EstablishmentService {
                 EstablishmentQuery.DoesEstablishment_have_Dish(p_establishmentId, p_dishId))
         {
             EstablishmentQuery.CreateLinkBetween_Establishment_Dish(p_establishmentId, p_dishId);
+        }
+    }
+
+    public static void AddLinkEstablishmentAndDish(long p_establishmentId, Long[] p_linkDelta)
+    {
+        if(p_linkDelta!=null)
+        {
+            if(EstablishmentQuery.DoesEstablishmentExists(p_establishmentId))
+            {
+                if(p_linkDelta.length > 0)
+                {
+                    List<Long> l_linkDelta = DishQuery.CheckDishesExistance(Arrays.asList(p_linkDelta));
+                    EstablishmentToDishes l_establishmentToDishes = EstablishmentQuery.GetEstablishmentToDish(p_establishmentId);
+                    for(int i=l_linkDelta.size()-1; i>=0;i--)
+                    {
+                        if(l_establishmentToDishes.dish_id.contains(l_linkDelta.get(i)))
+                        {
+                            l_linkDelta.remove(i);
+                        }
+                    }
+                    EstablishmentQuery.CreateLinkBetween_Establishment_Dish_Bulk(p_establishmentId, l_linkDelta);
+                }
+            }
+        }
+    }
+
+    public static void RemoveLinkEstablishmentAndDish(long p_establishmentId, Long[] p_linkDelta)
+    {
+        if(p_linkDelta!=null)
+        {
+            if(EstablishmentQuery.DoesEstablishmentExists(p_establishmentId))
+            {
+                if(p_linkDelta.length > 0)
+                {
+                    EstablishmentQuery.DeleteLinkBetween_Establishment_Dish_Bulk(p_establishmentId,Arrays.asList(p_linkDelta));
+                }
+            }
         }
     }
 
