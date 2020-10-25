@@ -1,17 +1,13 @@
 package com.example.app.image;
 
 
-import com.example.main.ConfigurationBeans;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.sql.PreparedStatement;
 
 @Controller
 @RequestMapping(value = "/")

@@ -1,4 +1,5 @@
 import { Observable } from "../binding/Binding.js";
+import { LoadingButton } from "../components_graphic/LoadingButton.js";
 import { ScrollablePanel } from "../components_graphic/ScrollablePanel.js";
 import { DishCalculationType, DishGet, DishService } from "../services/DishService.js";
 import { EstablishmentDishExecutionType, EstablishmentService } from "../services/Establishment.js";
@@ -30,8 +31,8 @@ class DishAddToEstablishment
         this.ownedDishesSelectableContainer = new ScrollablePanel(this._root.querySelector("#owned-dishes"));
         this.notOwnedDishesSelectableContainer = new ScrollablePanel(this._root.querySelector("#not-owned-dishes"));
 
-        this._root.querySelector("#add").addEventListener("click", () => {this.onAddSelectedClick();});
-        this._root.querySelector("#remove").addEventListener("click", () => {this.onRemoveSelectedClick();});
+        new LoadingButton(this._root.querySelector("#add"), (p_onCompleted) => {this.onAddSelectedClick(p_onCompleted);});
+        new LoadingButton(this._root.querySelector("#remove"), (p_onCompleted) => {this.onRemoveSelectedClick(p_onCompleted);});
 
         DishService.GetDishesWithExcluded([DishCalculationType.RETRIEVE_THUMBNAIL], p_establishmentId, (p_dishes : DishGet) => {
             for(let i= 0;i<p_dishes.dishes_included_in_establishment.length;i++)
@@ -63,7 +64,7 @@ class DishAddToEstablishment
         }, null);
     }
 
-    onAddSelectedClick() 
+    onAddSelectedClick(p_onCompleted : ()=>void) 
     {
         let l_addedDishes : number[] = [];
         for(let i=0;i<this.l_notOwnedDishesSelectable.length;i++)
@@ -87,11 +88,16 @@ class DishAddToEstablishment
                             this.l_ownedDishesSelectable.push(l_dishSelectable);
                         }
                     }
-                }, null);
+                    p_onCompleted();
+                }, p_onCompleted);
+        }
+        else
+        {
+            p_onCompleted();
         }
     }
 
-    onRemoveSelectedClick() 
+    onRemoveSelectedClick(p_onCompleted : ()=>void) 
     {
         let l_removedDishes : number[] = [];
         for(let i=0;i<this.l_ownedDishesSelectable.length;i++)
@@ -115,7 +121,12 @@ class DishAddToEstablishment
                             this.l_notOwnedDishesSelectable.push(l_dishSelectable);
                         }
                     }
-                }, null);
+                    p_onCompleted();
+                }, p_onCompleted);
+        }
+        else
+        {
+            p_onCompleted();
         }
     }
 }
