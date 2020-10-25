@@ -10,6 +10,8 @@
      - Clicking on establishment redirect to the establishment/detail&establishment_id=$ page
      - Updating the establishment-detail to display #id next to the name.
 
+     - There is a bug when we try to create a dish with a long price.
+
 # Dish ordering : 
 -## Service-Side :
      * Creating an order. Link to the user-id is optional but to pay, you have to create an account.

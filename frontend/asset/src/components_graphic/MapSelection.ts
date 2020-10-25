@@ -134,7 +134,6 @@ class MapSelectionUpdate extends MapSelection
     private _initialValue : LatLng;
 
     private _hasChanged : Observable<boolean>;
-    public get hasChanged(){return this._hasChanged;}
 
     constructor(p_parent : HTMLElement, p_initialLat : number, p_initialLng : number)
     {
@@ -165,6 +164,11 @@ class MapSelectionUpdate extends MapSelection
         this._initialValue.lat = this.latLng.lat;
         this._initialValue.lng = this.latLng.lng;
         this.onLatLngChangedUpdate();
+    }
+
+    public hasChanged() : boolean
+    {
+        return this._hasChanged.value;
     }
 
     onLatLngChangedUpdate()

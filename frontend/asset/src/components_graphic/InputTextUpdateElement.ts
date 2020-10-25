@@ -10,8 +10,7 @@ class InputTextUpdateElement
     private _initialValue : string;
 
     private _hasChanged : Observable<boolean>;
-    public get hasChanged(){return this._hasChanged;}
-
+    
     private list : InputTextUpdateElement_KeyUpEventListener;
 
     constructor(p_parent : HTMLElement)
@@ -59,6 +58,11 @@ class InputTextUpdateElement
             this._input.readOnly = true;
             this._input.removeEventListener("keyup", this.list);
         }
+    }
+
+    public hasChanged() : boolean
+    {
+        return this._hasChanged.value;
     }
 
     public onValueChanged()

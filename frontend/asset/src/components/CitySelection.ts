@@ -112,7 +112,6 @@ class CitySelectionUpdate extends CitySelection
     private _initialValue : City;
 
     private _hasChanged : Observable<boolean>;
-    public get hasChanged(){return this._hasChanged;}
 
     public setInitialValue(p_city : City)
     {
@@ -138,6 +137,11 @@ class CitySelectionUpdate extends CitySelection
     public disableModifications()
     {
         this.selectFetch.readOnly.value = true;
+    }
+
+    public hasChanged() : boolean
+    {
+        return this._hasChanged.value;
     }
 
     onSelectedKeyChanged_update()

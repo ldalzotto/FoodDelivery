@@ -100,20 +100,20 @@ class EstablishementDisplay {
     onSubmitPressed(p_onCompleted : () => void) {
         let l_establishmentDelta: EstablishmentDelta | null;
         let l_establishmentAddressDelta: EstablishmentAddressDelta | null;
-        if (this.nameElement.hasChanged.value || this.phoneElement.hasChanged.value) {
+        if (this.nameElement.hasChanged() || this.phoneElement.hasChanged()) {
             l_establishmentDelta = new EstablishmentDelta();
-            if (this.nameElement.hasChanged.value) { l_establishmentDelta.name = this.nameElement.input.value; }
-            if (this.phoneElement.hasChanged.value) { l_establishmentDelta.phone = this.phoneElement.input.value; }
+            if (this.nameElement.hasChanged()) { l_establishmentDelta.name = this.nameElement.input.value; }
+            if (this.phoneElement.hasChanged()) { l_establishmentDelta.phone = this.phoneElement.input.value; }
         }
 
-        if (this.addressElement.hasChanged.value || this.pointElement.hasChanged.value || this.cityElement.hasChanged.value) {
+        if (this.addressElement.hasChanged() || this.pointElement.hasChanged() || this.cityElement.hasChanged()) {
             l_establishmentAddressDelta = new EstablishmentAddressDelta();
-            if (this.addressElement.hasChanged.value) { l_establishmentAddressDelta.street_full_name = this.addressElement.input.value; }
-            if (this.pointElement.hasChanged.value) {
+            if (this.addressElement.hasChanged()) { l_establishmentAddressDelta.street_full_name = this.addressElement.input.value; }
+            if (this.pointElement.hasChanged()) {
                 l_establishmentAddressDelta.lat = this.pointElement.latLng.lat;
                 l_establishmentAddressDelta.lng = this.pointElement.latLng.lng;
             }
-            if (this.cityElement.hasChanged.value) { 
+            if (this.cityElement.hasChanged()) { 
                 let l_selectedCity = this.cityElement.getSelectedCity();
                 if(l_selectedCity)
                 {

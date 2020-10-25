@@ -66,7 +66,7 @@ public class EstablishmentService {
         List<EstablishmentAddress> l_establishmentAddresses = null;
         Parameter<Establishment> l_establishment_retrieved = new Parameter<>();
         Parameter<EstablishmentAddress> l_establishmentAddress_retrieved = new Parameter<>();
-        EstablishmentQuery.GetEstablishment_with_EstablishmentAddress(p_userId,l_establishment_retrieved, l_establishmentAddress_retrieved);
+        EstablishmentQuery.GetEstablishment_with_EstablishmentAddress(p_establishmentId, l_establishment_retrieved, l_establishmentAddress_retrieved);
 
         if(l_establishment_retrieved.Value!=null)
         {
