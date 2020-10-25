@@ -9,6 +9,10 @@ class DishAddToEstablishment
     static readonly Type: string = "dish-add-to-establishment";
 
     private _root : HTMLElement;
+
+    private ownedDishesSelectableContainer : ScrollablePanel;
+    private notOwnedDishesSelectableContainer : ScrollablePanel;
+
     private l_ownedDishesSelectable : DishPreviewSelectable[];
     private l_notOwnedDishesSelectable : DishPreviewSelectable[];
     private establishmentId : number;
@@ -23,16 +27,17 @@ class DishAddToEstablishment
         let l_template: HTMLTemplateElement = document.getElementById(DishAddToEstablishment.Type) as HTMLTemplateElement;
         this._root.appendChild(l_template.content.cloneNode(true));
 
-        let l_ownedDishes = new ScrollablePanel(this._root.querySelector("#owned-dishes"));
-        let l_notOwnedDishes = new ScrollablePanel(this._root.querySelector("#not-owned-dishes"));
+        this.ownedDishesSelectableContainer = new ScrollablePanel(this._root.querySelector("#owned-dishes"));
+        this.notOwnedDishesSelectableContainer = new ScrollablePanel(this._root.querySelector("#not-owned-dishes"));
 
         this._root.querySelector("#add").addEventListener("click", () => {this.onAddSelectedClick();});
+        this._root.querySelector("#remove").addEventListener("click", () => {this.onRemoveSelectedClick();});
 
         DishService.GetDishesWithExcluded([DishCalculationType.RETRIEVE_THUMBNAIL], p_establishmentId, (p_dishes : DishGet) => {
             for(let i= 0;i<p_dishes.dishes_included_in_establishment.length;i++)
             {
                 let l_div = document.createElement("div");
-                l_ownedDishes.container.appendChild(l_div);
+                this.ownedDishesSelectableContainer.container.appendChild(l_div);
                 let l_dishIndex : number = p_dishes.dishes_included_in_establishment[i];
                 this.l_ownedDishesSelectable.push(
                     new DishPreviewSelectable(
@@ -45,7 +50,7 @@ class DishAddToEstablishment
             for(let i= 0;i<p_dishes.dishes_excluded_in_establishment.length;i++)
             {
                 let l_div = document.createElement("div");
-                l_notOwnedDishes.container.appendChild(l_div);
+                this.notOwnedDishesSelectableContainer.container.appendChild(l_div);
                 let l_dishIndex : number = p_dishes.dishes_excluded_in_establishment[i];
                 this.l_notOwnedDishesSelectable.push(
                     new DishPreviewSelectable(
@@ -71,33 +76,54 @@ class DishAddToEstablishment
         }
         if(l_addedDishes.length > 0)
         {
-            //TODO -> what to do on success ?
-            EstablishmentService.LinkEstablishmentDishUpdate(this.establishmentId, EstablishmentDishExecutionType.ADD, l_addedDishes, null, null);
+            EstablishmentService.LinkEstablishmentDishUpdate(this.establishmentId, EstablishmentDishExecutionType.ADD, l_addedDishes,
+                () => {
+                    for (let i = this.l_notOwnedDishesSelectable.length - 1; i >= 0; i--) {
+                        let l_dishSelectable: DishPreviewSelectable = this.l_notOwnedDishesSelectable[i];
+                        if (l_dishSelectable.isSelected.value) {
+                            this.ownedDishesSelectableContainer.container.appendChild(l_dishSelectable.root);
+                            l_dishSelectable.isSelected.value = false;
+                            this.l_notOwnedDishesSelectable.splice(i, 1);
+                            this.l_ownedDishesSelectable.push(l_dishSelectable);
+                        }
+                    }
+                }, null);
+        }
+    }
+
+    onRemoveSelectedClick() 
+    {
+        let l_removedDishes : number[] = [];
+        for(let i=0;i<this.l_ownedDishesSelectable.length;i++)
+        {
+            let l_dishSelectable : DishPreviewSelectable = this.l_ownedDishesSelectable[i];
+            if(l_dishSelectable.isSelected.value)
+            {
+                l_removedDishes.push(l_dishSelectable.dishPreview.dish.id);
+            }
+        }
+        if(l_removedDishes.length > 0)
+        {
+            EstablishmentService.LinkEstablishmentDishUpdate(this.establishmentId, EstablishmentDishExecutionType.REMOVE, l_removedDishes,
+                () => {
+                    for (let i = this.l_ownedDishesSelectable.length - 1; i >= 0; i--) {
+                        let l_dishSelectable: DishPreviewSelectable = this.l_ownedDishesSelectable[i];
+                        if (l_dishSelectable.isSelected.value) {
+                            this.notOwnedDishesSelectableContainer.container.appendChild(l_dishSelectable.root);
+                            l_dishSelectable.isSelected.value = false;
+                            this.l_ownedDishesSelectable.splice(i, 1);
+                            this.l_notOwnedDishesSelectable.push(l_dishSelectable);
+                        }
+                    }
+                }, null);
         }
     }
 }
 
-/*
-    <template id="dish-add-to-establishment">
-      <div class="row">
-        <div class="column half dish-modification-owned">
-          <div class="row">
-            <button id="remove">REMOVE SELECTED</button>
-          </div>
-          <div id="owned-dishes"></div>
-        </div>
-        <div class="column half dish-modification-not-owned">
-          <div class="row">
-            <button id="add">ADD SELECTED</button>
-          </div>
-          <div id="not-owned-dishes"></div>
-        </div>
-      </div>
-    </template>
-*/
-
 class DishPreviewSelectable
 {
+    public get root(){return this._dishPreview.root;}
+
     private _dishPreview : DishPreview;
     public get dishPreview() { return this._dishPreview; }
 
