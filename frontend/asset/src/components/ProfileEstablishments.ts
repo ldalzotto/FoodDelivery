@@ -9,13 +9,14 @@ import { City } from "../services/Geo.js";
 import { MapSelection } from "../components_graphic/MapSelection.js"
 import { ImageUrl } from "../services/Image.js";
 import { Navigation } from "../services/Navigation.js";
+import { ElementList, ElementListCallbacks } from "../components_graphic/ElementList.js";
 
 
 class ProfileEstablishmentContext extends HTMLElement {
     static readonly Type: string = "profile-establishments";
 
     private establishmentRegistration: EstablishmentRegistration;
-    private establishmentListsElement: HTMLElement;
+    private establishmentListsElementV2: ElementList<EstablishementDisplayV2, EstablishmentGet, EstablishmentGet, ProfileEstablishmentListCallbacks>;
 
     static Initialize() {
         customElements.define(ProfileEstablishmentContext.Type, ProfileEstablishmentContext);
@@ -28,31 +29,39 @@ class ProfileEstablishmentContext extends HTMLElement {
         let l_template: HTMLTemplateElement = document.getElementById(ProfileEstablishmentContext.Type) as HTMLTemplateElement;
         this.appendChild(l_template.content.cloneNode(true));
 
+    
         this.establishmentRegistration = this.querySelector(EstablishmentRegistration.Type);
-        this.establishmentRegistration.addEventListener(EstablishmentRegistration_AddedEstablishment.Type, () => { this.reloadEstablishments(); });
+        this.establishmentRegistration.addEventListener(EstablishmentRegistration_AddedEstablishment.Type, () => { this.establishmentListsElementV2.reload(); });
 
-        this.establishmentListsElement = this.querySelector("#establishments-list");
-        this.reloadEstablishments();
+        this.establishmentListsElementV2 = new ElementList(this.querySelector("#establishments-list"), new ProfileEstablishmentListCallbacks());
+        this.establishmentListsElementV2.reload();
     }
 
-    public reloadEstablishments() {
-        this.establishmentListsElement.innerHTML = "";
+}
+
+class ProfileEstablishmentListCallbacks implements ElementListCallbacks<EstablishementDisplayV2, EstablishmentGet, EstablishmentGet>
+{
+    fetchElements(p_onSuccess: (p_fetch: EstablishmentGet) => void): null {
         EstablishmentService.GetEstablishments(
-            [EstablishmentCalculationType.RETRIEVE_CITIES, EstablishmentCalculationType.RETRIEVE_THUMBNAIL],
-            (p_establishments: EstablishmentGet) => {
-                for (let i = 0; i < p_establishments.establishments.length; i++) {
-                    let l_establishmentDisplay_root = document.createElement("div");
-                    this.establishmentListsElement.appendChild(l_establishmentDisplay_root);
-
-                    let l_establishmentDisplay: EstablishementDisplayV2 = EstablishementDisplayV2.build(l_establishmentDisplay_root, p_establishments.establishments[i], p_establishments.establishment_addresses[i],
-                         p_establishments.cities[p_establishments.establishment_address_TO_city[i]],
-                         p_establishments.thumbnails[p_establishments.establishment_TO_thumbnail[i]]);
-                    l_establishmentDisplay.root.addEventListener(EstablishementDisplayV2_Click.Type, 
-                        (p_event : EstablishementDisplayV2_Click) => {Navigation.MoveToEstablishmentDetailPage(p_event.establishment_id);});
-                }
-            }, null
-        );
+            [EstablishmentCalculationType.RETRIEVE_CITIES, EstablishmentCalculationType.RETRIEVE_THUMBNAIL], p_onSuccess, null);
+        return null;
     }
+    forEachFetchedElements(p_fetch: EstablishmentGet, p_callback: (p_fetchElement: EstablishmentGet, p_index: number) => void): null {
+        for (let i = 0; i < p_fetch.establishments.length; i++)
+        {
+            p_callback(p_fetch, i);
+        }
+        return null;
+    }
+    buildElement(p_fetchElement: EstablishmentGet, p_index: number, p_itemHTMlRoot: HTMLElement): EstablishementDisplayV2 {
+        let l_establishmentDisplay: EstablishementDisplayV2 = EstablishementDisplayV2.build(p_itemHTMlRoot, p_fetchElement.establishments[p_index], p_fetchElement.establishment_addresses[p_index],
+            p_fetchElement.cities[p_fetchElement.establishment_address_TO_city[p_index]],
+            p_fetchElement.thumbnails[p_fetchElement.establishment_TO_thumbnail[p_index]]);
+       l_establishmentDisplay.root.addEventListener(EstablishementDisplayV2_Click.Type, 
+           (p_event : EstablishementDisplayV2_Click) => {Navigation.MoveToEstablishmentDetailPage(p_event.establishment_id);});
+        return l_establishmentDisplay;
+    }
+
 }
 
 class EstablishmentRegistration_AddedEstablishment extends Event {
