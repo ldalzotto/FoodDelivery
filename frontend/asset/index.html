@@ -221,6 +221,31 @@
       </div>
     </template>
 
+    <template id="dish-creation">
+      <div class="row">
+        <div class="column one">
+          <div id="add-dish-form">
+            <div class="row">
+              <div class="column one-third">Name : </div> <input class="two-third" id="name" type="text"/>
+            </div>
+            <div class="blank-3"></div>
+            <div class="row">
+              <div class="column one-third">Price : </div> <input class="two-third" id="price" type="number"/>
+            </div>
+            <div class="blank-3"></div>
+            <div class="row">
+              <input clas="column one" id="thumb" type="file"/>
+            </div>
+            <div class="blank-2"></div>
+            
+            <br/><br/>
+            <loading-button id="dish-creation" button-text="CREATE"></loading-button>
+          </div>
+        </div>
+        </div>
+      </div>
+    </template>
+
     <template id="user-location">
       <div class="row">
         <div class="column one">
@@ -236,6 +261,7 @@
     </template>
 
     <template id="profile-dishes">
+      <dish-creation></dish-creation>
       <div id="dish-list"></div>
     </template>
 
