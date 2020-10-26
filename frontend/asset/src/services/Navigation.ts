@@ -27,6 +27,11 @@ class Navigation
         router.navigate(`${Navigation_Constants.Profile_EstablishmentDetailPath}?establishmentId=${p_establishmentId}`);
     }
 
+    static MoveToDishDetailPage(p_dishId : number)
+    {
+        router.navigate(`${Navigation_Constants.Profile_DishDetailPath}?dishId=${p_dishId}`);
+    }
+
     static MoveToEatPage()
     {
         router.navigate(Navigation_Constants.EatPath);

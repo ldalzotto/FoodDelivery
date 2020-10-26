@@ -1,7 +1,7 @@
 import {Observable} from "../binding/Binding.js"
 import { UpdatableElement } from "./UpdatablePanel.js";
 
-class InputTextUpdateElement implements UpdatableElement
+class InputUpdateElement implements UpdatableElement
 {
     static readonly Type : string = "input-text-update";
     
@@ -12,14 +12,15 @@ class InputTextUpdateElement implements UpdatableElement
 
     private _hasChanged : Observable<boolean>;
     
-    private list : InputTextUpdateElement_KeyUpEventListener;
+    private list : InputUpdateElement_KeyUpEventListener;
 
-    constructor(p_parent : HTMLElement)
+    constructor(p_parent : HTMLElement, p_inputType : InputElementType)
     {
         this._root = document.createElement("input");
         this._input = this._root as HTMLInputElement;
+        this._input.type = p_inputType;
         p_parent.appendChild(this._root);
-        this.list = new InputTextUpdateElement_KeyUpEventListener(this);
+        this.list = new InputUpdateElement_KeyUpEventListener(this);
         this._input.readOnly = false;
 
         this._hasChanged = new Observable<boolean>(false);
@@ -92,18 +93,26 @@ class InputTextUpdateElement implements UpdatableElement
 
 }
 
-class InputTextUpdateElement_KeyUpEventListener implements EventListenerObject
+class InputUpdateElement_KeyUpEventListener implements EventListenerObject
 {
-    private inputTextUpdateElement : InputTextUpdateElement;
+    private InputUpdateElement : InputUpdateElement;
 
-    constructor(p_inputText : InputTextUpdateElement)
+    constructor(p_inputText : InputUpdateElement)
     {
-        this.inputTextUpdateElement = p_inputText;
+        this.InputUpdateElement = p_inputText;
     }
 
     handleEvent(evt: Event): void {
-        this.inputTextUpdateElement.onValueChanged();
+        this.InputUpdateElement.onValueChanged();
     }
 }
 
-export {InputTextUpdateElement}
+enum InputElementType
+{
+    TEXT = "text",
+    NUMBER = "number"
+};
+
+
+
+export {InputUpdateElement, InputElementType}

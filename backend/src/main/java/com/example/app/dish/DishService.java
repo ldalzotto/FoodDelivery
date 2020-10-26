@@ -17,6 +17,17 @@ import java.util.List;
 import java.util.Set;
 
 public class DishService {
+
+    public static DishGet GetDish(long p_dishId, List<DishCalculationType> p_calculations)
+    {
+        DishGet l_dishGet = new DishGet();
+        List<Dish> l_dishes = new ArrayList<>(1);
+        l_dishes.add(DishQuery.GetDish(p_dishId));
+        l_dishGet.setDishes(l_dishes);
+        DishService.processEstablishmentGetCalculations(l_dishGet, p_calculations);
+        return l_dishGet;
+    }
+
     public static DishGet GetDishes_FromEstablishmentId(long p_establishementId, List<DishCalculationType> p_calculations)
     {
         DishGet l_dishGet = new DishGet();

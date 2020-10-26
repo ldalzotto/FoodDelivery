@@ -4,6 +4,17 @@ import { ImageUrl } from "./Image.js";
 
 class DishService
 {
+    public static GetDish(p_dish_id : number, p_dishCalculation : DishCalculationType[] | null, p_onCompleted : (p_dishesGet : DishGet) => void, p_onError : (err : ServerError) => void)
+    {
+        let l_queryParams = new QueryParamBuilder();
+        l_queryParams.addParam("dish_id", p_dish_id.toString());
+        if(p_dishCalculation)
+        {
+            l_queryParams.addParam("calculations", p_dishCalculation.toString());
+        }
+        Server.SendRequest_Json("GET", `http://localhost:8080/dish${l_queryParams.params}`, null, false, p_onCompleted, p_onError);
+    }
+
     public static GetDishesForUser(p_dishCalculation : DishCalculationType[] | null, p_onCompleted : (p_dishesGet : DishGet) => void, p_onError : (err : ServerError) => void)  
     {
         let l_queryParams = new QueryParamBuilder();
@@ -35,6 +46,21 @@ class DishService
         }
         Server.SendRequest_Form("POST", `http://localhost:8080/dish`, l_form, true, p_onCompleted, p_onError);
     }
+
+    public static UpdateDish(p_dish_id : number, p_dishDelta : DishDelta, p_onCompleted : () => void, p_onError : (err : ServerError) => void)
+    {
+        let l_form : FormData = new FormData();
+        l_form.append("dish_id", p_dish_id.toString());
+        l_form.append("dish", JSON.stringify(p_dishDelta));
+        Server.SendRequest_Form("POST", `http://localhost:8080/dish/update`, l_form, true, p_onCompleted, p_onError);
+    }
+
+    public static DeleteDish(p_dish_id : number, p_onCompleted : () => void, p_onError : (err : ServerError) => void)
+    {
+        let l_queryParams = new QueryParamBuilder();
+        l_queryParams.addParam("dish_id", p_dish_id.toString());
+        Server.SendRequest_Json("POST", `http://localhost:8080/dish/delete${l_queryParams.params}`, null, true, p_onCompleted, p_onError);
+    }
 }
 
 class Dish
@@ -44,6 +70,12 @@ class Dish
     public price : number;
     public thumb_id : number;
     public user_id : number;
+}
+
+class DishDelta
+{
+    public name : string;
+    public price : number;
 }
 
 class DishGet
@@ -60,4 +92,4 @@ enum DishCalculationType
     RETRIEVE_THUMBNAIL = "RETRIEVE_THUMBNAIL"
 }
 
-export {Dish, DishGet, DishService, DishCalculationType}
+export {Dish, DishGet, DishDelta, DishService, DishCalculationType}

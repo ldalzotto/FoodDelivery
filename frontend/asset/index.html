@@ -66,6 +66,11 @@
       <profile-dishes></profile-dishes>
     </template>
 
+    <template id="dish-detail-page">
+      <page-header></page-header>
+      <div id="detail"></div>
+    </template>
+
     <template id="establishment-detail-page">
       <page-header></page-header>
       <div id="detail"></div>
@@ -160,9 +165,6 @@
           <loading-button id="establishment-creation" button-text="CREATE"></loading-button>
         </div>
       </div>
-        
-      
-     
     </template>
 
     <template id="establishment-display">
@@ -197,6 +199,18 @@
           <div id="address"></div>
         </div>
       </div>
+    </template>
+
+    <template id="dish-details-display">
+      <div class="blank-3"></div>
+      <div class="row">
+        <div class="column one-third">Name : </div> <input-text-update class="column two-third" id="name"/>
+      </div>
+      <div class="blank-3"></div>  
+      <div class="row">
+        <div class="column one-third">Price : </div> <input-text-update class="column two-third" id="price"/>
+      </div>
+      <div class="blank-3"></div>
     </template>
 
     <template id="dish-preview">

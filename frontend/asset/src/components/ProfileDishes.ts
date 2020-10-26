@@ -3,6 +3,7 @@ import { ElementList, ElementListCallbacks } from "../components_graphic/Element
 import { LoadingButton } from "../components_graphic/LoadingButton.js";
 import { Dish, DishCalculationType, DishGet, DishService } from "../services/DishService.js";
 import { ImageUrl } from "../services/Image.js";
+import { Navigation } from "../services/Navigation.js";
 
 class ProfileDishes
 {
@@ -45,7 +46,9 @@ class DishListCallback implements ElementListCallbacks<DishPreview, DishGet, Dis
         return null;
     }
     buildElement(p_fetchElement: DishGet, p_index: number, p_itemHTMlRoot: HTMLElement): DishPreview {
-        return new DishPreview(p_itemHTMlRoot, p_fetchElement.dishes[p_index], p_fetchElement.thumbnails[p_fetchElement.dish_TO_thumbnail[p_index]]);
+        let l_dishPreview = new DishPreview(p_itemHTMlRoot, p_fetchElement.dishes[p_index], p_fetchElement.thumbnails[p_fetchElement.dish_TO_thumbnail[p_index]]);
+        l_dishPreview.root.addEventListener("click", () => { Navigation.MoveToDishDetailPage(l_dishPreview.dish.id); });
+        return l_dishPreview;
     }
 
 }

@@ -1,5 +1,5 @@
 import { Observable } from "../binding/Binding.js";
-import { InputTextUpdateElement } from "../components_graphic/InputTextUpdateElement.js";
+import { InputElementType, InputUpdateElement } from "../components_graphic/InputUpdateElement.js";
 import { LoadingButton } from "../components_graphic/LoadingButton.js";
 import { MapSelectionUpdate } from "../components_graphic/MapSelection.js";
 import { UpdatableElement, UpdatablePanel, UpdatablePanelCallbacks } from "../components_graphic/UpdatablePanel.js";
@@ -13,11 +13,11 @@ class EstablishementDisplay {
     private _root : HTMLElement;
     public get root(){return this._root;}
 
-    public nameElement: InputTextUpdateElement;
-    public addressElement: InputTextUpdateElement;
+    public nameElement: InputUpdateElement;
+    public addressElement: InputUpdateElement;
     public cityElement: CitySelectionUpdate;
     public pointElement: MapSelectionUpdate;
-    public phoneElement: InputTextUpdateElement;
+    public phoneElement: InputUpdateElement;
 
     public establishmentServer: Establishment;
 
@@ -37,10 +37,10 @@ class EstablishementDisplay {
 
                 l_establihsmentDisplay.establishmentServer = p_establishmentGet.establishments[0];
         
-                l_establihsmentDisplay.nameElement = new InputTextUpdateElement(l_modificationContentElement.querySelector("#name"));
+                l_establihsmentDisplay.nameElement = new InputUpdateElement(l_modificationContentElement.querySelector("#name"), InputElementType.TEXT);
                 l_establihsmentDisplay.nameElement.init(l_establihsmentDisplay.establishmentServer.name);
         
-                l_establihsmentDisplay.addressElement = new InputTextUpdateElement(l_modificationContentElement.querySelector("#address"));
+                l_establihsmentDisplay.addressElement = new InputUpdateElement(l_modificationContentElement.querySelector("#address"), InputElementType.TEXT);
                 l_establihsmentDisplay.addressElement.init(l_establishment_address.street_full_name);
         
                 l_establihsmentDisplay.cityElement = new CitySelectionUpdate(l_modificationContentElement.querySelector("#city"));
@@ -48,7 +48,7 @@ class EstablishementDisplay {
         
                 l_establihsmentDisplay.pointElement = new MapSelectionUpdate(l_modificationContentElement.querySelector("#point"), l_establishment_address.lat, l_establishment_address.lng);
         
-                l_establihsmentDisplay.phoneElement = new InputTextUpdateElement(l_modificationContentElement.querySelector("#phone"));
+                l_establihsmentDisplay.phoneElement = new InputUpdateElement(l_modificationContentElement.querySelector("#phone"), InputElementType.TEXT);
                 l_establihsmentDisplay.phoneElement.init(l_establihsmentDisplay.establishmentServer.phone);
         
                 let l_updatableElements : UpdatableElement[] = [

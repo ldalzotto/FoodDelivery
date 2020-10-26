@@ -2,6 +2,7 @@ package com.example.app.dish;
 
 import com.example.app.dish.domain.Dish;
 import com.example.app.dish.domain.DishDelta;
+import com.example.app.dish.domain.DishGet;
 import com.example.app.session.SessionErrorHandler;
 import com.example.app.session.SessionService;
 import com.example.main.FunctionalError;
@@ -33,6 +34,25 @@ public class DishController {
         else if(p_user_id!=null)
         {
             return ResponseEntity.ok().body(DishService.GetDishes_FromUserId(p_user_id, l_calculations));
+        }
+        else
+        {
+            return ResponseEntity.ok().body(null);
+        }
+    }
+
+    @CrossOrigin(origins = {"http://localhost:8081", "http://192.168.1.11:8081"})
+    @RequestMapping(value = "/dish", method = RequestMethod.GET)
+    public @ResponseBody
+    ResponseEntity<?> GetDish(
+            @RequestParam(value = "dish_id", required = false) Long p_dish_id,
+            @RequestParam(value = "calculations", required = false) String p_calculations) {
+
+        List<DishCalculationType> l_calculations = DishCalculationType.parseString(p_calculations);
+
+        if(p_dish_id!=null)
+        {
+            return ResponseEntity.ok().body(DishService.GetDish(p_dish_id, l_calculations));
         }
         else
         {
