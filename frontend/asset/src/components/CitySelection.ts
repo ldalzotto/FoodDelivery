@@ -2,6 +2,7 @@ import { ServerError } from "../server/Server.js";
 import {GeoService, City} from "../services/Geo.js"
 import {SelectFetch} from "../components_graphic/SelectFetch.js"
 import { Observable } from "../binding/Binding.js";
+import { UpdatableElement } from "../components_graphic/UpdatablePanel.js";
 
 class CitySelection_SelectedEvent extends Event
 {
@@ -98,7 +99,7 @@ class CitySelection
     }
 }
 
-class CitySelectionUpdate extends CitySelection
+class CitySelectionUpdate extends CitySelection implements UpdatableElement
 {
     
     constructor(p_root : HTMLElement)

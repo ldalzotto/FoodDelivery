@@ -166,34 +166,24 @@
     </template>
 
     <template id="establishment-display">
-        <div class="row">
-          <div class="column one">
-            <div class="row">
-              <button class="column one-twelfth" id="modification-unlock"></button>
-              <loading-button class="column one-twelfth" id="submit" button-text="S"></loading-button>
-              <loading-button class="column one-twelfth" id="delete" button-text="D"></loading-button>
-            </div>
-            <div class="blank-3"></div>
-            <div class="row">
-              <div class="column one-third">Name : </div> <input-text-update class="column two-third" id="name"/>
-            </div>
-            <div class="blank-3"></div>
-            <div class="row">
-              <div class="column one-third">Address : </div> <input-text-update class="column two-third" id="address"/>
-            </div>
-            <div class="blank-3"></div>
-            <div class="row">
-              <div class="column one-third">City : </div><city-selection class="column two-third" readonly="" id="city"></city-selection>
-            </div>
-            <div class="blank-3"></div>
-            <div class="row">
-              <div class="column one-third">Phone : </div> <input-text-update class="column two-third" id="phone"/>
-            </div>
-            <div class="blank-2"></div>
-            <map-selection class="map-test" id="point"></map-selection>
-           
+          <div class="blank-3"></div>
+          <div class="row">
+            <div class="column one-third">Name : </div> <input-text-update class="column two-third" id="name"/>
           </div>
-        </div>
+          <div class="blank-3"></div>
+          <div class="row">
+            <div class="column one-third">Address : </div> <input-text-update class="column two-third" id="address"/>
+          </div>
+          <div class="blank-3"></div>
+          <div class="row">
+            <div class="column one-third">City : </div><city-selection class="column two-third" readonly="" id="city"></city-selection>
+          </div>
+          <div class="blank-3"></div>
+          <div class="row">
+            <div class="column one-third">Phone : </div> <input-text-update class="column two-third" id="phone"/>
+          </div>
+          <div class="blank-2"></div>
+          <map-selection class="map-test" id="point"></map-selection>
       <br/>
     </template>
 
@@ -311,6 +301,21 @@
       <div class="row scroll-panel">
         <div id="container" class="column one">
 
+        </div>
+      </div>
+    </template>
+
+    <template id="updatable-panel">
+      <div class="row">
+        <div class="column one">
+          <div class="row">
+            <button class="column one-twelfth" id="modification-unlock"></button>
+            <loading-button class="column one-twelfth" id="submit" button-text="S"></loading-button>
+            <loading-button class="column one-twelfth" id="delete" button-text="D"></loading-button>
+          </div>
+          <div id="content">
+
+          </div>
         </div>
       </div>
     </template>

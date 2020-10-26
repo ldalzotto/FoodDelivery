@@ -1,6 +1,7 @@
 import {Observable} from "../binding/Binding.js"
+import { UpdatableElement } from "./UpdatablePanel.js";
 
-class InputTextUpdateElement
+class InputTextUpdateElement implements UpdatableElement
 {
     static readonly Type : string = "input-text-update";
     
