@@ -154,6 +154,61 @@ public class EstablishmentService {
         return l_return;
     }
 
+    public static EstablishmentsGet GetEstablishments_From_DishId_WithEcludedEstablishments(
+            long p_user_id, long p_dish_id, List<EstablishmentCalculationType> p_caluclations)
+    {
+        EstablishmentsGet l_return = new EstablishmentsGet();
+
+        Parameter<List<Establishment>> l_establishments = new Parameter<>();
+        Parameter<List<EstablishmentAddress>> l_establishmentAddresses = new Parameter<>();
+        EstablishmentQuery.GetAllEstablishments_with_EstablishmentAddress(p_user_id,l_establishments, l_establishmentAddresses);
+
+        l_return.setEstablishments(l_establishments.Value);
+        l_return.setEstablishmentAddresses(l_establishmentAddresses.Value);
+
+
+        List<Long> l_establishments_associatedwith_dish = EstablishmentQuery.GetEstablishmentIds_from_Dish(p_dish_id);
+
+        long[] l_establishmentIndices_associatedwith_dish = new long[l_establishments_associatedwith_dish.size()];
+        long[] l_establishmentIndices_notassociatedwith_dish = new long[l_establishments.Value.size() - l_establishments_associatedwith_dish.size()];
+
+        int l_establishmentIndices_associatedwith_dish_counter = 0;
+        int l_establishmentIndices_notassociatedwith_dish_counter = 0;
+
+        for(int i = 0; i<l_establishments.Value.size();i++)
+        {
+            Establishment l_establishment = l_establishments.Value.get(i);
+            boolean l_matched = false;
+
+            for(int j=0;j<l_establishments_associatedwith_dish.size();j++)
+            {
+                if(l_establishment.id == l_establishments_associatedwith_dish.get(j))
+                {
+                    l_matched = true;
+                    break;
+                }
+            }
+
+            if(l_matched)
+            {
+                l_establishmentIndices_associatedwith_dish[l_establishmentIndices_associatedwith_dish_counter] = i;
+                l_establishmentIndices_associatedwith_dish_counter += 1;
+            }
+            else
+            {
+                l_establishmentIndices_notassociatedwith_dish[l_establishmentIndices_notassociatedwith_dish_counter] = i;
+                l_establishmentIndices_notassociatedwith_dish_counter += 1;
+            }
+        }
+
+        l_return.setEstablishmentsIncludedInDish(l_establishmentIndices_associatedwith_dish);
+        l_return.setEstablishmentsExcludedInDish(l_establishmentIndices_notassociatedwith_dish);
+
+        ProcessEstablishmentCalculations(p_caluclations, l_return);
+
+        return l_return;
+    }
+
     public static void LinkEstablishmentAndDish(long p_establishmentId, long p_dishId)
     {
         if(

@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class EstablishmentsGet extends HashMap<String, Object> {
+
     public void setEstablishments(List<Establishment> p_establishments)
     {
         this.put("establishments", p_establishments);
@@ -15,6 +16,7 @@ public class EstablishmentsGet extends HashMap<String, Object> {
     {
         return (List<Establishment>) this.getOrDefault("establishments", null);
     }
+
     public void setEstablishmentAddresses(List<EstablishmentAddress> p_establishmentAddresses)
     {
         this.put("establishment_addresses", p_establishmentAddresses);
@@ -23,6 +25,7 @@ public class EstablishmentsGet extends HashMap<String, Object> {
     {
         return (List<EstablishmentAddress>) this.getOrDefault("establishment_addresses", null);
     }
+
     public void setCities(List<City> p_cities)
     {
         this.put("cities", p_cities);
@@ -31,6 +34,7 @@ public class EstablishmentsGet extends HashMap<String, Object> {
     {
         return (List<City>)this.getOrDefault("cities", null);
     }
+
     public void setEstablishmentAddressToCity(long[] p_establishmentAddressToCity)
     {
         this.put("establishment_address_TO_city", p_establishmentAddressToCity);
@@ -39,6 +43,7 @@ public class EstablishmentsGet extends HashMap<String, Object> {
     {
         return (long[])this.getOrDefault("establishment_address_TO_city", null);
     }
+
     public void setDeliveryCharges(double[] p_deliveryCharges)
     {
         this.put("delivery_charges", p_deliveryCharges);
@@ -47,6 +52,7 @@ public class EstablishmentsGet extends HashMap<String, Object> {
     {
         return (double[])this.getOrDefault("delivery_charges", null);
     }
+
     public void setThumbnails(List<ImageUrl> p_thumbnails)
     {
         this.put("thumbnails", p_thumbnails);
@@ -55,6 +61,7 @@ public class EstablishmentsGet extends HashMap<String, Object> {
     {
         return (List<String>)this.getOrDefault("thumbnails", null);
     }
+
     public void setEstablishmentToThumbnail(long[] p_establishmentToThumbnail)
     {
         this.put("establishment_TO_thumbnail", p_establishmentToThumbnail);
@@ -62,5 +69,15 @@ public class EstablishmentsGet extends HashMap<String, Object> {
     public long[] getEstablishmentToThumbnail()
     {
         return (long[])this.getOrDefault("establishment_TO_thumbnail", null);
+    }
+
+    public void setEstablishmentsIncludedInDish(long[] p_establishmentsIncludedInDish)
+    {
+        this.put("establishments_included_in_dish", p_establishmentsIncludedInDish);
+    }
+
+    public void setEstablishmentsExcludedInDish(long[] p_establishmentsExcludedInDish)
+    {
+        this.put("establishments_excluded_in_dish", p_establishmentsExcludedInDish);
     }
 }

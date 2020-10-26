@@ -82,6 +82,26 @@ public class EstablishmentsController {
                 EstablishmentCalculationType.parseString(p_calculations)));
     }
 
+    @CrossOrigin(origins = {"http://localhost:8081", "http://192.168.1.11:8081"}, allowCredentials = "true")
+    @RequestMapping(value = "/establishments-with-excluded", method = RequestMethod.GET)
+    public @ResponseBody
+    ResponseEntity<?> GetEstablishments(
+            @CookieValue("session_token") String p_sessionToken,
+            @CookieValue("session_user_id") long p_user_id,
+            @RequestParam("dish_id") long p_dish_id,
+            @RequestParam(value = "calculations", required = false) String p_calculations) {
+
+        FunctionalError l_Functional_error = new FunctionalError();
+
+        if (!SessionErrorHandler.HandleSessionValidationToken(
+                SessionService.validateSessionToken(p_sessionToken, p_user_id), l_Functional_error)) {
+            return ResponseEntity.badRequest().body(l_Functional_error);
+        }
+
+        return ResponseEntity.ok().body(EstablishmentService.GetEstablishments_From_DishId_WithEcludedEstablishments(p_user_id, p_dish_id,
+                EstablishmentCalculationType.parseString(p_calculations)));
+    }
+
     @CrossOrigin(origins = {"http://localhost:8081", "http://192.168.1.11:8081"})
     @RequestMapping(value = "/establishments/near", method = RequestMethod.GET)
     public @ResponseBody

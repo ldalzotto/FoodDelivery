@@ -112,6 +112,21 @@ public class EstablishmentQuery {
                 });
     }
 
+    public static List<Long> GetEstablishmentIds_from_Dish(long p_dish_id)
+    {
+        return
+            ConfigurationBeans.jdbcTemplate.query(con -> {
+               PreparedStatement l_ps = con.prepareStatement(
+                       "select establishments.id from establishments, establishment_dish " +
+                       "where establishment_dish.dish_id = ? " +
+                       "and establishments.id = establishment_dish.establishment_id ");
+               l_ps.setLong(1, p_dish_id);
+               return l_ps;
+            }, (rs, nb) -> {
+                return rs.getLong(1);
+            });
+    }
+
     public static void UpdateEstablishment(Establishment p_establishment)
     {
         TransactionStatus ts = ConfigurationBeans.transactionManager.getTransaction(new DefaultTransactionDefinition());
