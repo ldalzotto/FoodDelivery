@@ -274,21 +274,9 @@
     </template>
 
     <template id="dish-add-to-establishment">
-      <div class="row">
-        <div class="column half">
-          <div class="row">
-            <loading-button id="remove" button-text="REMOVE SELECTED"></loading-button>
-          </div>
-          <div id="owned-dishes" class="dish-modification-panel"></div>
-        </div>
-        <div class="column half">
-          <div class="row">
-            <loading-button id="add" button-text="ADD SELECTED"></loading-button>
-          </div>
-          <div id="not-owned-dishes" class="dish-modification-panel"></div>
-        </div>
-      </div>
+      <two-way-selection-panel></two-way-selection-panel>
     </template>
+
 
     <template id="establishments-thumb">
       <div id="establishments-thumb">
@@ -330,6 +318,24 @@
           <div id="content">
 
           </div>
+        </div>
+      </div>
+    </template>
+
+    
+    <template id="two-way-selection-panel">
+      <div class="row">
+        <div class="column half">
+          <div class="row">
+            <loading-button id="left-button" button-text="REMOVE SELECTED"></loading-button>
+          </div>
+          <div id="left-scroll-panel" class="dish-modification-panel"></div>
+        </div>
+        <div class="column half">
+          <div class="row">
+            <loading-button id="right-button" button-text="ADD SELECTED"></loading-button>
+          </div>
+          <div id="right-scroll-panel" class="dish-modification-panel"></div>
         </div>
       </div>
     </template>

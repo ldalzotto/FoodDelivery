@@ -1,9 +1,7 @@
-import { Observable } from "../binding/Binding.js";
 import { InputElementType, InputUpdateElement } from "../components_graphic/InputUpdateElement.js";
-import { LoadingButton } from "../components_graphic/LoadingButton.js";
 import { MapSelectionUpdate } from "../components_graphic/MapSelection.js";
 import { UpdatableElement, UpdatablePanel, UpdatablePanelCallbacks } from "../components_graphic/UpdatablePanel.js";
-import { Establishment, EstablishmentAddress, EstablishmentAddressDelta, EstablishmentCalculationType, EstablishmentDelta, EstablishmentGet, EstablishmentService } from "../services/Establishment.js";
+import { Establishment, EstablishmentAddressDelta, EstablishmentCalculationType, EstablishmentDelta, EstablishmentGet, EstablishmentService } from "../services/Establishment.js";
 import { CitySelectionUpdate } from "./CitySelection.js";
 
 

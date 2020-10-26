@@ -16,7 +16,7 @@ class ProfileEstablishmentContext extends HTMLElement {
     static readonly Type: string = "profile-establishments";
 
     private establishmentRegistration: EstablishmentRegistration;
-    private establishmentListsElementV2: ElementList<EstablishementDisplayV2, EstablishmentGet, EstablishmentGet, ProfileEstablishmentListCallbacks>;
+    private establishmentListsElementV2: ElementList<EstablishementDisplayPreview, EstablishmentGet, EstablishmentGet, ProfileEstablishmentListCallbacks>;
 
     static Initialize() {
         customElements.define(ProfileEstablishmentContext.Type, ProfileEstablishmentContext);
@@ -39,7 +39,7 @@ class ProfileEstablishmentContext extends HTMLElement {
 
 }
 
-class ProfileEstablishmentListCallbacks implements ElementListCallbacks<EstablishementDisplayV2, EstablishmentGet, EstablishmentGet>
+class ProfileEstablishmentListCallbacks implements ElementListCallbacks<EstablishementDisplayPreview, EstablishmentGet, EstablishmentGet>
 {
     fetchElements(p_onSuccess: (p_fetch: EstablishmentGet) => void): null {
         EstablishmentService.GetEstablishments(
@@ -53,8 +53,8 @@ class ProfileEstablishmentListCallbacks implements ElementListCallbacks<Establis
         }
         return null;
     }
-    buildElement(p_fetchElement: EstablishmentGet, p_index: number, p_itemHTMlRoot: HTMLElement): EstablishementDisplayV2 {
-        let l_establishmentDisplay: EstablishementDisplayV2 = EstablishementDisplayV2.build(p_itemHTMlRoot, p_fetchElement.establishments[p_index], p_fetchElement.establishment_addresses[p_index],
+    buildElement(p_fetchElement: EstablishmentGet, p_index: number, p_itemHTMlRoot: HTMLElement): EstablishementDisplayPreview {
+        let l_establishmentDisplay: EstablishementDisplayPreview = EstablishementDisplayPreview.build(p_itemHTMlRoot, p_fetchElement.establishments[p_index], p_fetchElement.establishment_addresses[p_index],
             p_fetchElement.cities[p_fetchElement.establishment_address_TO_city[p_index]],
             p_fetchElement.thumbnails[p_fetchElement.establishment_TO_thumbnail[p_index]]);
        l_establishmentDisplay.root.addEventListener(EstablishementDisplayV2_Click.Type, 
@@ -172,18 +172,18 @@ class EstablishementDisplayV2_Click extends Event{
     }
 }
 
-class EstablishementDisplayV2 {
+class EstablishementDisplayPreview {
     static readonly Type: string = "establishment-display-preview";
 
     private _root : HTMLElement;
     public get root(){return this._root;}
 
-    public static build(p_root : HTMLElement, p_sourceEstablishment : Establishment, p_sourceEstablishmentAddress : EstablishmentAddress, p_city : City, p_thumbImage : ImageUrl) : EstablishementDisplayV2
+    public static build(p_root : HTMLElement, p_sourceEstablishment : Establishment, p_sourceEstablishmentAddress : EstablishmentAddress, p_city : City, p_thumbImage : ImageUrl) : EstablishementDisplayPreview
     {
-        let l_establihsmentDisplay = new EstablishementDisplayV2();
+        let l_establihsmentDisplay = new EstablishementDisplayPreview();
         l_establihsmentDisplay._root = p_root;
         
-        let l_template: HTMLTemplateElement = document.getElementById(EstablishementDisplayV2.Type) as HTMLTemplateElement;
+        let l_template: HTMLTemplateElement = document.getElementById(EstablishementDisplayPreview.Type) as HTMLTemplateElement;
         l_establihsmentDisplay._root.appendChild(l_template.content.cloneNode(true));
 
         let l_image =l_establihsmentDisplay._root.querySelector("#thumb") as HTMLImageElement; 
