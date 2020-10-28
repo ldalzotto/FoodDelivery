@@ -1,9 +1,6 @@
 package com.example.app.dish;
 
-import com.example.app.dish.domain.Dish;
-import com.example.app.dish.domain.DishDelta;
-import com.example.app.dish.domain.DishGet;
-import com.example.app.dish.domain.EstablishmentToDishes;
+import com.example.app.dish.domain.*;
 import com.example.app.establishments.EstablishmentQuery;
 import com.example.app.image.ImageQuery;
 import com.example.app.image.domain.ImageCreated;
@@ -11,10 +8,7 @@ import com.example.app.image.domain.ImageUrl;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class DishService {
 
@@ -89,6 +83,7 @@ public class DishService {
         DishService.processEstablishmentGetCalculations(l_dishGet, p_calculations);
         return l_dishGet;
     }
+
     public static void CreateDish(Dish p_dish, MultipartFile p_dishThumb)
     {
         if(p_dishThumb != null)
@@ -114,6 +109,39 @@ public class DishService {
     public static void DeleteDish(long p_dish_id)
     {
         DishQuery.DeleteDish(p_dish_id);
+    }
+
+    public static void AddLinkDishAndEstablishment(long p_dish_id, Long[] p_establishments_id)
+    {
+        if(p_establishments_id != null)
+        {
+            if(DishQuery.DoesDishExists(p_dish_id))
+            {
+                List<Long> p_establishments = EstablishmentQuery.CheckEstablishmentsExistence(Arrays.asList(p_establishments_id));
+                DishToEstablishments l_dish_to_establishments = DishQuery.GetDishToEstablishments(p_dish_id);
+                List<Long> l_added_establishments = new ArrayList<>();
+                for(int i=0;i<p_establishments.size();i++)
+                {
+                    if(!l_dish_to_establishments.establishment_id.contains(p_establishments.get(i)))
+                    {
+                        l_added_establishments.add(p_establishments.get(i));
+                    }
+                }
+
+                if(l_added_establishments.size() > 0)
+                {
+                    DishQuery.CreateLinkBetween_Dish_And_Establishment_Bulk(p_dish_id, l_added_establishments);
+                }
+            }
+        }
+    }
+
+    public static void RemoveLinkDishAndEstablishment(long p_dish_id, Long[] p_establishments_id)
+    {
+        if(p_establishments_id != null)
+        {
+            DishQuery.DeleteLinkBetween_Dish_And_Establishment_Bulk(p_dish_id, Arrays.asList(p_establishments_id));
+        }
     }
 
     public static void processEstablishmentGetCalculations(DishGet p_dishGet, List<DishCalculationType> p_calculations)

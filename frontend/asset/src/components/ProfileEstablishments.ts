@@ -178,10 +178,14 @@ class EstablishementDisplayPreview {
     private _root : HTMLElement;
     public get root(){return this._root;}
 
+    private _establishment: Establishment;
+    public get establishment() { return this._establishment; }
+
     public static build(p_root : HTMLElement, p_sourceEstablishment : Establishment, p_sourceEstablishmentAddress : EstablishmentAddress, p_city : City, p_thumbImage : ImageUrl) : EstablishementDisplayPreview
     {
         let l_establihsmentDisplay = new EstablishementDisplayPreview();
         l_establihsmentDisplay._root = p_root;
+        l_establihsmentDisplay._establishment = p_sourceEstablishment;
         
         let l_template: HTMLTemplateElement = document.getElementById(EstablishementDisplayPreview.Type) as HTMLTemplateElement;
         l_establihsmentDisplay._root.appendChild(l_template.content.cloneNode(true));
@@ -199,4 +203,4 @@ class EstablishementDisplayPreview {
     }
 }
 
-export { ProfileEstablishmentContext }
+export { ProfileEstablishmentContext, EstablishementDisplayPreview }

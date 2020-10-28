@@ -58,6 +58,18 @@ class EstablishmentService
         Server.SendRequest_Json("GET", `http://localhost:8080/establishments/near${l_queryParams.params}`, null, false, p_okCallback, p_errorCallback);
     }
 
+    public static GetEstablishmentsFromDishId_WithExcluded(p_dish_id: number, l_calculationTypes: EstablishmentCalculationType[] | null,
+        p_okCallback: (p_establishments: EstablishmentGet) => void, p_errorCallback: (p_serverError: ServerError) => (void))
+    {
+        let l_queryParams = new QueryParamBuilder();
+        l_queryParams.addParam("dish_id", p_dish_id.toString());
+        if (l_calculationTypes)
+        {
+            l_queryParams.addParam("calculations", l_calculationTypes.toString());
+        }
+        Server.SendRequest_Json("GET", `http://localhost:8080/establishments-with-excluded${l_queryParams.params}`, null, true, p_okCallback, p_errorCallback);
+    }
+
     public static UpdateEstablishment_Widht_Address(p_establishmentId : number, p_establishmentDelta : EstablishmentDelta | null, p_addressDelta : EstablishmentAddressDelta | null,
         p_okCallback ?: (arg0 : null)=>(void), p_errorCallback ?: (p_serverError : ServerError)=>(void))
     {
@@ -122,6 +134,8 @@ class EstablishmentGet
     public delivery_charges : number[] | null;
     public thumbnails : ImageUrl[] | null;
     public establishment_TO_thumbnail : number[] | null;
+    public establishments_included_in_dish: number[] | null;
+    public establishments_excluded_in_dish: number[] | null;
 }
 
 

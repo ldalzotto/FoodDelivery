@@ -17,6 +17,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 
 public class EstablishmentQuery {
 
@@ -229,20 +230,35 @@ public class EstablishmentQuery {
         return l_return.value;
     }
 
-    public static boolean DoesEstablishment_have_Dish(long p_establishmentId, long p_dishId)
+    public static List<Long> CheckEstablishmentsExistence(List<Long> p_establishment_ids)
     {
-        BooleanWrapper l_return = new BooleanWrapper();
-        l_return.value = false;
-        ConfigurationBeans.jdbcTemplate.query(con -> {
-           PreparedStatement l_ps = con.prepareStatement("select count(*) from establishment_dish where establishment_dish.establishment_id = ? and establishment_dish.dish_id = ?");
-            l_ps.setLong(1, p_establishmentId);
-            l_ps.setLong(2, p_dishId);
-           return l_ps;
-        }, (rs) -> {
-          long l_count =  rs.getLong(1);
-          if(l_count==0){l_return.value = true;}
-        });
-        return l_return.value;
+        String l_tableName = "_" + UUID.randomUUID().toString().replaceAll("-", "");
+
+        ConfigurationBeans.jdbcTemplate.update(String.format("create table %s(id INTEGER )", l_tableName));
+
+        ConfigurationBeans.jdbcTemplate.batchUpdate(String.format("insert into %s(id) values (?)", l_tableName),
+                new BatchPreparedStatementSetter() {
+                    @Override
+                    public void setValues(PreparedStatement ps, int i) throws SQLException {
+                        ps.setLong(1, p_establishment_ids.get(i));
+                    }
+
+                    @Override
+                    public int getBatchSize() {
+                        return p_establishment_ids.size();
+                    }
+                });
+
+        List<Long> l_matchedId =
+                ConfigurationBeans.jdbcTemplate.query(String.format("select establishments.* from establishments, %s where establishments.id == %s.id", l_tableName, l_tableName) ,
+                        (rs, rowNum) -> {
+                            return rs.getLong(1);
+                        });
+
+
+        ConfigurationBeans.jdbcTemplate.update(String.format("drop table %s", l_tableName));
+
+        return l_matchedId;
     }
 
     public static EstablishmentToDishes GetEstablishmentToDish(long p_establishmentId)
@@ -258,16 +274,6 @@ public class EstablishmentQuery {
         });
 
         return l_establishmentToDishes;
-    }
-
-    public static void CreateLinkBetween_Establishment_Dish(long p_establishmentId, long p_dishId)
-    {
-        ConfigurationBeans.jdbcTemplate.update(con -> {
-            PreparedStatement l_ps = con.prepareStatement("insert into establishment_dish(establishment_id, dish_id) values (?,?)");
-            l_ps.setLong(1, p_establishmentId);
-            l_ps.setLong(2, p_dishId);
-            return l_ps;
-        });
     }
 
     public static void CreateLinkBetween_Establishment_Dish_Bulk(long p_establishmentId, List<Long> p_dishesId)

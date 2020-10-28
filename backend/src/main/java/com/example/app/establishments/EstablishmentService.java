@@ -209,17 +209,6 @@ public class EstablishmentService {
         return l_return;
     }
 
-    public static void LinkEstablishmentAndDish(long p_establishmentId, long p_dishId)
-    {
-        if(
-                EstablishmentQuery.DoesEstablishmentExists(p_establishmentId) &&
-                        DishQuery.DoesDishExists(p_dishId) &&
-                EstablishmentQuery.DoesEstablishment_have_Dish(p_establishmentId, p_dishId))
-        {
-            EstablishmentQuery.CreateLinkBetween_Establishment_Dish(p_establishmentId, p_dishId);
-        }
-    }
-
     public static void AddLinkEstablishmentAndDish(long p_establishmentId, Long[] p_linkDelta)
     {
         if(p_linkDelta!=null)

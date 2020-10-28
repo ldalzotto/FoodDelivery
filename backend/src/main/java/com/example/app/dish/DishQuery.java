@@ -1,6 +1,7 @@
 package com.example.app.dish;
 
 import com.example.app.dish.domain.Dish;
+import com.example.app.dish.domain.DishToEstablishments;
 import com.example.main.ConfigurationBeans;
 import com.example.utils.BooleanWrapper;
 import com.example.utils.IntegerHeap;
@@ -95,14 +96,14 @@ public class DishQuery {
     public static boolean DoesDishExists(long p_dishId)
     {
         BooleanWrapper l_return = new BooleanWrapper();
-        l_return.value = false;
+        l_return.value = true;
         ConfigurationBeans.jdbcTemplate.query(con -> {
             PreparedStatement l_ps = con.prepareStatement("select count(*) from dish where dish.id == ?");
             l_ps.setLong(1, p_dishId);
             return l_ps;
         }, (rs) -> {
             long l_count =  rs.getLong(1);
-            if(l_count==0){l_return.value = true;}
+            if(l_count==0){l_return.value = false;}
         });
         return l_return.value;
     }
@@ -151,6 +152,58 @@ public class DishQuery {
             l_ps.setLong(1, p_dishId);
             return l_ps;
         });
+    }
+
+    public static DishToEstablishments GetDishToEstablishments(long p_dishid)
+    {
+        DishToEstablishments l_dishToEstablishments = new DishToEstablishments();
+        l_dishToEstablishments.dish_id = p_dishid;
+        l_dishToEstablishments.establishment_id = new ArrayList<>();
+
+        ConfigurationBeans.jdbcTemplate.query(con -> {
+            PreparedStatement l_ps = con.prepareStatement("select establishment_dish.* from establishment_dish where " +
+                    "establishment_dish.dish_id = ?");
+            l_ps.setLong(1, p_dishid);
+            return l_ps;
+        }, (rs) -> {
+            l_dishToEstablishments.establishment_id.add(rs.getLong(1));
+        });
+        return l_dishToEstablishments;
+    }
+
+    public static void CreateLinkBetween_Dish_And_Establishment_Bulk(long p_dish, List<Long> p_establishments)
+    {
+        ConfigurationBeans.jdbcTemplate.batchUpdate("insert into establishment_dish(establishment_id, dish_id) values(?, ?)",
+                new BatchPreparedStatementSetter() {
+                    @Override
+                    public void setValues(PreparedStatement ps, int i) throws SQLException {
+                        ps.setLong(1, p_establishments.get(i));
+                        ps.setLong(2, p_dish);
+                    }
+
+                    @Override
+                    public int getBatchSize() {
+                        return p_establishments.size();
+                    }
+                });
+    }
+
+    public static void DeleteLinkBetween_Dish_And_Establishment_Bulk(long p_dish, List<Long> p_establishments)
+    {
+        ConfigurationBeans.jdbcTemplate.batchUpdate("delete from establishment_dish where establishment_dish.establishment_id = ?" +
+                        " and establishment_dish.dish_id = ?",
+                new BatchPreparedStatementSetter() {
+                    @Override
+                    public void setValues(PreparedStatement ps, int i) throws SQLException {
+                        ps.setLong(1, p_establishments.get(i));
+                        ps.setLong(2, p_dish);
+                    }
+
+                    @Override
+                    public int getBatchSize() {
+                        return p_establishments.size();
+                    }
+                });
     }
 }
 

@@ -1,5 +1,6 @@
 import { Server, ServerError } from "../server/Server.js";
 import { QueryParamBuilder } from "../utils/QueryParamsBuilder.js";
+import { EstablishmentDishExecutionType } from "./Establishment.js";
 import { ImageUrl } from "./Image.js";
 
 class DishService
@@ -60,6 +61,14 @@ class DishService
         let l_queryParams = new QueryParamBuilder();
         l_queryParams.addParam("dish_id", p_dish_id.toString());
         Server.SendRequest_Json("POST", `http://localhost:8080/dish/delete${l_queryParams.params}`, null, true, p_onCompleted, p_onError);
+    }
+
+    public static LinkDishToEstablishmentUpdate(p_dish_id: number, p_establishments_id: number[], p_executionType: EstablishmentDishExecutionType, p_onCompleted: () => void, p_onError: (err: ServerError) => void)
+    {
+        let l_queryParams = new QueryParamBuilder();
+        l_queryParams.addParam("dish_id", p_dish_id.toString());
+        l_queryParams.addParam("calculation", p_executionType.toString());
+        Server.SendRequest_Json("POST", `http://localhost:8080/dish/establishment-update${l_queryParams.params}`, p_establishments_id, true, p_onCompleted, p_onError);
     }
 }
 

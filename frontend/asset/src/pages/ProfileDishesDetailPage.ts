@@ -1,4 +1,5 @@
 import { DishDetailDisplay } from "../components/DishDetailDisplay.js";
+import { EstablishmentAddToDish } from "../components/EstablishmentAddToDish.js";
 import { PageHeader } from "../components/PageHeader.js";
 import { Accordilon, AccordilonItemInput } from "../components_graphic/Accordilon.js";
 
@@ -12,8 +13,9 @@ class ProfileDishDetailPage extends HTMLElement
         this.appendChild((document.getElementById(ProfileDishDetailPage.Type) as HTMLTemplateElement).content.cloneNode(true));
         new PageHeader(this.querySelector(PageHeader.Type));
         new Accordilon(this.querySelector("#detail"), [
-            AccordilonItemInput.build("General informations : ", (p_root : HTMLElement) => {DishDetailDisplay.build(p_root, p_dish_id);})
-        ]); 
+            AccordilonItemInput.build("General informations : ", (p_root: HTMLElement) => { DishDetailDisplay.build(p_root, p_dish_id); }),
+            AccordilonItemInput.build("Establishments : ", (p_root: HTMLElement) => { new EstablishmentAddToDish(p_root, p_dish_id); })
+        ]);
     }
 }
 

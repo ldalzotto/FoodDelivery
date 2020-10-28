@@ -141,26 +141,6 @@ public class EstablishmentsController {
     }
 
     @CrossOrigin(origins = {"http://localhost:8081", "http://192.168.1.11:8081"}, allowCredentials = "true")
-    @RequestMapping(value = "/establishment/dish", method = RequestMethod.POST)
-    public @ResponseBody
-    ResponseEntity<?> LinkEstablishmentDish(
-            @CookieValue("session_token") String p_sessionToken,
-            @CookieValue("session_user_id") long p_user_id,
-            @RequestParam("establishment_id") long p_establishment_id,
-            @RequestParam("dish_id") long p_dish_id) {
-
-        FunctionalError l_Functional_error = new FunctionalError();
-
-        if (!SessionErrorHandler.HandleSessionValidationToken(
-                SessionService.validateSessionToken(p_sessionToken, p_user_id), l_Functional_error)) {
-            return ResponseEntity.badRequest().body(l_Functional_error);
-        }
-
-        EstablishmentService.LinkEstablishmentAndDish(p_establishment_id, p_dish_id);
-        return ResponseEntity.ok().body(null);
-    }
-
-    @CrossOrigin(origins = {"http://localhost:8081", "http://192.168.1.11:8081"}, allowCredentials = "true")
     @RequestMapping(value = "/establishment/dish-update", method = RequestMethod.POST)
     public @ResponseBody
     ResponseEntity<?> LinkEstablishmentDishUpdate(
@@ -210,22 +190,4 @@ public class EstablishmentsController {
         return ResponseEntity.ok().body(null);
     }
 
-}
-
-enum EstablishmentDishExecutionType
-{
-    DEFAULT, ADD, REMOVE;
-
-  public static EstablishmentDishExecutionType fromInt(int p_value)
-  {
-      switch (p_value)
-      {
-          case 0:
-              return EstablishmentDishExecutionType.ADD;
-          case 1:
-              return EstablishmentDishExecutionType.REMOVE;
-          default:
-              return EstablishmentDishExecutionType.DEFAULT;
-      }
-  }
 }

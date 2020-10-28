@@ -66,6 +66,7 @@ class TwoWaySelectionPanel<ElementType>
                 l_element.isSelected.value = false;
                 p_to_scrollPanel.container.appendChild(l_element.selectableElement);
                 p_from.splice(i, 1);
+                i -= 1;
                 p_to.push(l_element);
             }
             
