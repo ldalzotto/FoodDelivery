@@ -98,11 +98,16 @@ public class DishService {
         DishQuery.InsertDish(p_dish);
     }
 
-    public static void UpdateDish(long p_dish_id, DishDelta p_dishDelta)
+    public static void UpdateDish(long p_dish_id, DishDelta p_dishDelta, byte[] l_dishThumb)
     {
         Dish l_dish = DishQuery.GetDish(p_dish_id);
         if(p_dishDelta.name!=null){ l_dish.name = p_dishDelta.name; }
         if(p_dishDelta.price != null) { l_dish.price = p_dishDelta.price; }
+        if(l_dishThumb!=null)
+        {
+            ImageCreated l_dishThumb_created = ImageQuery.PostImage(l_dishThumb);
+            l_dish.thumb_id = l_dishThumb_created.image_id;
+        }
         DishQuery.UpdateDish(l_dish);
     }
 

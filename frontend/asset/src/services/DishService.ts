@@ -48,11 +48,15 @@ class DishService
         Server.SendRequest_Form("POST", `http://localhost:8080/dish`, l_form, true, p_onCompleted, p_onError);
     }
 
-    public static UpdateDish(p_dish_id : number, p_dishDelta : DishDelta, p_onCompleted : () => void, p_onError : (err : ServerError) => void)
+    public static UpdateDish(p_dish_id: number, p_dishDelta: DishDelta, p_dish_thumb: File | null, p_onCompleted: () => void, p_onError: (err: ServerError) => void)
     {
         let l_form : FormData = new FormData();
         l_form.append("dish_id", p_dish_id.toString());
         l_form.append("dish", JSON.stringify(p_dishDelta));
+        if (p_dish_thumb)
+        {
+            l_form.append("dish_thumb", p_dish_thumb);
+        }
         Server.SendRequest_Form("POST", `http://localhost:8080/dish/update`, l_form, true, p_onCompleted, p_onError);
     }
 

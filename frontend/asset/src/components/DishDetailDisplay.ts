@@ -1,4 +1,4 @@
-import { InputElementType, InputUpdateElement } from "../components_graphic/InputUpdateElement.js";
+import { InputElementType, InputImageUpdateElement, InputUpdateElement } from "../components_graphic/InputUpdateElement.js";
 import { UpdatableElement, UpdatablePanel, UpdatablePanelCallbacks } from "../components_graphic/UpdatablePanel.js";
 import { Dish, DishDelta, DishGet, DishService } from "../services/DishService.js";
 
@@ -10,6 +10,7 @@ class DishDetailDisplay
 
     public nameElement : InputUpdateElement;
     public priceElement : InputUpdateElement;
+    public thumbElement: InputImageUpdateElement;
 
     public dish : Dish;
 
@@ -24,7 +25,8 @@ class DishDetailDisplay
 
         l_dishDetailDisplay.nameElement = new InputUpdateElement(l_dishDetailDisplayContent.querySelector("#name"), InputElementType.TEXT);
         l_dishDetailDisplay.priceElement = new InputUpdateElement(l_dishDetailDisplayContent.querySelector("#price"), InputElementType.NUMBER);
-
+        l_dishDetailDisplay.thumbElement = new InputImageUpdateElement(l_dishDetailDisplayContent.querySelector("#thumb"));
+        
         DishService.GetDish(p_dish_id, null, 
             (p_dishGet : DishGet) => 
             {
@@ -35,7 +37,7 @@ class DishDetailDisplay
             }, null);
 
         let l_updatableElements : UpdatableElement[] = [
-            l_dishDetailDisplay.nameElement, l_dishDetailDisplay.priceElement
+            l_dishDetailDisplay.nameElement, l_dishDetailDisplay.priceElement, l_dishDetailDisplay.thumbElement
         ];
         
         l_dishDetailDisplay.updatablePanel = new UpdatablePanel(l_dishDetailDisplay._root, new DishDetailDisplay_Callbacks(l_dishDetailDisplay), l_dishDetailDisplayContent, l_updatableElements);
@@ -64,7 +66,14 @@ class DishDetailDisplay_Callbacks implements UpdatablePanelCallbacks
             l_dishDelta.price = parseFloat(this.dishDetailDisplay.priceElement.input.value);
         }
 
-        DishService.UpdateDish(this.dishDetailDisplay.dish.id, l_dishDelta, 
+        let l_thumb_file: File | null = null;
+        if (this.dishDetailDisplay.thumbElement.hasChanged())
+        {
+            l_thumb_file = this.dishDetailDisplay.thumbElement.input.files[0];
+        }
+
+
+        DishService.UpdateDish(this.dishDetailDisplay.dish.id, l_dishDelta, l_thumb_file,
             () => {
                 this.dishDetailDisplay.updatablePanel.clearChanges();
                 p_onCompleted();

@@ -177,6 +177,16 @@ public class EstablishmentQuery {
         }
     }
 
+    public static void UpdateEstablishmentThumb(long p_establishment_id, long p_thumb_id)
+    {
+        ConfigurationBeans.jdbcTemplate.update(con -> {
+            PreparedStatement l_ps = con.prepareStatement("update establishments set thumb_id = ? where id = ?");
+            l_ps.setLong(1, p_thumb_id);
+            l_ps.setLong(2, p_establishment_id);
+            return l_ps;
+        });
+    }
+
     public static void GetAllEstablishments_with_EstablishmentAddress(long p_user_id, Parameter<List<Establishment>> out_establishment,
                                                                       Parameter<List<EstablishmentAddress>> out_establishmentAddress)
     {

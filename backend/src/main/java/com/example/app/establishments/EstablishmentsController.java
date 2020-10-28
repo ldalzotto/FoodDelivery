@@ -9,6 +9,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+
 @Controller
 @RequestMapping(value = "/")
 public class EstablishmentsController {
@@ -38,8 +40,19 @@ public class EstablishmentsController {
             return ResponseEntity.badRequest().body(l_Functional_error);
         }
         */
+
+        byte[] l_thumbImage = null;
+        if(p_thumbImage != null)
+        {
+            try {
+                l_thumbImage = p_thumbImage.getBytes();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
         l_establishment.user_id = p_user_id;
-        EstablishmentService.InsertEstablishment(l_establishment, l_establishmentAddress, p_thumbImage);
+        EstablishmentService.InsertEstablishment(l_establishment, l_establishmentAddress, l_thumbImage);
         return ResponseEntity.ok().body(null);
     }
 
@@ -124,19 +137,29 @@ public class EstablishmentsController {
             @CookieValue("session_user_id") long p_user_id,
             @RequestParam("establishment_id") long p_establishment_id,
             @RequestParam(value = "establishment_delta", required = false) String p_establishmentDelta,
-            @RequestParam(value = "establishment_address_delta", required = false) String p_establishmentAddressDelta) {
+            @RequestParam(value = "establishment_address_delta", required = false) String p_establishmentAddressDelta,
+            @RequestParam(value = "establishment_thumb_delta", required = false) MultipartFile p_establishmentThumb) {
 
         FunctionalError l_Functional_error = new FunctionalError();
-
-        EstablishmentDelta l_establishmentDelta = EstablishmentDelta.parse(p_establishmentDelta);
-        EstablishmentAddressDelta l_establishmentAddressDelta = EstablishmentAddressDelta.parse(p_establishmentAddressDelta);
 
         if (!SessionErrorHandler.HandleSessionValidationToken(
                 SessionService.validateSessionToken(p_sessionToken, p_user_id), l_Functional_error)) {
             return ResponseEntity.badRequest().body(l_Functional_error);
         }
 
-        EstablishmentService.UpdateEstablishment(p_establishment_id, l_establishmentDelta, l_establishmentAddressDelta);
+        EstablishmentDelta l_establishmentDelta = EstablishmentDelta.parse(p_establishmentDelta);
+        EstablishmentAddressDelta l_establishmentAddressDelta = EstablishmentAddressDelta.parse(p_establishmentAddressDelta);
+        byte[] l_establishmentThumb = null;
+        if(p_establishmentThumb!=null)
+        {
+            try {
+                l_establishmentThumb = p_establishmentThumb.getBytes();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        EstablishmentService.UpdateEstablishment(p_establishment_id, l_establishmentDelta, l_establishmentAddressDelta, l_establishmentThumb);
         return ResponseEntity.ok().body(null);
     }
 

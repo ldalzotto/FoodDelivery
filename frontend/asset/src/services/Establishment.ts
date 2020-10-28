@@ -71,12 +71,13 @@ class EstablishmentService
     }
 
     public static UpdateEstablishment_Widht_Address(p_establishmentId : number, p_establishmentDelta : EstablishmentDelta | null, p_addressDelta : EstablishmentAddressDelta | null,
-        p_okCallback ?: (arg0 : null)=>(void), p_errorCallback ?: (p_serverError : ServerError)=>(void))
+        p_thumbDelta: File | null, p_okCallback?: (arg0: null) => (void), p_errorCallback?: (p_serverError: ServerError) => (void))
     {
         let l_form : FormData = new FormData();
         l_form.append("establishment_id", JSON.stringify(p_establishmentId));
         if(p_establishmentDelta){l_form.append("establishment_delta", JSON.stringify(p_establishmentDelta));}
         if(p_addressDelta){l_form.append("establishment_address_delta", JSON.stringify(p_addressDelta));}
+        if (p_thumbDelta) { l_form.append("establishment_thumb_delta", p_thumbDelta); }
         Server.SendRequest_Form("POST", `http://localhost:8080/establishment/update`, l_form, true, p_okCallback, p_errorCallback);
     }
 

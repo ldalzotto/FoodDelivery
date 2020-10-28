@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -118,7 +119,17 @@ public class DishController {
 
         DishDelta l_dishDelta = DishDelta.parse(p_dishDelta);
 
-        DishService.UpdateDish(p_dish_id, l_dishDelta);
+        byte[] l_dishThumb = null;
+        if(p_dishThumb != null)
+        {
+            try {
+                l_dishThumb = p_dishThumb.getBytes();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        DishService.UpdateDish(p_dish_id, l_dishDelta, l_dishThumb);
         return ResponseEntity.ok().body(null);
     }
 

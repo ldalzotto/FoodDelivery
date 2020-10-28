@@ -10,9 +10,7 @@ import com.example.app.image.domain.ImageCreated;
 import com.example.app.image.domain.ImageUrl;
 import com.example.utils.Parameter;
 import org.springframework.dao.DataAccessException;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
@@ -22,7 +20,7 @@ public class EstablishmentService {
     private static final double EarthRadius = 6371e3;
 
     public static void InsertEstablishment(Establishment p_establishment,
-                                                               EstablishmentAddress p_establishmentAddress, MultipartFile p_thumbImage)
+                                                               EstablishmentAddress p_establishmentAddress, byte[] p_thumbImage)
     {
         boolean l_addressInsert = false;
 
@@ -34,14 +32,8 @@ public class EstablishmentService {
 
                 if(p_thumbImage != null)
                 {
-                    try
-                    {
-                        ImageCreated l_image = ImageQuery.PostImage(p_thumbImage.getBytes());
-                        p_establishment.thumb_id = l_image.image_id;
-                    } catch (IOException p_ex)
-                    {
-                        System.out.print(p_ex.toString());
-                    }
+                    ImageCreated l_image = ImageQuery.PostImage(p_thumbImage);
+                    p_establishment.thumb_id = l_image.image_id;
                 }
 
                 //insert establishment
@@ -89,27 +81,43 @@ public class EstablishmentService {
     }
 
     public static void UpdateEstablishment(long p_establishmentId, EstablishmentDelta p_establishmentDelta,
-                                           EstablishmentAddressDelta p_establishmentAddressDelta)
+                                           EstablishmentAddressDelta p_establishmentAddressDelta, byte[] p_thumbDelta)
     {
         Parameter<Establishment> l_establishmentServer = new Parameter<>();
         Parameter<EstablishmentAddress> l_establishmentAddressServer = new Parameter<>();
         EstablishmentQuery.GetEstablishment_with_EstablishmentAddress(p_establishmentId, l_establishmentServer, l_establishmentAddressServer);
 
-            if(p_establishmentDelta !=null)
-            {
-                if(p_establishmentDelta.name != null){l_establishmentServer.Value.name = p_establishmentDelta.name;}
-                if(p_establishmentDelta.phone != null){l_establishmentServer.Value.phone = p_establishmentDelta.phone;}
-                EstablishmentQuery.UpdateEstablishment(l_establishmentServer.Value);
+        if (p_establishmentDelta != null) {
+            if (p_establishmentDelta.name != null) {
+                l_establishmentServer.Value.name = p_establishmentDelta.name;
             }
+            if (p_establishmentDelta.phone != null) {
+                l_establishmentServer.Value.phone = p_establishmentDelta.phone;
+            }
+            EstablishmentQuery.UpdateEstablishment(l_establishmentServer.Value);
+        }
 
-            if(p_establishmentAddressDelta!=null)
-            {
-                if(p_establishmentAddressDelta.street_full_name != null){l_establishmentAddressServer.Value.street_full_name = p_establishmentAddressDelta.street_full_name;}
-                if(p_establishmentAddressDelta.city_id != null){l_establishmentAddressServer.Value.city_id = p_establishmentAddressDelta.city_id;}
-                if(p_establishmentAddressDelta.lat != null){l_establishmentAddressServer.Value.lat = p_establishmentAddressDelta.lat;}
-                if(p_establishmentAddressDelta.lng != null){l_establishmentAddressServer.Value.lng = p_establishmentAddressDelta.lng;}
-                EstablishmentQuery.UpdateEstablishmentAddress(l_establishmentAddressServer.Value);
+        if (p_establishmentAddressDelta != null) {
+            if (p_establishmentAddressDelta.street_full_name != null) {
+                l_establishmentAddressServer.Value.street_full_name = p_establishmentAddressDelta.street_full_name;
             }
+            if (p_establishmentAddressDelta.city_id != null) {
+                l_establishmentAddressServer.Value.city_id = p_establishmentAddressDelta.city_id;
+            }
+            if (p_establishmentAddressDelta.lat != null) {
+                l_establishmentAddressServer.Value.lat = p_establishmentAddressDelta.lat;
+            }
+            if (p_establishmentAddressDelta.lng != null) {
+                l_establishmentAddressServer.Value.lng = p_establishmentAddressDelta.lng;
+            }
+            EstablishmentQuery.UpdateEstablishmentAddress(l_establishmentAddressServer.Value);
+        }
+
+        if(p_thumbDelta != null)
+        {
+            ImageCreated l_thumb = ImageQuery.PostImage(p_thumbDelta);
+            EstablishmentQuery.UpdateEstablishmentThumb(p_establishmentId, l_thumb.image_id);
+        }
     }
 
     public static EstablishmentsGet GetEstablishments(long p_userId, List<EstablishmentCalculationType> p_caluclations)

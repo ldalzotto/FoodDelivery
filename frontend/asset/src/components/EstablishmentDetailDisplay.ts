@@ -1,4 +1,4 @@
-import { InputElementType, InputUpdateElement } from "../components_graphic/InputUpdateElement.js";
+import { InputElementType, InputImageUpdateElement, InputUpdateElement } from "../components_graphic/InputUpdateElement.js";
 import { MapSelectionUpdate } from "../components_graphic/MapSelection.js";
 import { UpdatableElement, UpdatablePanel, UpdatablePanelCallbacks } from "../components_graphic/UpdatablePanel.js";
 import { Establishment, EstablishmentAddressDelta, EstablishmentCalculationType, EstablishmentDelta, EstablishmentGet, EstablishmentService } from "../services/Establishment.js";
@@ -16,6 +16,7 @@ class EstablishementDisplay {
     public cityElement: CitySelectionUpdate;
     public pointElement: MapSelectionUpdate;
     public phoneElement: InputUpdateElement;
+    public thumbImageElement: InputImageUpdateElement;
 
     public establishmentServer: Establishment;
 
@@ -48,13 +49,16 @@ class EstablishementDisplay {
         
                 l_establihsmentDisplay.phoneElement = new InputUpdateElement(l_modificationContentElement.querySelector("#phone"), InputElementType.TEXT);
                 l_establihsmentDisplay.phoneElement.init(l_establihsmentDisplay.establishmentServer.phone);
-        
+
+                 l_establihsmentDisplay.thumbImageElement = new InputImageUpdateElement(l_modificationContentElement.querySelector("#thumb"));
+
                 let l_updatableElements : UpdatableElement[] = [
                     l_establihsmentDisplay.nameElement,
                     l_establihsmentDisplay.addressElement,
                     l_establihsmentDisplay.cityElement,
                     l_establihsmentDisplay.pointElement,
-                    l_establihsmentDisplay.phoneElement
+                    l_establihsmentDisplay.phoneElement,
+                    l_establihsmentDisplay.thumbImageElement
                 ];
                 l_establihsmentDisplay.updatablePanel = new UpdatablePanel(l_establihsmentDisplay._root, 
                                 new EstablishmentDisplayCallbacks(l_establihsmentDisplay), l_modificationContentElement, l_updatableElements);
@@ -77,6 +81,8 @@ class EstablishmentDisplayCallbacks implements UpdatablePanelCallbacks
     onSubmitPressed(p_onCompleted: () => void): void {
         let l_establishmentDelta: EstablishmentDelta | null;
         let l_establishmentAddressDelta: EstablishmentAddressDelta | null;
+        let l_establishmentThumbDelta: File | null;
+
         if (this.establishmentDisplay.nameElement.hasChanged() || this.establishmentDisplay.phoneElement.hasChanged()) {
             l_establishmentDelta = new EstablishmentDelta();
             if (this.establishmentDisplay.nameElement.hasChanged()) { l_establishmentDelta.name = this.establishmentDisplay.nameElement.input.value; }
@@ -99,7 +105,12 @@ class EstablishmentDisplayCallbacks implements UpdatablePanelCallbacks
             }
         }
 
-        EstablishmentService.UpdateEstablishment_Widht_Address(this.establishmentDisplay.establishmentServer.id, l_establishmentDelta, l_establishmentAddressDelta,
+        if (this.establishmentDisplay.thumbImageElement.hasChanged())
+        {
+            l_establishmentThumbDelta = this.establishmentDisplay.thumbImageElement.input.files[0];
+        }
+
+        EstablishmentService.UpdateEstablishment_Widht_Address(this.establishmentDisplay.establishmentServer.id, l_establishmentDelta, l_establishmentAddressDelta, l_establishmentThumbDelta,
             () => {
                 this.establishmentDisplay.updatablePanel.clearChanges();
                 p_onCompleted();
