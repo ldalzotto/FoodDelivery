@@ -18,3 +18,18 @@
         -> Having a flow state telling if order is CREATED, PAID, DELIVERED.
      * Adding a dish to an order.
      * Having history of order from user-id.
+
+
+
+element.style {
+    background-color: orange;
+    position: absolute;
+    float: left;
+    width: 15px;
+    height: 15px;
+    /* top: -20.0%; */
+    /* left: 97.5%; */
+    right: -6px;
+    top: -6px;
+    border-radius: 99999px;
+}
