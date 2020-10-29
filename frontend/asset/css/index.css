@@ -93,3 +93,92 @@
     padding: 10px;
     background-color: #ccc;
 }
+
+
+
+
+.update-dot-base
+{
+    background-color: orange;
+    position: absolute;
+    float: left;
+    border-radius: 99999px;
+    width: 15px;
+    height: 15px;
+}
+
+.update-dot-base.top-right
+{
+    right: -6px;
+    top: -6px;
+}
+
+
+input-enhanced >* .input-context
+{
+    border-width: 2px;
+    border-right-width: 0px;
+    border-style: inset;
+    border-image: initial;
+    border-top-left-radius: 999px;
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+    border-bottom-left-radius: 999px;
+}
+
+input-enhanced >* .input-context > .content
+{
+    overflow: hidden;
+    text-align: center;
+    vertical-align: middle;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    display: inline-block;
+    cursor: default;
+    user-select: none;
+}
+
+input-enhanced >* .input-context > .content > .yes
+{
+    color: green;
+}
+input-enhanced >* .input-context > .content > .no
+{
+    color: red;
+}
+
+
+input-enhanced >* input.input
+{
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+    border-bottom-left-radius: 0px;
+}
+
+input-enhanced >* .left-icon
+{
+    position: absolute;
+    right: 12px;
+    top: 4px;
+    user-select: none;
+}
+
+input-enhanced >* .left-icon:hover
+{
+    cursor: pointer;
+}
+
+input-enhanced >* .input-context-dimensions
+{
+    width: 25px;
+    height: 24px;
+}
+
+input-enhanced >* .input-dimensions
+{
+    width: calc(100% - 25px);
+    height: 24px;
+    position: relative;
+}

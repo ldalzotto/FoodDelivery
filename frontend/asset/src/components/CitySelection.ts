@@ -3,6 +3,7 @@ import {GeoService, City} from "../services/Geo.js"
 import {SelectFetch} from "../components_graphic/SelectFetch.js"
 import { Observable } from "../binding/Binding.js";
 import { UpdatableElement } from "../components_graphic/UpdatablePanel.js";
+import { EnhancedInput } from "../components_graphic/EnhancedInput.js";
 
 class CitySelection_SelectedEvent extends Event
 {
@@ -22,14 +23,21 @@ class CitySelection
     static readonly Type : string = "city-selection";
 
     protected _root : HTMLElement;
-    protected selectFetch : SelectFetch<CitySelection_Entry>;
+    public get root() { return this._root; }
+    
+    public selectFetch: SelectFetch<CitySelection_Entry>;
+    public enhancedInput: EnhancedInput;
 
-    protected onSelectedKeyChanged_chainCallback : ((p_key : number)=>void) | null;
+    public onSelectedKeyChanged_chainCallback: ((p_key: number) => void) | null;
 
     constructor(p_root : HTMLElement, p_readOnly : boolean = false)
     {
         this._root = p_root;
-        this.selectFetch = new SelectFetch<CitySelection_Entry>(this._root, p_readOnly);
+        let l_inputElement = document.createElement("div");
+        this.enhancedInput = new EnhancedInput(l_inputElement);
+
+
+        this.selectFetch = new SelectFetch<CitySelection_Entry>(this._root, l_inputElement, p_readOnly);
         this.selectFetch.bind((arg0, arg1) => this.fetchSelectList(arg0, arg1), 
             (arg0, arg1) => this.selectionPredicate(arg0, arg1),
             (arg0) => this.onSelectedKeyChanged(arg0),
@@ -76,12 +84,12 @@ class CitySelection
     {
         if(p_key!=-1)
         {
-            this.selectFetch.input.style.backgroundColor = "green";
+            this.enhancedInput.setValidationPassed(true);
             this._root.dispatchEvent(new CitySelection_SelectedEvent(this.selectFetch.selection[this.selectFetch.selectedKey_observable.value].city))
         }
         else
         {
-            this.selectFetch.input.style.backgroundColor = "red";
+            this.enhancedInput.setValidationPassed(false);
             this._root.dispatchEvent(new CitySelection_SelectedEvent(null))
         }
 
@@ -94,35 +102,40 @@ class CitySelection
     onReadOnlyChange() {
         if(this.selectFetch.readOnly.value)
         {
-            this.selectFetch.input.style.backgroundColor = "";
+            // this.selectFetch.input.style.backgroundColor = "";
         }
     }
 }
 
-class CitySelectionUpdate extends CitySelection implements UpdatableElement
+class CitySelectionUpdate implements UpdatableElement
 {
+    private _initialValue: City;
+    private _hasChanged: Observable<boolean>;
+    private _citySelection: CitySelection;
+    public get citySelection() { return this._citySelection; }
     
     constructor(p_root : HTMLElement)
     {
-        super(p_root, true);
+        this._citySelection = new CitySelection(p_root, true);
+        this._citySelection.enhancedInput.onResetClicked = () =>
+        {
+            this._citySelection.forceCity(this._initialValue);
+        };
         this._hasChanged = new Observable<boolean>(false);
-        this.onSelectedKeyChanged_chainCallback = this.onSelectedKeyChanged_update;
+        this._citySelection.onSelectedKeyChanged_chainCallback = () => { this.onSelectedKeyChanged_update(); };
         this._hasChanged.subscribe_withInit(() => {this.onHasChanged_change(this._hasChanged.value);});
     }
 
-    private _initialValue : City;
-
-    private _hasChanged : Observable<boolean>;
-
+    
     public setInitialValue(p_city : City)
     {
         this._initialValue = p_city;
-        this.forceCity(this._initialValue);
+        this._citySelection.forceCity(this._initialValue);
     }
 
     public setCurrentAsInitialValue()
     {
-        let l_selectedElement = this.selectFetch.getSelectedElement();
+        let l_selectedElement = this._citySelection.selectFetch.getSelectedElement();
         if(l_selectedElement)
         {
             this._initialValue = l_selectedElement.city;
@@ -132,12 +145,12 @@ class CitySelectionUpdate extends CitySelection implements UpdatableElement
 
     public enableModifications()
     {
-        this.selectFetch.readOnly.value = false;
+        this._citySelection.selectFetch.readOnly.value = false;
     }
 
     public disableModifications()
     {
-        this.selectFetch.readOnly.value = true;
+        this._citySelection.selectFetch.readOnly.value = true;
     }
 
     public hasChanged() : boolean
@@ -147,7 +160,7 @@ class CitySelectionUpdate extends CitySelection implements UpdatableElement
 
     onSelectedKeyChanged_update()
     {
-        let l_selectedElement = this.selectFetch.getSelectedElement();
+        let l_selectedElement = this._citySelection.selectFetch.getSelectedElement();
         if(l_selectedElement)
         {
             if(l_selectedElement.city.id !== this._initialValue.id)
@@ -163,16 +176,7 @@ class CitySelectionUpdate extends CitySelection implements UpdatableElement
 
     onHasChanged_change(p_hasChanged : boolean)
     {
-        if(p_hasChanged)
-        {
-            this._root.style.borderStyle = "dashed";
-            this._root.style.borderColor = "orange";
-        }
-        else
-        {
-            this._root.style.borderStyle = "";
-            this._root.style.borderColor = "";
-        }
+        this._citySelection.enhancedInput.setUpdateDotDisplayed(p_hasChanged);
     }
 }
 

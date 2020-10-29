@@ -98,10 +98,10 @@ class EstablishmentDisplayCallbacks implements UpdatablePanelCallbacks
                 l_establishmentAddressDelta.lng = this.establishmentDisplay.pointElement.latLng.lng;
             }
             if (this.establishmentDisplay.cityElement.hasChanged()) { 
-                let l_selectedCity = this.establishmentDisplay.cityElement.getSelectedCity();
+                let l_selectedCity = this.establishmentDisplay.cityElement.citySelection.getSelectedCity();
                 if(l_selectedCity)
                 {
-                    l_establishmentAddressDelta.city_id = this.establishmentDisplay.cityElement.getSelectedCity().id;
+                    l_establishmentAddressDelta.city_id = this.establishmentDisplay.cityElement.citySelection.getSelectedCity().id;
                 }
             }
         }
