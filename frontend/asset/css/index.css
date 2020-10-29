@@ -69,3 +69,27 @@
 {
     height: 500px;
 }
+
+.accordilon-header
+{
+    background-color: #eee;
+    color: #444;
+    cursor: pointer;
+    transition: 0.4s;
+    padding: 10px;
+    font-size: 18px;
+}
+
+.accordilon-header:hover
+{
+    background-color: #ccc;
+}
+
+.accordilon-item
+{
+    overflow: hidden;
+    max-height: 0px;
+    transition: max-height 0.2s ease-out;
+    padding: 10px;
+    background-color: #ccc;
+}

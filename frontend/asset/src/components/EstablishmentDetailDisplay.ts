@@ -26,43 +26,44 @@ class EstablishementDisplay {
         let l_establihsmentDisplay: EstablishementDisplay = new EstablishementDisplay();
         l_establihsmentDisplay._root = p_root;
 
+        let l_template: HTMLTemplateElement = document.getElementById(EstablishementDisplay.Type) as HTMLTemplateElement;
+        let l_modificationContentElement = l_template.content.cloneNode(true) as HTMLElement;
+        l_establihsmentDisplay.nameElement = new InputUpdateElement(l_modificationContentElement.querySelector("#name"), InputElementType.TEXT);
+        l_establihsmentDisplay.addressElement = new InputUpdateElement(l_modificationContentElement.querySelector("#address"), InputElementType.TEXT);
+        l_establihsmentDisplay.cityElement = new CitySelectionUpdate(l_modificationContentElement.querySelector("#city"));
+        l_establihsmentDisplay.pointElement = new MapSelectionUpdate(l_modificationContentElement.querySelector("#point"));
+        l_establihsmentDisplay.phoneElement = new InputUpdateElement(l_modificationContentElement.querySelector("#phone"), InputElementType.TEXT);
+        l_establihsmentDisplay.thumbImageElement = new InputImageUpdateElement(l_modificationContentElement.querySelector("#thumb"));
+
+        let l_updatableElements: UpdatableElement[] = [
+            l_establihsmentDisplay.nameElement,
+            l_establihsmentDisplay.addressElement,
+            l_establihsmentDisplay.cityElement,
+            l_establihsmentDisplay.pointElement,
+            l_establihsmentDisplay.phoneElement,
+            l_establihsmentDisplay.thumbImageElement
+        ];
+        l_establihsmentDisplay.updatablePanel = new UpdatablePanel(l_establihsmentDisplay._root,
+            new EstablishmentDisplayCallbacks(l_establihsmentDisplay), l_modificationContentElement, l_updatableElements);
+
         EstablishmentService.GetEstablishment(p_establishmentId, [EstablishmentCalculationType.RETRIEVE_CITIES, EstablishmentCalculationType.RETRIEVE_THUMBNAIL],
-             (p_establishmentGet : EstablishmentGet) => {
-                let l_template: HTMLTemplateElement = document.getElementById(EstablishementDisplay.Type) as HTMLTemplateElement;
-                let l_modificationContentElement = l_template.content.cloneNode(true) as HTMLElement;
-                
+            (p_establishmentGet: EstablishmentGet) =>
+            {
+
                 let l_establishment_address = p_establishmentGet.establishment_addresses[0];
-                let l_city = p_establishmentGet.cities[p_establishmentGet.establishment_address_TO_city[0]]; 
+                let l_city = p_establishmentGet.cities[p_establishmentGet.establishment_address_TO_city[0]];
 
                 l_establihsmentDisplay.establishmentServer = p_establishmentGet.establishments[0];
-        
-                l_establihsmentDisplay.nameElement = new InputUpdateElement(l_modificationContentElement.querySelector("#name"), InputElementType.TEXT);
                 l_establihsmentDisplay.nameElement.init(l_establihsmentDisplay.establishmentServer.name);
-        
-                l_establihsmentDisplay.addressElement = new InputUpdateElement(l_modificationContentElement.querySelector("#address"), InputElementType.TEXT);
                 l_establihsmentDisplay.addressElement.init(l_establishment_address.street_full_name);
-        
-                l_establihsmentDisplay.cityElement = new CitySelectionUpdate(l_modificationContentElement.querySelector("#city"));
                 l_establihsmentDisplay.cityElement.setInitialValue(l_city);
-        
-                l_establihsmentDisplay.pointElement = new MapSelectionUpdate(l_modificationContentElement.querySelector("#point"), l_establishment_address.lat, l_establishment_address.lng);
-        
-                l_establihsmentDisplay.phoneElement = new InputUpdateElement(l_modificationContentElement.querySelector("#phone"), InputElementType.TEXT);
+                l_establihsmentDisplay.pointElement.init(l_establishment_address.lat, l_establishment_address.lng);
+
                 l_establihsmentDisplay.phoneElement.init(l_establihsmentDisplay.establishmentServer.phone);
 
-                 l_establihsmentDisplay.thumbImageElement = new InputImageUpdateElement(l_modificationContentElement.querySelector("#thumb"));
 
-                let l_updatableElements : UpdatableElement[] = [
-                    l_establihsmentDisplay.nameElement,
-                    l_establihsmentDisplay.addressElement,
-                    l_establihsmentDisplay.cityElement,
-                    l_establihsmentDisplay.pointElement,
-                    l_establihsmentDisplay.phoneElement,
-                    l_establihsmentDisplay.thumbImageElement
-                ];
-                l_establihsmentDisplay.updatablePanel = new UpdatablePanel(l_establihsmentDisplay._root, 
-                                new EstablishmentDisplayCallbacks(l_establihsmentDisplay), l_modificationContentElement, l_updatableElements);
-        
+
+
              }, null);
         return l_establihsmentDisplay;
     }

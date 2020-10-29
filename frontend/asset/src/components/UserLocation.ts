@@ -15,7 +15,8 @@ class UserLocation
         this._root = p_root;
         let l_template : HTMLTemplateElement = document.getElementById(UserLocation.Type) as HTMLTemplateElement;
         this._root.appendChild(l_template.content.cloneNode(true));
-        this._mapSelection = new MapSelection(this._root.querySelector("#latlng"), 0, 0);
+        this._mapSelection = new MapSelection(this._root.querySelector("#latlng"));
+        this._mapSelection.init(0, 0);
         this._submitButton = this._root.querySelector("#submit");
         this._submitButton.addEventListener("click", () => {this.onSubmitClick();});
     }

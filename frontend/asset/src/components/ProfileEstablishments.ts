@@ -123,7 +123,8 @@ class EstablishmentRegistration extends HTMLElement {
         this.inputName = this.querySelector("#name") as HTMLInputElement;
         this.inputAddressStreetName = this.querySelector("#street-name") as HTMLInputElement;
         this.citySelection = new CitySelection(this.querySelector("#city"));
-        this.latLngMap = new MapSelection(this.querySelector("#latlng"), 48.85, 2.35);
+        this.latLngMap = new MapSelection(this.querySelector("#latlng"));
+        this.latLngMap.init(48.85, 2.35);
         this.inputPhone = this.querySelector("#phone") as HTMLInputElement;
         this.inputThumbImage = this.querySelector("#thumb") as HTMLInputElement;
 

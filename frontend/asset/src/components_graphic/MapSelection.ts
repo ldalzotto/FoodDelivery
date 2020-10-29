@@ -27,10 +27,8 @@ class MapSelection
     private displayedMarker : any;
     private isFocused : boolean;
 
-    constructor(p_parent : HTMLElement, p_initialLat : number, p_initialLng : number)
+    constructor(p_parent: HTMLElement)
     {
-        this.latLng.lat = p_initialLat;
-        this.latLng.lng = p_initialLng;
 
         this._root = document.createElement("div");
 
@@ -40,31 +38,37 @@ class MapSelection
         this._root.style.height = "inherit";
         this._root.style.margin = "inherit";
         this._root.style.padding = "inherit";
+    }
 
-        setTimeout(() => {
+    public init(p_initialLat: number, p_initialLng: number)
+    {
+        this.latLng.lat = p_initialLat;
+        this.latLng.lng = p_initialLng;
+
+        setTimeout(() =>
+        {
             this.isFocused = false;
-            this.map = L.map(this._root, {scrollWheelZoom: false}).setView([this.latLng.lat, this.latLng.lng], 13);
+            this.map = L.map(this._root, { scrollWheelZoom: false }).setView([this.latLng.lat, this.latLng.lng], 13);
             L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoicGxvbWJhIiwiYSI6ImNrZzgwcnZ2OTA2NXcyd215bDhveXc2dmYifQ.40bIOrEnYw6UTl9TKkZJOw',
-            {
-                attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-                maxZoom: 18,
-                id: 'mapbox/streets-v11',
-                tileSize: 512,
-                zoomOffset: -1,
-                accessToken: 'your.mapbox.access.token'
-            }).addTo(this.map);
-            this.map.on('click', (event:any) => {this.onMapClick(event);} );
+                {
+                    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                    maxZoom: 18,
+                    id: 'mapbox/streets-v11',
+                    tileSize: 512,
+                    zoomOffset: -1,
+                    accessToken: 'your.mapbox.access.token'
+                }).addTo(this.map);
+            this.map.on('click', (event: any) => { this.onMapClick(event); });
             this.setSelectionMarker(this.latLng.lat, this.latLng.lng, true);
 
-            this.map.on('focus', () => {this.onMapFocus();});
-            this.map.on('blur', () => {this.onMapBlur();});
-            this.onLatLngChanged.subscribe((p_null) => {this.onLatLngChangedFn();})
+            this.map.on('focus', () => { this.onMapFocus(); });
+            this.map.on('blur', () => { this.onMapBlur(); });
+            this.onLatLngChanged.subscribe((p_null) => { this.onLatLngChangedFn(); })
 
-            WindowElement.addEventListener(WindowElement_ResizeEvent, () => {this.onWindowResize();});
+            WindowElement.addEventListener(WindowElement_ResizeEvent, () => { this.onWindowResize(); });
         }, 0);
-
     }
-    
+
     public setSelectionMarker(plat : number, p_long : number, p_moveTo : boolean)
     {
             if (this.displayedMarker != undefined) {
@@ -136,20 +140,18 @@ class MapSelectionUpdate extends MapSelection implements UpdatableElement
 
     private _hasChanged : Observable<boolean>;
 
-    constructor(p_parent : HTMLElement, p_initialLat : number, p_initialLng : number)
+    constructor(p_parent: HTMLElement)
     {
-        super(p_parent, p_initialLat, p_initialLng);
+        super(p_parent);
 
         this._initialValue = new LatLng();
-        this._initialValue.lat = p_initialLat;
-        this._initialValue.lng = p_initialLng;
 
         this._hasChanged = new Observable<boolean>(false);
 
         this.onLatLngChanged.subscribe(() => {this.onLatLngChangedUpdate();});
         this._hasChanged.subscribe(() => {this.onHasChanged_change(this._hasChanged.value);});
     }
-
+    
     public enableModifications()
     {
         this.readonly = false;
