@@ -46,8 +46,14 @@ class DishListCallback implements ElementListCallbacks<DishPreview, DishGet, Dis
         return null;
     }
     buildElement(p_fetchElement: DishGet, p_index: number, p_itemHTMlRoot: HTMLElement): DishPreview {
-        let l_dishPreview = new DishPreview(p_itemHTMlRoot, p_fetchElement.dishes[p_index], p_fetchElement.thumbnails[p_fetchElement.dish_TO_thumbnail[p_index]]);
+        let l_root = document.createElement("div");
+        p_itemHTMlRoot.appendChild(l_root);
+
+        let l_dishPreview = new DishPreview(l_root, p_fetchElement.dishes[p_index], p_fetchElement.thumbnails[p_fetchElement.dish_TO_thumbnail[p_index]]);
+
         l_dishPreview.root.addEventListener("click", () => { Navigation.MoveToDishDetailPage(l_dishPreview.dish.id); });
+        l_dishPreview.root.classList.add("column");
+        l_dishPreview.root.classList.add("dyn-grid");
         return l_dishPreview;
     }
 
@@ -108,14 +114,14 @@ class DishPreview
     private _dish : Dish;
     public get dish(){return this._dish;}
 
-    constructor(p_root : HTMLElement, p_dish : Dish, p_thumb : ImageUrl)
+    constructor(p_root: HTMLElement, p_dish: Dish, p_thumb: ImageUrl)
     {
+        this._root = p_root
         this._dish = p_dish;
 
-        this._root = p_root;
         let l_template: HTMLTemplateElement = document.getElementById(DishPreview.Type) as HTMLTemplateElement;
-        this._root.appendChild(l_template.content.cloneNode(true));
-
+        let l_fragment = this._root.appendChild(l_template.content.cloneNode(true));
+      
         if(p_thumb)
         {
             (this._root.querySelector("#thumb") as HTMLImageElement).src = p_thumb.url;

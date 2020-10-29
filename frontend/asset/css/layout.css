@@ -1,0 +1,148 @@
+html {
+    box-sizing: border-box;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: inherit;
+}
+
+
+/******************* LAYOUT *******************/
+
+.container {
+    margin: 0 auto;
+    padding: 0 10px;
+    max-width: 1200px;
+}
+
+.row::before,
+.row::after,
+.row-begin,
+.row-end {
+    display: table;
+    content: ' ';
+    clear: both;
+}
+
+.row-layout-mainsection {
+    margin-left: auto;
+    margin-right: auto;
+    width: 80%;
+}
+
+.auto {
+    width: auto;
+}
+
+.column {
+    float: left;
+}
+
+.one {
+    width: 100%;
+}
+
+.half {
+    width: calc(100% / 2);
+}
+
+.one-third {
+    width: calc(100% / 3);
+}
+
+.two-third {
+    width: calc(100% / 3 * 2);
+}
+
+.one-fourth {
+    width: calc(100% / 4);
+}
+
+.two-fourth {
+    width: calc(100% / 4 * 2);
+}
+
+.one-twelfth {
+    width: calc(100% / 12);
+}
+
+.two-thirds {
+    width: calc(100% / 3 * 2);
+}
+
+.blank-1 {
+    height: 10px;
+}
+
+.blank-2 {
+    height: 7.5px;
+}
+
+.blank-3 {
+    height: 5px;
+}
+
+@media screen and (min-width: 800px) {
+    .blank-1 {
+        height: 20px;
+    }
+    .blank-2 {
+        height: 15px;
+    }
+    .blank-3 {
+        height: 7.5px;
+    }
+}
+
+
+/******************* Dynamic grid *********************/
+
+.dyn-grid {
+    width: calc(100% / 1);
+}
+
+@media only screen and (min-width: 600px) and (max-width: 991px) {
+    .dyn-grid {
+        width: calc(100% / 2);
+    }
+    .dyn-grid:nth-child(2n + 3) {
+        display: table;
+        content: ' ';
+        clear: both;
+    }
+}
+
+@media only screen and (min-width: 992px) {
+    
+    .dyn-grid {
+        width: calc(100% / 3);
+    }
+    .dyn-grid:nth-child(3n + 4) {
+        display: table;
+        content: ' ';
+        clear: both;
+    }
+}
+
+
+/******************* HTML ELEMENTS *******************/
+
+h1 {
+    font-size: 2.0rem;
+}
+
+h2 {
+    font-size: 1.5rem;
+    margin-block-start: 0.70em;
+    margin-block-end: 0.70em;
+}
+
+input {
+    width: 100%;
+}
+
+button {
+    width: 100%;
+}

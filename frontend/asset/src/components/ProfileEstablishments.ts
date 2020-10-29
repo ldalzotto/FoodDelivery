@@ -54,7 +54,18 @@ class ProfileEstablishmentListCallbacks implements ElementListCallbacks<Establis
         return null;
     }
     buildElement(p_fetchElement: EstablishmentGet, p_index: number, p_itemHTMlRoot: HTMLElement): EstablishementDisplayPreview {
-        let l_establishmentDisplay: EstablishementDisplayPreview = EstablishementDisplayPreview.build(p_itemHTMlRoot, p_fetchElement.establishments[p_index], p_fetchElement.establishment_addresses[p_index],
+
+        /*
+                l_dishPreview.root.classList.add("column");
+        l_dishPreview.root.classList.add("dyn-grid");
+        */
+
+        let l_root = document.createElement("div");
+        p_itemHTMlRoot.appendChild(l_root);
+        l_root.classList.add("column");
+        l_root.classList.add("dyn-grid");
+
+        let l_establishmentDisplay: EstablishementDisplayPreview = EstablishementDisplayPreview.build(l_root, p_fetchElement.establishments[p_index], p_fetchElement.establishment_addresses[p_index],
             p_fetchElement.cities[p_fetchElement.establishment_address_TO_city[p_index]],
             p_fetchElement.thumbnails[p_fetchElement.establishment_TO_thumbnail[p_index]]);
        l_establishmentDisplay.root.addEventListener(EstablishementDisplayV2_Click.Type, 

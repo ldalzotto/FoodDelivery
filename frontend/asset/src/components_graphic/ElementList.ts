@@ -24,9 +24,7 @@ class ElementList<ELEMENT_TYPE, FETCH_TYPE, FETCH_ELEMENT_TYPE, Callbacks extend
         this._items = [];
         this._callbacks.fetchElements((p_fetch : FETCH_TYPE) => {
             this._callbacks.forEachFetchedElements(p_fetch, (p_fetchElement : FETCH_ELEMENT_TYPE, p_index : number) => {
-                let l_listItem = document.createElement("div");
-                this._root.appendChild(l_listItem);
-                this._items.push(this._callbacks.buildElement(p_fetchElement, p_index, l_listItem));
+                this._items.push(this._callbacks.buildElement(p_fetchElement, p_index, this._root));
             });
         });
     }
