@@ -3,7 +3,7 @@ import {GeoService, City} from "../services/Geo.js"
 import {SelectFetch} from "../components_graphic/SelectFetch.js"
 import { Observable } from "../binding/Binding.js";
 import { UpdatableElement } from "../components_graphic/UpdatablePanel.js";
-import { EnhancedInput } from "../components_graphic/EnhancedInput.js";
+import { EnhancedInput, EnhancedInput_Module } from "../components_graphic/EnhancedInput.js";
 
 class CitySelection_SelectedEvent extends Event
 {
@@ -34,7 +34,7 @@ class CitySelection
     {
         this._root = p_root;
         let l_inputElement = document.createElement("div");
-        this.enhancedInput = new EnhancedInput(l_inputElement);
+        this.enhancedInput = new EnhancedInput(l_inputElement, [EnhancedInput_Module.LEFT_CHECKMARK_VALIDATION, EnhancedInput_Module.REVERT_BUTTON, EnhancedInput_Module.UPDATE_DOT]);
 
 
         this.selectFetch = new SelectFetch<CitySelection_Entry>(this._root, l_inputElement, p_readOnly);
@@ -84,12 +84,12 @@ class CitySelection
     {
         if(p_key!=-1)
         {
-            this.enhancedInput.setValidationPassed(true);
+            this.enhancedInput.getModule_LeftCheckmarkValidation().setValidationPassed(true);
             this._root.dispatchEvent(new CitySelection_SelectedEvent(this.selectFetch.selection[this.selectFetch.selectedKey_observable.value].city))
         }
         else
         {
-            this.enhancedInput.setValidationPassed(false);
+            this.enhancedInput.getModule_LeftCheckmarkValidation().setValidationPassed(false);
             this._root.dispatchEvent(new CitySelection_SelectedEvent(null))
         }
 
@@ -117,7 +117,7 @@ class CitySelectionUpdate implements UpdatableElement
     constructor(p_root : HTMLElement)
     {
         this._citySelection = new CitySelection(p_root, true);
-        this._citySelection.enhancedInput.onResetClicked = () =>
+        this._citySelection.enhancedInput.getModule_RevertButton().onResetClicked = () =>
         {
             this._citySelection.forceCity(this._initialValue);
         };
@@ -176,7 +176,7 @@ class CitySelectionUpdate implements UpdatableElement
 
     onHasChanged_change(p_hasChanged : boolean)
     {
-        this._citySelection.enhancedInput.setUpdateDotDisplayed(p_hasChanged);
+        this._citySelection.enhancedInput.getModule_UpdateDot().setUpdateDotDisplayed(p_hasChanged);
     }
 }
 
