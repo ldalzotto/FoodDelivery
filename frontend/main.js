@@ -8,7 +8,13 @@ app.use(express.static("asset"));
 
 
 app.get("*", (req, res) => {
-    res.sendFile(path.join(appDir, "index.html"));
+    if (req.originalUrl.endsWith(".css")) {
+        let l_stylepath = req.originalUrl.slice(req.originalUrl.indexOf("css/"), req.originalUrl.length);
+        res.sendFile(path.join(appDir, l_stylepath));
+    }
+    else {
+        res.sendFile(path.join(appDir, "index.html"));
+    }
 });
 
 const port = 8081;

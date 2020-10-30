@@ -46,8 +46,8 @@ class SelectFetch<T>
     }
 
     public bind(p_fetchSelectList : (p_rawInput : string, p_onComplented : (p_fetched : T[] | null)  => void) => (void),
-    p_selectedEntryPredicate : (p_input : string, p_index : number) => boolean, p_onSelectedKeyChanged : (p_key : number) => (void),
-    p_onReadOnlyChanged ?: () => (void))
+                p_selectedEntryPredicate : (p_input : string, p_index : number) => boolean, p_onSelectedKeyChanged : (p_key : number) => (void),
+                p_onReadOnlyChanged ?: () => (void))
     {
         this.fetchSelectList = p_fetchSelectList;
         this.selectedEntryPreicate = p_selectedEntryPredicate;
@@ -98,8 +98,6 @@ class SelectFetch<T>
 
     createRefreshTimer()
     {
-        if(!this.readOnly.value)
-        {
             this.refreshTimer = setTimeout(() => {
                 if(this.onRefreshValue==null)
                 {
@@ -113,13 +111,11 @@ class SelectFetch<T>
                 
                 this.refreshTimerState = RefreshTimerState.WAITING_FOR_INPUT;
             }, 200);
-        }
     }
 
     refreshSelection()
     {
-        if(!this.readOnly.value)
-        {
+
             if(this.onRefreshValue != null && !this.refreshProcessing)
             {
                 let l_refreshValue : string = this.onRefreshValue;
@@ -151,21 +147,18 @@ class SelectFetch<T>
                     else
                     {
                         this._selection = [];
+                        this._selectedKey_observable.value = -1;
                     }
                     this.refreshProcessing = false;
                     this.refreshSelection();
                 });
             }
-        }
     }
 
     onReadOnlyChange(p_readOnly : boolean)
     {
         this._input.readOnly = p_readOnly;
-        if(!p_readOnly)
-        {
-            this.onInputValueChanged(this.inputValue_observable.value);
-        }
+
         if(this.onReadOnlyChangedFn)
         {
             this.onReadOnlyChangedFn();
