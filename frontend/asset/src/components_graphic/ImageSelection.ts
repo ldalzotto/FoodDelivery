@@ -269,7 +269,12 @@ class ImageSelectionUpdateElement implements UpdatableElement
 
     private onRevertClicked()
     {
-        this.imageSelection.setImageId(this.initialImageId);
+        this.setImageId(this.initialImageId);
+    }
+
+    public setImageId(p_image_id: number)
+    {
+        this.imageSelection.setImageId(p_image_id);
     }
 
     enableModifications(): void

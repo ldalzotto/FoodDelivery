@@ -61,7 +61,8 @@ class EstablishementDisplay {
                 l_establihsmentDisplay.pointElement.init(l_establishment_address.lat, l_establishment_address.lng);
 
                 l_establihsmentDisplay.phoneElement.init(l_establihsmentDisplay.establishmentServer.phone);
-
+                l_establihsmentDisplay.thumbImageElement.setImageId(p_establishmentGet.thumbnails[p_establishmentGet.establishment_TO_thumbnail[0]].image_id);
+                l_establihsmentDisplay.thumbImageElement.setCurrentAsInitialValue();
 
 
 

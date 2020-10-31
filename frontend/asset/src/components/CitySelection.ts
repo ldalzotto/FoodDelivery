@@ -36,7 +36,6 @@ class CitySelection
         let l_inputElement = document.createElement("div");
         this.enhancedInput = new EnhancedInput(l_inputElement, [EnhancedInput_Module.LEFT_CHECKMARK_VALIDATION, EnhancedInput_Module.REVERT_BUTTON, EnhancedInput_Module.UPDATE_DOT]);
 
-
         this.selectFetch = new SelectFetch<CitySelection_Entry>(this._root, l_inputElement, p_readOnly);
         this.selectFetch.bind((arg0, arg1) => this.fetchSelectList(arg0, arg1), 
             (arg0, arg1) => this.selectionPredicate(arg0, arg1),
