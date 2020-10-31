@@ -115,111 +115,6 @@ class InputUpdateElement_KeyUpEventListener implements EventListenerObject
     }
 }
 
-class InputImageUpdateElement implements UpdatableElement
-{
-    private _root: HTMLElement;
-    private _input: HTMLInputElement;
-    public get input() { return this._input; }
-
-    private _initialValue: File;
-
-    private _hasChanged: Observable<boolean>;
-    private list: InputImageUpdateElement_EventListener;
-
-    constructor(p_parent: HTMLElement)
-    {
-        this._root = document.createElement("input");
-        this._input = this._root as HTMLInputElement;
-        this._input.type = "file";
-        p_parent.appendChild(this._root);
-        this._input.readOnly = false;
-        this.list = new InputImageUpdateElement_EventListener(this);
-
-        this._hasChanged = new Observable<boolean>(false);
-        this._hasChanged.subscribe_withInit(() => { this.onHasChanged_change(this._hasChanged.value); });
-    }
-
-    public init(p_initialValue: File)
-    {
-        this.setInitialValue(p_initialValue);
-        this._input.files[0] = p_initialValue;
-    }
-
-    public setInitialValue(p_initialValue: File)
-    {
-        this._initialValue = p_initialValue;
-    }
-
-    enableModifications(): void
-    {
-        if (this._input.readOnly)
-        {
-            this._input.readOnly = false;
-            this._input.style.pointerEvents = "";
-            this._input.addEventListener("change", this.list);
-        }
-    }
-    disableModifications(): void
-    {
-        if (!this._input.readOnly)
-        {
-            this._input.readOnly = true;
-            this._input.style.pointerEvents = "none";
-            this._input.removeEventListener("change", this.list);
-        }
-    }
-    setCurrentAsInitialValue(): void
-    {
-        this.setInitialValue(this._input.files[0]);
-        this.onValueChanged();
-    }
-
-    hasChanged(): boolean
-    {
-        return this._hasChanged.value;
-    }
-
-    private onHasChanged_change(p_hasChanged: boolean)
-    {
-        if (p_hasChanged)
-        {
-            this._input.style.backgroundColor = "orange";
-        }
-        else
-        {
-            this._input.style.backgroundColor = "";
-        }
-    }
-
-    public onValueChanged()
-    {
-        if (this._initialValue !== this._input.files[0])
-        {
-            this._hasChanged.value = true;
-        }
-        else
-        {
-            this._hasChanged.value = false;
-        }
-    }
-
-}
-
-class InputImageUpdateElement_EventListener implements EventListenerObject
-{
-    private InputUpdateElement: InputImageUpdateElement;
-
-    constructor(p_inputText: InputImageUpdateElement)
-    {
-        this.InputUpdateElement = p_inputText;
-    }
-
-    handleEvent(evt: Event): void
-    {
-        this.InputUpdateElement.onValueChanged();
-    }
-}
-
 enum InputElementType
 {
     TEXT = "text",
@@ -228,4 +123,4 @@ enum InputElementType
 
 
 
-export { InputUpdateElement, InputElementType, InputImageUpdateElement }
+export { InputUpdateElement, InputElementType }

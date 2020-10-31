@@ -1,4 +1,5 @@
-import { InputElementType, InputImageUpdateElement, InputUpdateElement } from "../components_graphic/InputUpdateElement.js";
+import { ImageSelectionUpdateElement } from "../components_graphic/ImageSelection.js";
+import { InputElementType, InputUpdateElement } from "../components_graphic/InputUpdateElement.js";
 import { UpdatableElement, UpdatablePanel, UpdatablePanelCallbacks } from "../components_graphic/UpdatablePanel.js";
 import { Dish, DishDelta, DishGet, DishService } from "../services/DishService.js";
 
@@ -10,7 +11,7 @@ class DishDetailDisplay
 
     public nameElement : InputUpdateElement;
     public priceElement : InputUpdateElement;
-    public thumbElement: InputImageUpdateElement;
+    public thumbElement: ImageSelectionUpdateElement;
 
     public dish : Dish;
 
@@ -25,7 +26,7 @@ class DishDetailDisplay
 
         l_dishDetailDisplay.nameElement = new InputUpdateElement(l_dishDetailDisplayContent.querySelector("#name"), InputElementType.TEXT);
         l_dishDetailDisplay.priceElement = new InputUpdateElement(l_dishDetailDisplayContent.querySelector("#price"), InputElementType.NUMBER);
-        l_dishDetailDisplay.thumbElement = new InputImageUpdateElement(l_dishDetailDisplayContent.querySelector("#thumb"));
+        l_dishDetailDisplay.thumbElement = new ImageSelectionUpdateElement(l_dishDetailDisplayContent.querySelector("#thumb"));
         
         DishService.GetDish(p_dish_id, null, 
             (p_dishGet : DishGet) => 
@@ -69,7 +70,7 @@ class DishDetailDisplay_Callbacks implements UpdatablePanelCallbacks
         let l_thumb_file: File | null = null;
         if (this.dishDetailDisplay.thumbElement.hasChanged())
         {
-            l_thumb_file = this.dishDetailDisplay.thumbElement.input.files[0];
+            l_thumb_file = this.dishDetailDisplay.thumbElement.getImageSelection().getInput().files[0];
         }
 
 

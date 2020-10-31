@@ -1,5 +1,5 @@
 import { ImageSelection, ImageSelectionUpdateElement, ImageSelection_Module } from "../components_graphic/ImageSelection.js";
-import { InputElementType, InputImageUpdateElement, InputUpdateElement } from "../components_graphic/InputUpdateElement.js";
+import { InputElementType, InputUpdateElement } from "../components_graphic/InputUpdateElement.js";
 import { MapSelectionUpdate } from "../components_graphic/MapSelection.js";
 import { UpdatableElement, UpdatablePanel, UpdatablePanelCallbacks } from "../components_graphic/UpdatablePanel.js";
 import { Establishment, EstablishmentAddressDelta, EstablishmentCalculationType, EstablishmentDelta, EstablishmentGet, EstablishmentService } from "../services/Establishment.js";
