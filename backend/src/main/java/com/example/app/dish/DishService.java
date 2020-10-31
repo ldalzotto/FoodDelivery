@@ -89,7 +89,7 @@ public class DishService {
         if(p_dishThumb != null)
         {
             try {
-                ImageCreated l_imageCreated = ImageQuery.PostImage(p_dishThumb.getBytes());
+                ImageUrl l_imageCreated = ImageQuery.PostImage(p_dishThumb.getBytes());
                 p_dish.thumb_id = l_imageCreated.image_id;
             } catch (IOException e) {
                 e.printStackTrace();
@@ -105,7 +105,7 @@ public class DishService {
         if(p_dishDelta.price != null) { l_dish.price = p_dishDelta.price; }
         if(l_dishThumb!=null)
         {
-            ImageCreated l_dishThumb_created = ImageQuery.PostImage(l_dishThumb);
+            ImageUrl l_dishThumb_created = ImageQuery.PostImage(l_dishThumb);
             l_dish.thumb_id = l_dishThumb_created.image_id;
         }
         DishQuery.UpdateDish(l_dish);

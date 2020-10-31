@@ -32,7 +32,7 @@ public class EstablishmentService {
 
                 if(p_thumbImage != null)
                 {
-                    ImageCreated l_image = ImageQuery.PostImage(p_thumbImage);
+                    ImageUrl l_image = ImageQuery.PostImage(p_thumbImage);
                     p_establishment.thumb_id = l_image.image_id;
                 }
 
@@ -115,7 +115,7 @@ public class EstablishmentService {
 
         if(p_thumbDelta != null)
         {
-            ImageCreated l_thumb = ImageQuery.PostImage(p_thumbDelta);
+            ImageUrl l_thumb = ImageQuery.PostImage(p_thumbDelta);
             EstablishmentQuery.UpdateEstablishmentThumb(p_establishmentId, l_thumb.image_id);
         }
     }

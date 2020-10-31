@@ -13,6 +13,54 @@ interface EnhancedInputModules
     [module: number]: any
 }
 
+/*
+class EnhancedInput_Html
+{
+    public static html(p_checkmark_element: string, p_input_column_class: string,
+        p_revert_button_element: string, p_update_icon_element: string): string
+    {
+        return `
+            <input-enhanced>
+                <div class="row">
+                ${p_checkmark_element}
+                <div class="column input-dimensions" style="position: relative;">
+                    <input class="input" type="text">
+                    ${p_revert_button_element}
+                    ${p_update_icon_element}
+                </div>
+                </div>
+            </input-enhanced>
+        `;
+    }
+
+    public static checkMarkElement(): string
+    {
+        return `
+                <div class="column input-context input-context-dimensions">
+                    <div class="content">
+                    <span id="yes-icon" class="yes">✔</span>
+                    <span id="no-icon" class="no">✖</span>
+                    </div>
+                </div>
+        `;
+    }
+
+    public static revertButtonElement(): string
+    {
+        return `
+            <div id="reset-button" class="left-icon"><span>↻</span></div>
+        `;
+    }
+
+    public static updateIconElement(): string
+    {
+        return `
+            <div id="update-dot" class="update-dot-base top-right"></div>
+        `;
+    }
+}
+*/
+
 class EnhancedInput
 {
 

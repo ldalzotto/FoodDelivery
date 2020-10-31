@@ -1,3 +1,4 @@
+import { ImageSelection, ImageSelectionUpdateElement, ImageSelection_Module } from "../components_graphic/ImageSelection.js";
 import { InputElementType, InputImageUpdateElement, InputUpdateElement } from "../components_graphic/InputUpdateElement.js";
 import { MapSelectionUpdate } from "../components_graphic/MapSelection.js";
 import { UpdatableElement, UpdatablePanel, UpdatablePanelCallbacks } from "../components_graphic/UpdatablePanel.js";
@@ -16,7 +17,7 @@ class EstablishementDisplay {
     public cityElement: CitySelectionUpdate;
     public pointElement: MapSelectionUpdate;
     public phoneElement: InputUpdateElement;
-    public thumbImageElement: InputImageUpdateElement;
+    public thumbImageElement: ImageSelectionUpdateElement;
 
     public establishmentServer: Establishment;
 
@@ -33,7 +34,7 @@ class EstablishementDisplay {
         l_establihsmentDisplay.cityElement = new CitySelectionUpdate(l_modificationContentElement.querySelector("#city"));
         l_establihsmentDisplay.pointElement = new MapSelectionUpdate(l_modificationContentElement.querySelector("#point"));
         l_establihsmentDisplay.phoneElement = new InputUpdateElement(l_modificationContentElement.querySelector("#phone"), InputElementType.TEXT);
-        l_establihsmentDisplay.thumbImageElement = new InputImageUpdateElement(l_modificationContentElement.querySelector("#thumb"));
+        l_establihsmentDisplay.thumbImageElement = new ImageSelectionUpdateElement(l_modificationContentElement.querySelector("#thumb"));
 
         let l_updatableElements: UpdatableElement[] = [
             l_establihsmentDisplay.nameElement,
@@ -108,7 +109,7 @@ class EstablishmentDisplayCallbacks implements UpdatablePanelCallbacks
 
         if (this.establishmentDisplay.thumbImageElement.hasChanged())
         {
-            l_establishmentThumbDelta = this.establishmentDisplay.thumbImageElement.input.files[0];
+            l_establishmentThumbDelta = this.establishmentDisplay.thumbImageElement.getImageSelection().getInput().files[0];
         }
 
         EstablishmentService.UpdateEstablishment_Widht_Address(this.establishmentDisplay.establishmentServer.id, l_establishmentDelta, l_establishmentAddressDelta, l_establishmentThumbDelta,

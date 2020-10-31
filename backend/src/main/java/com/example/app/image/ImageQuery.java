@@ -1,6 +1,7 @@
 package com.example.app.image;
 
 import com.example.app.image.domain.ImageCreated;
+import com.example.app.image.domain.ImageUrl;
 import com.example.main.ConfigurationBeans;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -10,7 +11,7 @@ import java.sql.PreparedStatement;
 public class ImageQuery {
     //TODO -> If the same image is uploaded 2 times, it will create different static_image resource.
     //        Finding a way to create unique id (instead of the auto generated one) from input image.
-    public static ImageCreated PostImage(byte[] p_image)
+    public static ImageUrl PostImage(byte[] p_image)
     {
         KeyHolder l_keyHolder = new GeneratedKeyHolder();
         ConfigurationBeans.jdbcTemplate.update(con -> {
@@ -18,9 +19,7 @@ public class ImageQuery {
             l_ps.setBytes(1, p_image);
             return l_ps;
         }, l_keyHolder);
-        ImageCreated l_imageCreated = new ImageCreated();
-        l_imageCreated.image_id = l_keyHolder.getKey().longValue();
-        return l_imageCreated;
+        return new ImageUrl(l_keyHolder.getKey().longValue());
     }
 
     public static StaticImage GetImage(long p_imageId)

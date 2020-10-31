@@ -16,7 +16,7 @@ public class ImageController {
     @CrossOrigin(origins = {"http://localhost:8081", "http://192.168.1.11:8081"})
     @RequestMapping(value = "/image", method = RequestMethod.POST)
     public @ResponseBody
-    ResponseEntity<?> Image(@RequestParam("thefile")MultipartFile p_file) throws IOException {
+    ResponseEntity<?> Image(@RequestParam("file")MultipartFile p_file) throws IOException {
         return ResponseEntity.ok(ImageQuery.PostImage(p_file.getBytes()));
     }
 

@@ -96,6 +96,12 @@ html {
     }
 }
 
+.inherit-wh
+{
+    height: inherit;
+    width: inherit;
+}
+
 
 /******************* Dynamic grid *********************/
 

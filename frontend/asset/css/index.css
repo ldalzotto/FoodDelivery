@@ -231,8 +231,6 @@ updatable-panel >* .submit-button-dimensions
     background-color: red;
 }
 
-
-
 image-selection
 {
     height: 150px;
@@ -258,8 +256,10 @@ image-selection >* label > img
     width: inherit;
 }
 
+/*
 image-selection >* label > img .update-dot-base.position
 {
     right: -6px;
     top: -6px;
 }
+*/
