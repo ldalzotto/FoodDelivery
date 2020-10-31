@@ -1,4 +1,4 @@
-import { BindingUtils, Observable } from "../binding/Binding.js";
+import { BindingUtils, Observable } from "../framework/binding/Binding.js";
 
 class Accordilon
 {

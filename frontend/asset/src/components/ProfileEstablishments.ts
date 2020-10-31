@@ -1,9 +1,9 @@
 import { LoadingButton } from "../components_graphic/LoadingButton.js"
-import { ServerError } from "../server/Server.js";
+import { ServerError } from "../framework/server/Server.js";
 import {
     EstablishmentService, Establishment, EstablishmentAddress, EstablishmentGet, EstablishmentCalculationType
 } from "../services/Establishment.js"
-import { BindingUtils, Observable } from "../binding/Binding.js"
+import { BindingUtils, Observable } from "../framework/binding/Binding.js"
 import { CitySelection } from "./CitySelection.js";
 import { City } from "../services/Geo.js";
 import { MapSelection } from "../components_graphic/MapSelection.js"

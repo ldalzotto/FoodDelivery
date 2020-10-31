@@ -1,7 +1,7 @@
-import { Observable, BindingUtils } from "../binding/Binding.js";
+import { Observable, BindingUtils } from "../framework/binding/Binding.js";
 import { LoginInput, LoginService, PostLogin_ErrorCodes, ServerError } from "../services/Login.js"
 import { GUserState } from "../UserState.js"
-import { BindingIndex } from "../binding/Binding.js"
+import { BindingIndex } from "../framework/binding/Binding.js"
 
 class UserLogin_LoggedInEvent extends Event {
     static readonly Type = 'logged-in';

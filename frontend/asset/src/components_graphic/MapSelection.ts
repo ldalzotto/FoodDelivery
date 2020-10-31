@@ -1,4 +1,4 @@
-import { Observable } from "../binding/Binding.js";
+import { Observable } from "../framework/binding/Binding.js";
 import { LatLng } from "../services/Geo.js";
 import {WindowElement, WindowElement_ResizeEvent} from "../Window.js"
 import { UpdatableElement } from "./UpdatablePanel.js";

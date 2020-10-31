@@ -230,36 +230,3 @@ updatable-panel >* .submit-button-dimensions
     transition: right 0.4s;
     background-color: red;
 }
-
-image-selection
-{
-    height: 150px;
-    width: 150px;
-}
-
-image-selection >* input.file
-{
-    display: none;
-}
-
-image-selection >* label.file-label
-{
-    height: inherit;
-    width: inherit;
-    cursor: pointer;
-    position: relative;
-}
-
-image-selection >* label > img
-{
-    height: inherit;
-    width: inherit;
-}
-
-/*
-image-selection >* label > img .update-dot-base.position
-{
-    right: -6px;
-    top: -6px;
-}
-*/

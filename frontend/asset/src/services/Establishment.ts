@@ -1,5 +1,5 @@
-import {Server, ServerError} from "../server/Server.js"
-import { QueryParamBuilder } from "../utils/QueryParamsBuilder.js";
+import { Server, ServerError } from "../framework/server/Server.js"
+import { QueryParamBuilder } from "../framework/utils/QueryParamsBuilder.js";
 import { City, LatLng } from "./Geo.js";
 import { ImageUrl } from "./Image.js";
 

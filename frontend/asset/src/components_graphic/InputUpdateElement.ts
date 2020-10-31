@@ -1,4 +1,4 @@
-import {Observable} from "../binding/Binding.js"
+import { Observable } from "../framework/binding/Binding.js"
 import { EnhancedInput, EnhancedInput_Module } from "./EnhancedInput.js";
 import { UpdatableElement } from "./UpdatablePanel.js";
 
@@ -90,7 +90,7 @@ class InputUpdateElement implements UpdatableElement
 
     private onHasChanged_change(p_hasChanged : boolean)
     {
-        this.enhancedInput.getModule_UpdateDot().setUpdateDotDisplayed(p_hasChanged);
+        this.enhancedInput.getModule_UpdateDot().setEnabled(p_hasChanged);
     }
 
     private onResetClicked()

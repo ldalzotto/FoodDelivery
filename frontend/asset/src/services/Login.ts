@@ -1,5 +1,5 @@
 import {GUserState} from '../UserState.js'
-import {ServerError, Server} from "../server/Server.js"
+import { ServerError, Server } from "../framework/server/Server.js"
 
 
 class LoginInput

@@ -1,4 +1,5 @@
-import { BindingUtils, Observable } from "../binding/Binding.js";
+import { BindingUtils, Observable } from "../framework/binding/Binding.js";
+import { UpdateDot } from "../modules_graphic/UpdateDot.js";
 
 enum EnhancedInput_Module
 {
@@ -90,7 +91,7 @@ class EnhancedInput
                         break;
                     case EnhancedInput_Module.UPDATE_DOT:
                         {
-                            this.modules[EnhancedInput_Module.UPDATE_DOT] = new EnhancedInput_UpdateDot(this);
+                            this.modules[EnhancedInput_Module.UPDATE_DOT] = new UpdateDot(this._root.querySelector("#update-dot"));
                         }
                         break;
                     case EnhancedInput_Module.REVERT_BUTTON:
@@ -154,9 +155,9 @@ class EnhancedInput
         return this.modules[EnhancedInput_Module.LEFT_CHECKMARK_VALIDATION] as EnhancedInput_LeftCheckMarkValidation;
     }
 
-    public getModule_UpdateDot(): EnhancedInput_UpdateDot
+    public getModule_UpdateDot(): UpdateDot
     {
-        return this.modules[EnhancedInput_Module.UPDATE_DOT] as EnhancedInput_UpdateDot;
+        return this.modules[EnhancedInput_Module.UPDATE_DOT] as UpdateDot;
     }
 
     public getModule_RevertButton(): EnhancedInput_RevertButton
@@ -201,25 +202,6 @@ class EnhancedInput_LeftCheckMarkValidation
 
 }
 
-class EnhancedInput_UpdateDot
-{
-    private updateDot: HTMLElement;
-    private updateDotDisplayed: Observable<boolean>;
-
-    constructor(p_enhancedInput: EnhancedInput)
-    {
-        this.updateDot = p_enhancedInput.root.querySelector("#update-dot");
-        this.updateDotDisplayed = new Observable<boolean>(false);
-        BindingUtils.bindDisplayStyle(this.updateDot, this.updateDotDisplayed);
-        this.updateDotDisplayed.value = false;
-    }
-
-    public setUpdateDotDisplayed(p_value: boolean)
-    {
-        this.updateDotDisplayed.value = p_value;
-    }
-}
-
 class EnhancedInput_RevertButton
 {
     private enhancedInput: EnhancedInput;
@@ -236,7 +218,7 @@ class EnhancedInput_RevertButton
         let l_updatedot_module = this.enhancedInput.getModule_UpdateDot();
         if (l_updatedot_module)
         {
-            l_updatedot_module.setUpdateDotDisplayed(p_value);
+            l_updatedot_module.setEnabled(p_value);
         }
     }
 }

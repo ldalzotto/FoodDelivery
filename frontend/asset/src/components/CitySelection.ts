@@ -1,7 +1,7 @@
-import { ServerError } from "../server/Server.js";
+import { ServerError } from "../framework/server/Server.js";
 import {GeoService, City} from "../services/Geo.js"
 import {SelectFetch} from "../components_graphic/SelectFetch.js"
-import { Observable } from "../binding/Binding.js";
+import { Observable } from "../framework/binding/Binding.js";
 import { UpdatableElement } from "../components_graphic/UpdatablePanel.js";
 import { EnhancedInput, EnhancedInput_Module } from "../components_graphic/EnhancedInput.js";
 
@@ -176,7 +176,7 @@ class CitySelectionUpdate implements UpdatableElement
 
     onHasChanged_change(p_hasChanged : boolean)
     {
-        this._citySelection.enhancedInput.getModule_UpdateDot().setUpdateDotDisplayed(p_hasChanged);
+        this._citySelection.enhancedInput.getModule_UpdateDot().setEnabled(p_hasChanged);
     }
 }
 

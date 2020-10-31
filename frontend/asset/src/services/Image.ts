@@ -1,4 +1,4 @@
-import { Server } from "../server/Server.js";
+import { Server } from "../framework/server/Server.js";
 
 class ImageUrl {
     public image_id : number;

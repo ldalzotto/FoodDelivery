@@ -1,6 +1,5 @@
-import {MWatcher} from './binding/Binding.js'
-import {Cached} from "./binding/CachedValude.js"
-import { ServerError } from './server/Server.js';
+import { MWatcher } from './framework/binding/Binding.js'
+import { ServerError } from './framework/server/Server.js';
 import { LatLng } from './services/Geo.js';
 import {UserService} from "./services/User.js"
 

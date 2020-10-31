@@ -1,16 +1,14 @@
-import { Observable } from "../binding/Binding.js";
+import { Observable } from "../framework/binding/Binding.js";
+import { LComponent } from "../framework/component/LComponent.js";
+import { UpdateDot } from "../modules_graphic/UpdateDot.js";
 import { ImageService, ImageUrl } from "../services/Image.js";
+import { GlobalStyle } from "../Style.js";
 import { UpdatableElement } from "./UpdatablePanel.js";
 
 enum ImageSelection_Module
 {
     UPDATE_DOT = 0,
     REVERT_BUTTON = 1
-}
-
-interface ImageSelection_Modules
-{
-    [module: number]: any
 }
 
 class ImageSelection_Html
@@ -21,32 +19,32 @@ class ImageSelection_Html
     public static readonly updateDotId: string = "update-dot";
     public static readonly revertButtonId: string = "revert-button";
 
-    private static html(p_update_dot_element: string, p_revert_button_element: string): string
+    public static html(p_update_dot_element: string, p_revert_button_element: string): string
     {
         return `
-        <image-selection>
+        <${ImageSelection.Type}>
             <div class="row inherit-wh">
             <input class="file" type=file id="file" />
-            <label id="${ImageSelection_Html.imageLabelId}" for="file" class="column one file-label">
-                <img id="${ImageSelection_Html.imageId}" src="${ImageUrl.buildUrlForId(1).url}"/>
+            <label id="${ImageSelection_Html.imageLabelId}" for="file" class="column one inherit-wh file-label">
+                <img id="${ImageSelection_Html.imageId}" class="inherit-wh" src="${ImageUrl.buildUrlForId(1).url}"/>
                 <div id="image-absolute-container">
                     ${p_update_dot_element}
                     ${p_revert_button_element}
                 </div>
             </label>
             </div>
-        </image-selection>
+        </${ImageSelection.Type}>
         `;
     }
 
-    private static updatedot_html(): string
+    public static updatedot_html(): string
     {
         return `
             <div id="${ImageSelection_Html.updateDotId}" class="update-dot-base top-right"></div>
         `;
     }
 
-    private static revertbutton_html(): string
+    public static revertbutton_html(): string
     {
         return `
             <div id="${ImageSelection_Html.revertButtonId}" style="position: absolute; width: 17px; height: 17px; right: -9px; top: 11px;">
@@ -54,51 +52,45 @@ class ImageSelection_Html
             </div>
         `;
     }
+}
 
-    public static build(p_modules: ImageSelection_Module[]): string
+class ImageSelection_Style
+{
+    public static style(): string
     {
-        if (p_modules)
-        {
-            let l_upatedot = false;
-            let l_revert = false;
-
-            for (let i = 0; i < p_modules.length; i++)
+        return `
+            ${ImageSelection.Type}
             {
-                switch (p_modules[i])
-                {
-                    case ImageSelection_Module.UPDATE_DOT:
-                        {
-                            l_upatedot = true;
-                        }
-                        break;
-                    case ImageSelection_Module.REVERT_BUTTON:
-                        {
-                            l_revert = true;
-                        }
-                        break;
-                }
+                height: 150px;
+                width: 150px;
             }
 
-            let l_revertelement_str: string = l_revert ? ImageSelection_Html.revertbutton_html() : "";
-            let l_udpatedot_str: string = l_upatedot ? ImageSelection_Html.updatedot_html() : "";
-            return ImageSelection_Html.html(l_udpatedot_str, l_revertelement_str);
-        }
+            ${ImageSelection.Type} >* input.file
+            {
+                display: none;
+            }
 
-        return "";
+            ${ImageSelection.Type} >* label.file-label
+            {
+                cursor: pointer;
+                position: relative;
+            }
+        `;
     }
 }
 
-class ImageSelection
+class ImageSelection extends LComponent<ImageSelection_Module>
 {
     static readonly Type: string = "image-selection";
 
-    private _root: HTMLElement;
-    public get root() { return this._root; }
+    type(): string
+    {
+        return ImageSelection.Type;
+    }
 
     private readOnly: Observable<boolean>;
 
     private image: HTMLImageElement;
-    private imageLabel: HTMLImageElement;
     private intput: HTMLInputElement;
     public getInput() { return this.intput; }
 
@@ -107,40 +99,45 @@ class ImageSelection
 
     private onInputChanged_chain_callback: () => void;
 
-    private modules: ImageSelection_Modules;
-
     constructor(p_root: HTMLElement, p_modules: ImageSelection_Module[],
         p_is_read_only: boolean, p_onInputChanged_chain_callback: () => void = null)
     {
-        this._root = p_root;
-        this._root.appendChild(document.createRange().createContextualFragment(ImageSelection_Html.build(p_modules)));
-
+        super(p_root, p_modules);
+        
         this.readOnly = new Observable<boolean>(p_is_read_only);
         this.image = this._root.querySelector(`#${ImageSelection_Html.imageId}`);
-        this.imageLabel = this._root.querySelector(`#${ImageSelection_Html.imageLabelId}`);
         this.intput = this._root.querySelector(`input`);
         this.onInputChanged_chain_callback = p_onInputChanged_chain_callback;
 
         this.selectedImageId = 1;
-        this.modules = {};
-        if (p_modules)
-        {
-            for (let i = 0; i < p_modules.length; i++)
-            {
-                switch (p_modules[i])
-                {
-                    case ImageSelection_Module.UPDATE_DOT:
-                        this.modules[ImageSelection_Module.UPDATE_DOT] = new ImageSelection_UpdateDot(this);
-                        break;
-                    case ImageSelection_Module.REVERT_BUTTON:
-                        this.modules[ImageSelection_Module.REVERT_BUTTON] = new ImageSelection_RevertButton(this);
-                        break;
-                }
-            }
-        }
 
         this.intput.addEventListener("change", () => { this.onInputChange(); });
         this.readOnly.subscribe_withInit(() => { this.onReadOnlyChange(); });
+    }
+
+    html(): string
+    {
+        let l_revertelement_str: string = this._modules.has(ImageSelection_Module.REVERT_BUTTON) ? ImageSelection_Html.revertbutton_html() : "";
+        let l_udpatedot_str: string = this._modules.has(ImageSelection_Module.UPDATE_DOT) ? ImageSelection_Html.updatedot_html() : "";
+        return ImageSelection_Html.html(l_udpatedot_str, l_revertelement_str);
+    }
+
+    style(): string
+    {
+        return ImageSelection_Style.style();
+    }
+
+    module(p_key: ImageSelection_Module): void
+    {
+        switch (p_key)
+        {
+            case ImageSelection_Module.UPDATE_DOT:
+                this._modules.set(ImageSelection_Module.UPDATE_DOT, new UpdateDot(this._root.querySelector(`#${ImageSelection_Html.updateDotId}`)));
+                break;
+            case ImageSelection_Module.REVERT_BUTTON:
+                this._modules.set(ImageSelection_Module.REVERT_BUTTON, new ImageSelection_RevertButton(this));
+                break;
+        }
     }
 
     public setReadOnly(p_value: boolean)
@@ -204,39 +201,19 @@ class ImageSelection
         }
     }
 
-    public module_UpdateDot(): ImageSelection_UpdateDot
+    public module_UpdateDot(): UpdateDot
     {
-        return this.modules[ImageSelection_Module.UPDATE_DOT] as ImageSelection_UpdateDot;
+        return this._modules.get(ImageSelection_Module.UPDATE_DOT) as UpdateDot;
     }
 
     public module_RevertButton(): ImageSelection_RevertButton
     {
-        return this.modules[ImageSelection_Module.REVERT_BUTTON] as ImageSelection_RevertButton;
+        return this._modules.get(ImageSelection_Module.REVERT_BUTTON) as ImageSelection_RevertButton;
     }
-
 
     private static handleEvent_preventImageSelection(p_event: Event)
     {
         p_event.preventDefault();
-    }
-}
-
-
-class ImageSelection_UpdateDot
-{
-    private imageSelection: ImageSelection;
-
-    private updateDotElement: HTMLElement;
-
-    constructor(p_imageSelection: ImageSelection)
-    {
-        this.imageSelection = p_imageSelection;
-        this.updateDotElement = this.imageSelection.root.querySelector(`#${ImageSelection_Html.updateDotId}`);
-    }
-
-    public setEnabled(p_value: boolean)
-    {
-        this.updateDotElement.style.display = p_value ? "" : "none";
     }
 }
 

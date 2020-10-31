@@ -1,4 +1,4 @@
-import {MWatcher} from "../binding/Binding.js"
+import { MWatcher } from "../framework/binding/Binding.js"
 import { ProfileNavigation } from "../services/Navigation.js";
 import {ProfileEstablishmentContext} from "./ProfileEstablishments.js"
 

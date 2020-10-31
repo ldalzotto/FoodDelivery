@@ -1,5 +1,5 @@
 import {GUserState} from "../UserState.js"
-import {BindingIndex, BindingUtils, Observable} from "../binding/Binding.js"
+import { BindingIndex, BindingUtils, Observable } from "../framework/binding/Binding.js"
 import {Navigation} from "../services/Navigation.js"
 import {LoginService} from "../services/Login.js"
 

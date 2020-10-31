@@ -1,9 +1,13 @@
 
 import {WindowElement, WindowElement_ResizeEvent} from "./Window.js"
 import {GUserState_Init} from "./UserStateInit.js"
-import {Router, Route} from "./router/Router.js"
+import { Router, Route } from "./framework/router/Router.js"
 
 let appElement : HTMLElement = document.getElementById("app");
+
+import { GlobalStyle } from "./Style.js"
+
+GlobalStyle.initialize();
 
 import {RegisterComponents} from "./components/@Register.js"
 import {RegisterComponentsGraphic} from "./components_graphic/@Register.js"

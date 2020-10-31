@@ -1,5 +1,5 @@
-import {BindingUtils} from "../binding/Binding.js"
-import {Observable} from "../binding/Binding.js"
+import { BindingUtils } from "../framework/binding/Binding.js"
+import { Observable } from "../framework/binding/Binding.js"
 import {UserService} from "../services/User.js"
 import { User } from "../UserState.js";
 import {GUserState} from "../UserState.js"

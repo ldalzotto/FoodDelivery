@@ -1,7 +1,7 @@
 import { NearestEstablishments } from "../components/NearestEstablishments.js";
 import { PageHeader } from "../components/PageHeader.js";
 import { UserLocation, UserLocationSubmit_Event } from "../components/UserLocation.js";
-import { ServerError } from "../server/Server.js";
+import { ServerError } from "../framework/server/Server.js";
 import { GUserState, User } from "../UserState.js"
 
 class EatPage extends HTMLElement {

@@ -1,6 +1,6 @@
 import { UserService } from "../services/User.js"
 import { Navigation } from "../services/Navigation.js"
-import { Observable, BindingUtils } from "../binding/Binding.js"
+import { Observable, BindingUtils } from "../framework/binding/Binding.js"
 import { PageHeader } from "../components/PageHeader.js";
 
 class RegisterValidationPage extends HTMLElement {

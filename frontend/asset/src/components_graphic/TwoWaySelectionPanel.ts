@@ -1,4 +1,4 @@
-import { Observable } from "../binding/Binding.js";
+import { Observable } from "../framework/binding/Binding.js";
 import { LoadingButton } from "./LoadingButton.js";
 import { ScrollablePanel } from "./ScrollablePanel.js"
 

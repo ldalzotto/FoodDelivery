@@ -1,4 +1,4 @@
-import {Server, ServerError} from "../server/Server.js"
+import { Server, ServerError } from "../framework/server/Server.js"
 class GeoService
 {
     public static GetAllCitiesMatching(p_matchingName : string, p_limit : number, p_onCompleted:(p_cities:City[] | null, p_err : ServerError | null)=>(void))

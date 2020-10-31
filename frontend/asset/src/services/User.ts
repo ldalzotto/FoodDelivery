@@ -1,4 +1,4 @@
-import {ServerError, Server} from "../server/Server.js"
+import { ServerError, Server } from "../framework/server/Server.js"
 import {GUserState, User} from "../UserState.js"
 
 class PostUserInput
