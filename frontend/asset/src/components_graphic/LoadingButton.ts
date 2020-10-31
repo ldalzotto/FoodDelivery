@@ -27,4 +27,31 @@ class LoadingButton
     }
 }
 
-export {LoadingButton}
+class LoadingElement
+{
+    public isEnabled: boolean = true;
+    private isProcessing: boolean = false;
+
+    private asyncOperationOnClick: (p_onCompleted: () => void) => void;
+
+    constructor(p_element: HTMLElement,
+        p_asyncOperationOnClick: (p_onCompleted: () => void) => void)
+    {
+        this.asyncOperationOnClick = p_asyncOperationOnClick;
+        p_element.addEventListener("click", () => { this.onClicked(); });
+    }
+
+    onClicked()
+    {
+        if (this.isEnabled)
+        {
+            if (!this.isProcessing)
+            {
+                this.isProcessing = true;
+                this.asyncOperationOnClick(() => { this.isProcessing = false; })
+            }
+        }
+    }
+}
+
+export { LoadingButton, LoadingElement }

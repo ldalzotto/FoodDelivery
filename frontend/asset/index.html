@@ -356,18 +356,35 @@
     </template>
 
     <template id="updatable-panel">
-      <div class="row">
+      <div id="delete"></div>
+      <updatable-panel class="row">
         <div class="column one">
           <div class="row">
+          <!--
             <button class="column one-twelfth" id="modification-unlock"></button>
-            <loading-button class="column one-twelfth" id="submit" button-text="S"></loading-button>
             <loading-button class="column one-twelfth" id="delete" button-text="D"></loading-button>
-          </div>
+            -->
+            <div class="column submit-white-space-dimensions"></div>
+            <div class="column submit-button-dimensions" style="height: 24px; position: relative;">
+              <div class="icon-base lock" style="height: inherit;" id="modification-unlock">
+                <div>
+                  <div>🔒</div>
+                </div>
+              </div>
+              <div class="icon-base delete" style="height: inherit;" id="delete"></div>
+            </div>
+              </div>
           <div id="content">
 
           </div>
+          <div class="row">
+            <div class="column submit-white-space-dimensions"></div>
+            <div class="column submit-button-dimensions">
+              <loading-button id="submit" button-text="S"></loading-button>
+            </div>
+          </div>
         </div>
-      </div>
+        </updatable-panel>
     </template>
 
 
@@ -386,6 +403,18 @@
           <div id="right-scroll-panel" class="dish-modification-panel"></div>
         </div>
       </div>
+    </template>
+
+    <template id="image-selection">
+      <image-selection>
+        <div class="row">
+          <input class="file" type=file id="file" />
+          <label for="file" class="column one file-label">
+            <img id="image" />
+            <div class="update-dot-base top-right"></div>
+          </label>
+        </div>
+      </image-selection>
     </template>
 
 </body>

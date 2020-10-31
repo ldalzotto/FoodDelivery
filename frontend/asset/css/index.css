@@ -182,3 +182,84 @@ input-enhanced >* .input-dimensions
     height: 24px;
     position: relative;
 }
+
+
+
+updatable-panel >* .submit-white-space-dimensions
+{
+    width: calc(100% - 50px);
+    height: 1px;
+}
+
+updatable-panel >* .submit-white-space-dimensions::after
+{
+    content: ' ';
+}
+
+updatable-panel >* .submit-button-dimensions
+{
+    width: 50px;
+}
+
+
+.icon-base
+{
+    height: inherit;
+    width: 24px;
+    border-top-left-radius: 999px;
+    border-top-right-radius: 999px;
+    border-bottom-right-radius: 999px;
+    border-bottom-left-radius: 999px;
+    border-width: 2px;
+    border-style: inset;
+    border-image: initial;
+    cursor: pointer;
+}
+
+.icon-base.lock
+{
+    background-color: white;
+}
+
+.icon-base.delete
+{
+    height: inherit;
+    position: absolute;
+    top: 0px;
+    right: 60px;
+    transition: right 0.4s;
+    background-color: red;
+}
+
+
+
+image-selection
+{
+    height: 150px;
+    width: 150px;
+}
+
+image-selection >* input.file
+{
+    display: none;
+}
+
+image-selection >* label.file-label
+{
+    height: inherit;
+    width: inherit;
+    cursor: pointer;
+    position: relative;
+}
+
+image-selection >* label > img
+{
+    height: inherit;
+    width: inherit;
+}
+
+image-selection >* label > img .update-dot-base.position
+{
+    right: -6px;
+    top: -6px;
+}

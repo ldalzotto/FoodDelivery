@@ -1,17 +1,3 @@
-# Dishes :
--## Server-Side : 
-     - Adding/Removing/Update dish to establishment.
-     - Getting all dishes from user-id (for editing).
--## Front-End : 
-     - Adding a dish page where all dishes are displayed (with thumb).
-
-# Establishment detail :
-     - Refactoring the establishment-detail component so that it only display thumb, name and address
-     - Clicking on establishment redirect to the establishment/detail&establishment_id=$ page
-     - Updating the establishment-detail to display #id next to the name.
-
-     - There is a bug when we try to create a dish with a long price.
-
 # Dish ordering : 
 -## Service-Side :
      * Creating an order. Link to the user-id is optional but to pay, you have to create an account.
@@ -19,17 +5,14 @@
      * Adding a dish to an order.
      * Having history of order from user-id.
 
+1) Creating an image selection component. This involves to request the default image from server.
+   -> Then create it's modification variant. (with revert feature).
+2) Updating the map selection update to have modification dot and revert.
+3) Reorganizing the layout of the establishment detail panel.
+3) Adding layout to the accordilon.
 
+4) Adding style to the TwoWay selection panel.
 
-element.style {
-    background-color: orange;
-    position: absolute;
-    float: left;
-    width: 15px;
-    height: 15px;
-    /* top: -20.0%; */
-    /* left: 97.5%; */
-    right: -6px;
-    top: -6px;
-    border-radius: 99999px;
-}
+- When we load the website from a page diferent than the main page, multiple sesison tokens are inserted.
+- There is a bug when we try to create a dish with a long price.
+- On the UpdatablePanel, the delete callbacks is never triggered.

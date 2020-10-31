@@ -1,5 +1,5 @@
 import { Observable } from "../binding/Binding.js";
-import { LoadingButton } from "./LoadingButton.js";
+import { LoadingButton, LoadingElement } from "./LoadingButton.js";
 
 class UpdatablePanel
 {
@@ -7,12 +7,11 @@ class UpdatablePanel
 
     private _root : HTMLElement;
 
-    private modificationUnlockButton: HTMLButtonElement;
+    private modificationUnlockButton: HTMLElement;
     private submitChangeButton: LoadingButton;
-    private deleteButton: LoadingButton;
+    private deleteElement: LoadingElement;
 
     private isModificationEnabled: Observable<boolean>;
-    private modificationButtonText: Observable<string>;
 
     private updatablaeElements : UpdatableElement[];
 
@@ -28,12 +27,10 @@ class UpdatablePanel
 
         this.modificationUnlockButton = this._root.querySelector("#modification-unlock");
         this.submitChangeButton = new LoadingButton(this._root.querySelector("#submit"), (p_onCompleted) => {p_callbacks.onSubmitPressed(p_onCompleted);});
-        this.deleteButton = new LoadingButton(this._root.querySelector("#delete"), (p_onCompleted) => {p_callbacks.onDeletePressed(p_onCompleted);} );
+        this.deleteElement = new LoadingElement(this._root.querySelector("#delete"), (p_onCompleted) => { p_callbacks.onDeletePressed(p_onCompleted); });
 
         this.isModificationEnabled = new Observable<boolean>(false);
-        this.modificationButtonText = new Observable<string>("");
 
-        this.modificationButtonText.subscribe((arg0) => { this.modificationUnlockButton.textContent = arg0 });
         this.isModificationEnabled.subscribe_withInit((arg0) => { this.onIsModificationEnabledChanged(arg0); })
         this.modificationUnlockButton.addEventListener("click", () => { this.isModificationEnabled.value = !this.isModificationEnabled.value });
     }
@@ -44,18 +41,16 @@ class UpdatablePanel
             {
                 this.updatablaeElements[i].enableModifications();
             }
-            this.modificationButtonText.value = "L";
             this.submitChangeButton.button.disabled = false;
-            this.deleteButton.button.disabled = false;
+            this.deleteElement.isEnabled = true;
         }
         else {
             for(let i = 0;i<this.updatablaeElements.length;i++)
             {
                 this.updatablaeElements[i].disableModifications();
             }
-            this.modificationButtonText.value = "U";
             this.submitChangeButton.button.disabled = true;
-            this.deleteButton.button.disabled = true;
+            this.deleteElement.isEnabled = false;
         }
     }
 
