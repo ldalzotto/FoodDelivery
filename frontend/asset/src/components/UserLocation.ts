@@ -1,4 +1,4 @@
-import { MapSelection } from "../components_graphic/MapSelection.js";
+import { MapSelectionV2 } from "../components_graphic/MapSelection.js";
 import { LatLng } from "../services/Geo.js";
 
 class UserLocation
@@ -7,7 +7,7 @@ class UserLocation
 
     private _root : HTMLElement;
 
-    private _mapSelection : MapSelection;
+    private _mapSelection: MapSelectionV2;
     private _submitButton : HTMLElement;
 
     constructor(p_root : HTMLElement)
@@ -15,7 +15,7 @@ class UserLocation
         this._root = p_root;
         let l_template : HTMLTemplateElement = document.getElementById(UserLocation.Type) as HTMLTemplateElement;
         this._root.appendChild(l_template.content.cloneNode(true));
-        this._mapSelection = new MapSelection(this._root.querySelector("#latlng"));
+        this._mapSelection = new MapSelectionV2(this._root.querySelector("#latlng"), null);
         this._mapSelection.init(0, 0);
         this._submitButton = this._root.querySelector("#submit");
         this._submitButton.addEventListener("click", () => {this.onSubmitClick();});

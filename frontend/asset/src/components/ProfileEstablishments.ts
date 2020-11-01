@@ -6,7 +6,7 @@ import {
 import { BindingUtils, Observable } from "../framework/binding/Binding.js"
 import { CitySelection } from "./CitySelection.js";
 import { City } from "../services/Geo.js";
-import { MapSelection } from "../components_graphic/MapSelection.js"
+import { MapSelectionV2 } from "../components_graphic/MapSelection.js"
 import { ImageUrl } from "../services/Image.js";
 import { Navigation } from "../services/Navigation.js";
 import { ElementList, ElementListCallbacks } from "../components_graphic/ElementList.js";
@@ -95,7 +95,7 @@ class EstablishmentRegistration extends HTMLElement {
     private inputName: HTMLInputElement;
     private inputAddressStreetName: HTMLInputElement;
     private citySelection: CitySelection;
-    private latLngMap: MapSelection;
+    private latLngMap: MapSelectionV2;
     private inputPhone: HTMLInputElement;
     private inputThumbImage : HTMLInputElement;
 
@@ -123,7 +123,7 @@ class EstablishmentRegistration extends HTMLElement {
         this.inputName = this.querySelector("#name") as HTMLInputElement;
         this.inputAddressStreetName = this.querySelector("#street-name") as HTMLInputElement;
         this.citySelection = new CitySelection(this.querySelector("#city"));
-        this.latLngMap = new MapSelection(this.querySelector("#latlng"));
+        this.latLngMap = new MapSelectionV2(this.querySelector("#latlng"), null);
         this.latLngMap.init(48.85, 2.35);
         this.inputPhone = this.querySelector("#phone") as HTMLInputElement;
         this.inputThumbImage = this.querySelector("#thumb") as HTMLInputElement;

@@ -96,8 +96,8 @@ class EstablishmentDisplayCallbacks implements UpdatablePanelCallbacks
             l_establishmentAddressDelta = new EstablishmentAddressDelta();
             if (this.establishmentDisplay.addressElement.hasChanged()) { l_establishmentAddressDelta.street_full_name = this.establishmentDisplay.addressElement.input.value; }
             if (this.establishmentDisplay.pointElement.hasChanged()) {
-                l_establishmentAddressDelta.lat = this.establishmentDisplay.pointElement.latLng.lat;
-                l_establishmentAddressDelta.lng = this.establishmentDisplay.pointElement.latLng.lng;
+                l_establishmentAddressDelta.lat = this.establishmentDisplay.pointElement.getLatLng().lat;
+                l_establishmentAddressDelta.lng = this.establishmentDisplay.pointElement.getLatLng().lng;
             }
             if (this.establishmentDisplay.cityElement.hasChanged()) { 
                 let l_selectedCity = this.establishmentDisplay.cityElement.citySelection.getSelectedCity();

@@ -1,5 +1,6 @@
 import { Observable } from "../framework/binding/Binding.js";
 import { LComponent } from "../framework/component/LComponent.js";
+import { RevertButton } from "../modules_graphic/RevertButton.js";
 import { UpdateDot } from "../modules_graphic/UpdateDot.js";
 import { ImageService, ImageUrl } from "../services/Image.js";
 import { GlobalStyle } from "../Style.js";
@@ -135,7 +136,7 @@ class ImageSelection extends LComponent<ImageSelection_Module>
                 this._modules.set(ImageSelection_Module.UPDATE_DOT, new UpdateDot(this._root.querySelector(`#${ImageSelection_Html.updateDotId}`)));
                 break;
             case ImageSelection_Module.REVERT_BUTTON:
-                this._modules.set(ImageSelection_Module.REVERT_BUTTON, new ImageSelection_RevertButton(this));
+                this._modules.set(ImageSelection_Module.REVERT_BUTTON, new RevertButton(this._root.querySelector(`#${ImageSelection_Html.revertButtonId}`)));
                 break;
         }
     }
@@ -206,9 +207,9 @@ class ImageSelection extends LComponent<ImageSelection_Module>
         return this._modules.get(ImageSelection_Module.UPDATE_DOT) as UpdateDot;
     }
 
-    public module_RevertButton(): ImageSelection_RevertButton
+    public module_RevertButton(): RevertButton
     {
-        return this._modules.get(ImageSelection_Module.REVERT_BUTTON) as ImageSelection_RevertButton;
+        return this._modules.get(ImageSelection_Module.REVERT_BUTTON) as RevertButton;
     }
 
     private static handleEvent_preventImageSelection(p_event: Event)
@@ -216,27 +217,6 @@ class ImageSelection extends LComponent<ImageSelection_Module>
         p_event.preventDefault();
     }
 }
-
-class ImageSelection_RevertButton
-{
-    private imageSelection: ImageSelection;
-
-    public revertClickCallback: () => void;
-
-    constructor(p_imageSelection: ImageSelection)
-    {
-        this.imageSelection = p_imageSelection;
-        this.imageSelection.root.querySelector(`#${ImageSelection_Html.revertButtonId}`).addEventListener("click", (p_event) => { this.onRevertClicked(p_event); });
-    }
-
-    private onRevertClicked(p_event: Event)
-    {
-        p_event.stopPropagation();
-        p_event.preventDefault();
-        this.revertClickCallback();
-    }
-}
-
 
 class ImageSelectionUpdateElement implements UpdatableElement
 {

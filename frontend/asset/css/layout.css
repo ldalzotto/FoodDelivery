@@ -102,6 +102,11 @@ html {
     width: inherit;
 }
 
+.inherit-mp
+{
+    margin: inherit;
+    padding: inherit;
+}
 
 /******************* Dynamic grid *********************/
 

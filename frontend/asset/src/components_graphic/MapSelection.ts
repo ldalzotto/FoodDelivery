@@ -1,4 +1,7 @@
 import { Observable } from "../framework/binding/Binding.js";
+import { LComponent } from "../framework/component/LComponent.js";
+import { RevertButton } from "../modules_graphic/RevertButton.js";
+import { UpdateDot } from "../modules_graphic/UpdateDot.js";
 import { LatLng } from "../services/Geo.js";
 import {WindowElement, WindowElement_ResizeEvent} from "../Window.js"
 import { UpdatableElement } from "./UpdatablePanel.js";
@@ -10,45 +13,116 @@ declare namespace L
     function marker(platlong:any):any;
 }
 
-class MapSelection
+class MapSelectionV2_Html
 {
-    static readonly Type : string = "map-selection";
+    public static readonly MapContainerId = "map-container";
+    public static readonly UpdateDotId = "update-dot";
+    public static readonly RevertButtonId = "revert-button";
 
-    protected _root : HTMLElement;
-    public readonly : boolean = false;
-
-    private map : any;
-
-    protected _LatLng : LatLng = new LatLng();
-    public get latLng(){return this._LatLng;}
-
-    public onLatLngChanged : Observable<null> = new Observable<null>(null);
-
-    private displayedMarker : any;
-    private isFocused : boolean;
-
-    constructor(p_parent: HTMLElement)
+    public static build(p_update_dot_element: string, p_revert_button_element: string): string
     {
+        return `
+            <${MapSelectionV2.Type} class="inherit-wh inherit-mp">
+                <div class="inherit-wh inherit-mp" style="position: relative;">
+                    <div id="${MapSelectionV2_Html.MapContainerId}" class="inherit-wh"></div>
+                    ${p_update_dot_element}
+                    ${p_revert_button_element}
+                </div>
+            </${MapSelectionV2.Type}>
+        `;
+    }
 
-        this._root = document.createElement("div");
+    public static updateDot(): string
+    {
+        return `
+            <div id="${MapSelectionV2_Html.UpdateDotId}" class="update-dot-base top-right" style="z-index: 999999;"></div>
+        `;
+    }
 
-        this._root = p_parent.appendChild(this._root);
+    public static revertbutton_html(): string
+    {
+        return `
+            <div id="${MapSelectionV2_Html.RevertButtonId}" style="position: absolute; width: 17px; height: 17px; right: -9px; top: 11px; z-index: 999999;">
+                <span>↻</span>
+            </div>
+        `;
+    }
+}
 
-        this._root.style.width = "inherit";
-        this._root.style.height = "inherit";
-        this._root.style.margin = "inherit";
-        this._root.style.padding = "inherit";
+enum MapSelectionV2_Modules
+{
+    UPDATE_DOT = 0,
+    REVERT_BUTTON = 1
+}
+
+class MapSelectionV2 extends LComponent<MapSelectionV2_Modules>
+{
+    static readonly Type: string = "map-selection";
+
+    public readonly: boolean = false;
+
+    private map: any;
+
+    protected _LatLng: LatLng = new LatLng();
+    public get latLng() { return this._LatLng; }
+
+    public onLatLngChanged: Observable<null> = new Observable<null>(null);
+
+    private displayedMarker: any;
+    private isFocused: boolean;
+
+    private mapContainer: HTMLElement;
+
+
+    type(): string
+    {
+        return MapSelectionV2.Type;
+    }
+
+    constructor(p_root: HTMLElement, p_modules: MapSelectionV2_Modules[])
+    {
+        super(p_root, p_modules);
+        this.mapContainer = this._root.querySelector(`#${MapSelectionV2_Html.MapContainerId}`);
+    }
+
+    html(): string
+    {
+        let l_updatedot_str = this._modules.has(MapSelectionV2_Modules.UPDATE_DOT) ? MapSelectionV2_Html.updateDot() : "";
+        let l_revert_button_str = this._modules.has(MapSelectionV2_Modules.REVERT_BUTTON) ? MapSelectionV2_Html.revertbutton_html() : "";
+        return MapSelectionV2_Html.build(l_updatedot_str, l_revert_button_str);
+    }
+
+    style(): string { return null; }
+
+    module(p_key: MapSelectionV2_Modules): void
+    {
+        switch (p_key)
+        {
+            case MapSelectionV2_Modules.UPDATE_DOT:
+                {
+                    let l_update_dot = new UpdateDot(this._root.querySelector(`#${MapSelectionV2_Html.UpdateDotId}`));
+                    l_update_dot.setEnabled(false);
+                    this._modules.set(MapSelectionV2_Modules.UPDATE_DOT, l_update_dot);
+                }
+                break;
+            case MapSelectionV2_Modules.REVERT_BUTTON:
+                {
+                    let l_revert_button = new RevertButton(this._root.querySelector(`#${MapSelectionV2_Html.RevertButtonId}`));
+                    this._modules.set(MapSelectionV2_Modules.REVERT_BUTTON, l_revert_button);
+                }
+                break;
+        }
     }
 
     public init(p_initialLat: number, p_initialLng: number)
     {
         this.latLng.lat = p_initialLat;
         this.latLng.lng = p_initialLng;
-
+        
         setTimeout(() =>
         {
             this.isFocused = false;
-            this.map = L.map(this._root, { scrollWheelZoom: false }).setView([this.latLng.lat, this.latLng.lng], 13);
+            this.map = L.map(this.mapContainer, { scrollWheelZoom: false }).setView([this.latLng.lat, this.latLng.lng], 13);
             L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoicGxvbWJhIiwiYSI6ImNrZzgwcnZ2OTA2NXcyd215bDhveXc2dmYifQ.40bIOrEnYw6UTl9TKkZJOw',
                 {
                     attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
@@ -69,18 +143,19 @@ class MapSelection
         }, 0);
     }
 
-    public setSelectionMarker(plat : number, p_long : number, p_moveTo : boolean)
+    public setSelectionMarker(plat: number, p_long: number, p_moveTo: boolean)
     {
-            if (this.displayedMarker != undefined) {
-                this.map.removeLayer(this.displayedMarker);
-            };
-    
-            this.displayedMarker = L.marker([plat, p_long]).addTo(this.map);
+        if (this.displayedMarker != undefined)
+        {
+            this.map.removeLayer(this.displayedMarker);
+        };
 
-            if(p_moveTo)
-            {
-                this.map.setView([plat, p_long], 13);
-            }
+        this.displayedMarker = L.marker([plat, p_long]).addTo(this.map);
+
+        if (p_moveTo)
+        {
+            this.map.setView([plat, p_long], 13);
+        }
     }
 
     public invalidateSize() 
@@ -88,11 +163,14 @@ class MapSelection
         this.map.invalidateSize(false);
     }
 
-    onMapClick(event:any)
+    onMapClick(event: any)
     {
-        if(this.isFocused)
+        if (this.isFocused)
         {
-            this.setLatLng(event.latlng.lat, event.latlng.lng);
+            if (!this.readonly)
+            {
+                this.setLatLng(event.latlng.lat, event.latlng.lng);
+            }
         }
     }
 
@@ -113,92 +191,119 @@ class MapSelection
         this.invalidateSize();
     }
 
-    setLatLng(plat : number, p_long : number)
+    setLatLng(plat: number, p_long: number)
     {
-        if(!this.readonly)
-        {
-            if(this.latLng.lat !== plat || this.latLng.lng !== p_long)
+        if (this.latLng.lat !== plat || this.latLng.lng !== p_long)
             {
                 this.latLng.lat = plat;
                 this.latLng.lng = p_long;
-    
+
                 this.onLatLngChanged.notify();
             }
-        }
     }
-    
+
     onLatLngChangedFn()
     {
         this.setSelectionMarker(this.latLng.lat, this.latLng.lng, false);
     }
+
+    public module_UpdateDot(): UpdateDot
+    {
+        return this._modules.get(MapSelectionV2_Modules.UPDATE_DOT);
+    }
+    public module_RevertButton(): RevertButton
+    {
+        return this._modules.get(MapSelectionV2_Modules.REVERT_BUTTON);
+    }
 }
 
-class MapSelectionUpdate extends MapSelection implements UpdatableElement
+class MapSelectionUpdate implements UpdatableElement
 {
     
-    private _initialValue : LatLng;
+    private _initialValue: LatLng;
 
-    private _hasChanged : Observable<boolean>;
+    private mapSelection: MapSelectionV2;
+    private _hasChanged: Observable<boolean>;
 
-    constructor(p_parent: HTMLElement)
+    constructor(p_root: HTMLElement)
     {
-        super(p_parent);
+        this.mapSelection = new MapSelectionV2(p_root, [MapSelectionV2_Modules.UPDATE_DOT, MapSelectionV2_Modules.REVERT_BUTTON]);
 
         this._initialValue = new LatLng();
 
         this._hasChanged = new Observable<boolean>(false);
 
-        this.onLatLngChanged.subscribe(() => {this.onLatLngChangedUpdate();});
-        this._hasChanged.subscribe(() => {this.onHasChanged_change(this._hasChanged.value);});
+        this.mapSelection.onLatLngChanged.subscribe(() => { this.onLatLngChangedUpdate(); });
+        this._hasChanged.subscribe(() => { this.onHasChanged_change(this._hasChanged.value); });
+
+        this.mapSelection.module_RevertButton().revertClickCallback = () => { this.onRevertClicked(); };
     }
-    
+
+    public init(p_initialLat: number, p_initialLng: number)
+    {
+        this.mapSelection.init(p_initialLat, p_initialLng);
+        this._initialValue.lat = p_initialLat;
+        this._initialValue.lng = p_initialLng;
+    }
+
     public enableModifications()
     {
-        this.readonly = false;
+        this.mapSelection.readonly = false;
     }
 
     public disableModifications()
     {
-        this.readonly = true;
+        this.mapSelection.readonly = true;
     }
 
     public setCurrentAsInitialValue()
     {
-        this._initialValue.lat = this.latLng.lat;
-        this._initialValue.lng = this.latLng.lng;
+        this._initialValue.lat = this.mapSelection.latLng.lat;
+        this._initialValue.lng = this.mapSelection.latLng.lng;
         this.onLatLngChangedUpdate();
     }
 
-    public hasChanged() : boolean
+    public hasChanged(): boolean
     {
         return this._hasChanged.value;
     }
 
     onLatLngChangedUpdate()
     {
-        if(this._initialValue.lat !== this.latLng.lat || this._initialValue.lng !== this.latLng.lng)
-            {
-                this._hasChanged.value = true;
-            }
-            else
-            {
-                this._hasChanged.value = false;
-            }
-    }
-
-    private onHasChanged_change(p_hasChanged : boolean)
-    {
-        if(p_hasChanged)
+        if (this._initialValue.lat !== this.mapSelection.latLng.lat || this._initialValue.lng !== this.mapSelection.latLng.lng)
         {
-            this._root.style.borderStyle = "dashed";
-            this._root.style.borderColor = "orange";
+            this._hasChanged.value = true;
         }
         else
         {
-            this._root.style.borderStyle = "";
-            this._root.style.borderColor = "";
+            this._hasChanged.value = false;
         }
+    }
+
+    private onRevertClicked()
+    {
+        this.mapSelection.setLatLng(this._initialValue.lat, this._initialValue.lng);
+        this.onLatLngChangedUpdate();
+    }
+
+    private onHasChanged_change(p_hasChanged: boolean)
+    {
+        if (p_hasChanged)
+        {
+            this.mapSelection.module_UpdateDot().setEnabled(true);
+        }
+        else
+        {
+            this.mapSelection.module_UpdateDot().setEnabled(false);
+        }
+    }
+
+    public getLatLng()
+    {
+        return this.mapSelection.latLng;
     }
 }
 
-export {MapSelection, MapSelectionUpdate}
+
+
+export { MapSelectionV2, MapSelectionUpdate }
